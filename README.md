@@ -23,4 +23,4 @@ $ nixverse node deploy servers
 
 ## Notes
 
-`nodes/sshable` is probably the most interesting group. It's an example how Nixverse does cross-cutting configurations. It's the central place that specifies the public ssh keys all machines accept.
+`nodes/sshable` is probably the most interesting group. It demonstrates Nixverse's ability to do cross-cutting configurations. It's the central place that specifies the public ssh keys all machines accept.
