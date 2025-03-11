@@ -1,0 +1,6 @@
+github.com/godbus/dbus/v5 v5.1.0 h1:4KLkAxT3aOY8Li4FRJe/KvhoNFFxo0m6fNuFUO8QJUk=
+github.com/godbus/dbus/v5 v5.1.0/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
+github.com/hgl/golib v0.0.0-20241103060427-9dab1ad41f58 h1:iEn7UGRIZF98Ki3XOAOwgiEijurLsylb4LMYyDHBtAE=
+github.com/hgl/golib v0.0.0-20241103060427-9dab1ad41f58/go.mod h1:96Puv2NGINR/7noQEhygh1x+7N4qz+aJtyvt23QdiBc=
+github.com/hgl/golib v0.0.0-20241103080602-d21c9474eef0 h1:28h02NjOLr5IYP+Ero64J+Hy3PahATDEJuwPi0C60Q0=
+github.com/hgl/golib v0.0.0-20241103080602-d21c9474eef0/go.mod h1:96Puv2NGINR/7noQEhygh1x+7N4qz+aJtyvt23QdiBc=

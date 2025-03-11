@@ -1,0 +1,4 @@
+/build
+**/sops/age/keys.txt
+**/emacs/auto-save-list
+**/emacs/eln-cache

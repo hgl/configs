@@ -1,0 +1,83 @@
+{
+  "[shellscript]": {
+    "editor.insertSpaces": false
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "editor.dragAndDrop": false,
+  "editor.fontSize": 13,
+  "editor.rulers": [80],
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+  "extensions.ignoreRecommendations": true,
+  "files.autoSave": "afterDelay",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "nix.enableLanguageServer": true,
+  "nix.serverPath": "nil",
+  "projectManager.git.baseFolders": ["~/dev"],
+  "redhat.telemetry.enabled": false,
+  "shellcheck.executablePath": "shellcheck",
+  "telemetry.telemetryLevel": "off",
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "editor.minimap.enabled": false,
+  "nix.serverSettings": {
+    "nil": {
+      "formatting": {
+        "command": ["nixfmt"]
+      }
+    }
+  },
+  "remote.SSH.useLocalServer": false,
+  "html.format.enable": false,
+  "svelte.enable-ts-plugin": true,
+  "workbench.colorTheme": "Nord",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "diffEditor.ignoreTrimWhitespace": false,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[nginx]": {
+    "editor.defaultFormatter": "raynigon.nginx-formatter"
+  },
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "remote.SSH.remotePlatform": {
+    "hgl-nixos": "linux"
+  },
+  "breadcrumbs.enabled": false,
+  "editor.stickyScroll.enabled": false,
+  "editor.unicodeHighlight.nonBasicASCII": false,
+  "editor.multiCursorLimit": 30000,
+  "editor.formatOnSave": true,
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "vue.autoInsert.dotValue": true,
+  "[svelte]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "emmet.includeLanguages": {
+    "vue-html": "html",
+    "vue": "html"
+  },
+  "gitlens.views.commitDetails.files.layout": "tree",
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.renderWhitespace": "all",
+  "terminal.integrated.scrollback": 100000,
+  "go.toolsEnvVars": {
+    "GOEXPERIMENT": "aliastypeparams",
+    "GODEBUG": "gotypesalias=1"
+  },
+  "1password.editor.suggestStorage": false,
+  "terminal.integrated.defaultProfile.osx": "fish"
+}

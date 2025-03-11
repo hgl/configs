@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cmd_show() {
+	openssl x509 -noout -text -in "$1"
+}
+
+cmd_json() {
+	local filter=$1
+	local file=${2:-.}
+
+	cfssl-certinfo -cert "$file" | jq --raw-output "$filter"
+}
+
+cmd_verify() {
+	openssl verify -CAfile "$2" "$1"
+}
+
+cmd_crl() {
+	openssl crl -noout -text -in "$1"
+}
+
+COMMAND=${1-}
+if [[ $COMMAND = help ]]; then
+	shift
+	COMMAND=${1-}
+	prefix=cmd_help
+else
+	prefix=cmd
+fi
+SUBCOMMAND=${2-}
+if [[ -z $COMMAND ]]; then
+	[[ $(type -t "$prefix") = function ]] && "$prefix"
+elif [[ $(type -t "${prefix}_${COMMAND}_$SUBCOMMAND") = function ]]; then
+	shift 2
+	"${prefix}_${COMMAND}_$SUBCOMMAND" "$@"
+elif [[ $(type -t "${prefix}_$COMMAND") = function ]]; then
+	shift
+	"${prefix}_$COMMAND" "$@"
+else
+	cat >&2 <<-EOF
+		Unknown command: $COMMAND $SUBCOMMAND
+		Use "$SCRIPT_NAME help" to find out usage.
+	EOF
+fi
