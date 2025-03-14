@@ -79,5 +79,8 @@
     "GODEBUG": "gotypesalias=1"
   },
   "1password.editor.suggestStorage": false,
-  "terminal.integrated.defaultProfile.osx": "fish"
+  "terminal.integrated.defaultProfile.osx": "fish",
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
