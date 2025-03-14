@@ -17,6 +17,7 @@ in
           proxy_request_buffering off;
           client_max_body_size 0;
           add_header Strict-Transport-Security "max-age=63072000" always;
+          add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
         '';
       };
     };
