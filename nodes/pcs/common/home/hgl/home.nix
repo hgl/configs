@@ -169,6 +169,8 @@
     jq
     unzip
     bashInteractive
+    ripgrep
+    rsync
 
     (parallel-full.override { willCite = true; })
     wget
