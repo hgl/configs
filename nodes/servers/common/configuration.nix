@@ -118,6 +118,7 @@
     tcpdump
     btop
     iperf
+    rsync
   ];
 
   system.stateVersion = "24.05";
