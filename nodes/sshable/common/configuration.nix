@@ -11,7 +11,7 @@ let
   ];
   # Make a nixos installer accept my ssh keys by running
   # curl -L <domain> | sudo sh
-  keysScript = pkgs.writeTextDir "keys" ''
+  keysScript = pkgs.writeText "keys" ''
     mkdir -p /root/.ssh
     cat <<EOF >/root/.ssh/authorized_keys
     ${lib.concatStringsSep "\n" keys}
@@ -28,22 +28,24 @@ lib.mkMerge (
   ]
   ++ lib.optional (lib.elem "servers" nodes.current.parents) {
     services.caddy.virtualHosts.${nodes.current.config.networking.fqdn}.extraConfig = ''
-      handle /keys {
-        root ${keysScript}
-        file_server
+      handle_path /keys {
+        file_server {
+          root ${keysScript}
+        }
       }
     '';
   }
   ++ lib.optional (nodes.current.name == "s0") {
     services.caddy.virtualHosts.${nodes.current.config.networking.domain}.extraConfig = ''
-      handle /keys {
-        root ${keysScript}
-        file_server
+      handle_path /keys {
+        file_server {
+          root ${keysScript}
+        }
       }
     '';
   }
   ++ lib.optional (lib.elem "routers" nodes.current.parents) {
-    services.nginx.virtualHosts.${nodes.current.config.networking.fqdn}.locations."= /keys".root =
+    services.nginx.virtualHosts.${nodes.current.config.networking.fqdn}.locations."= /keys".alias =
       keysScript;
   }
 )
