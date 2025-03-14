@@ -8,6 +8,7 @@
 {
   imports = [
     ./nbhwj.nix
+    ./glenhuang.nix
   ];
   services.mysql = {
     package = pkgs.mariadb_114;
@@ -26,6 +27,7 @@
     };
   };
   services.caddy = {
+    enable = true;
     virtualHosts = {
       ${config.networking.domain} = {
         useACMEHost = config.networking.domain;

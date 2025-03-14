@@ -10,10 +10,18 @@ in
           -Server
           Strict-Transport-Security max-age=63072000
         }
-        handle /* {
-          root /srv/www/glenhuang
-          try_files {path}.html
-          file_server
+        handle_path /resume {
+          file_server {
+            root /srv/www/glenhuang/resume/index.html
+          }
+        }
+        redir /resume/ /resume 301
+        handle_path /resume/* {
+          root /srv/www/glenhuang/resume
+          file_server {
+            index ""
+            hide index.html
+          }
         }
       '';
     };
