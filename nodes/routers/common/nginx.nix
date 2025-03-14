@@ -54,17 +54,18 @@
         ssl = false;
       }
     ];
+    commonHttpConfig = ''
+      map $server_port $https_port {
+        3 2;
+        80 443;
+      }
+    '';
     virtualHosts = {
       http = {
         serverName = "_";
         default = true;
         extraConfig = ''
-          if ($server_port = 3) {
-            return 301 https://$host:2$request_uri;
-          }
-          if ($server_port = 80) {
-            return 301 https://$host$request_uri;
-          }
+          return 301 https://$host:$https_port$request_uri;
         '';
       };
       ${config.networking.fqdn} = {
@@ -75,6 +76,7 @@
         acmeRoot = null;
         extraConfig = ''
           add_header Strict-Transport-Security "max-age=63072000" always;
+          add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
         '';
       };
     };
