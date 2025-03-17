@@ -46,5 +46,14 @@ in
         sudo killall -HUP mDNSResponder
       '';
     })
+    (pkgs.writeShellApplication {
+      name = "serve";
+      runtimeInputs = [ pkgs.static-web-server ];
+      text = ''
+        dir=''${1:-.}
+        port=''${2:-8000}
+        exec static-web-server --root "$dir" --port "$port" --directory-listing
+      '';
+    })
   ];
 }
