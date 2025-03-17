@@ -17,7 +17,7 @@ ipsec: $(foreach name,$(vpn_clients), \
   private/vpn/ipsec/clients/$(name)/ipsec.key \
   private/vpn/ipsec/clients/$(name)/uuid \
 )
-build/vpn/clients/%/vpn.mobileconfig: private/vpn/ipsec/clients/%/uuid build/vpn/ipsec/clients/%/ipsec.key private/vpn/ipsec/clients/%/ipsec.crt private/vpn/ipsec/ca.crt private/vpn/clients.yaml | build/vpn/clients/%
+build/vpn/clients/%/vpn.mobileconfig: private/vpn/ipsec/clients/%/uuid build/vpn/ipsec/clients/%/ipsec.key private/vpn/ipsec/clients/%/ipsec.crt vpn/ipsec/ca.crt private/vpn/clients.yaml | build/vpn/clients/%
 	umask a=,u=rw
 	mobileconfig $* $(wordlist 1,5,$^) >$@
 build/vpn/ipsec/clients/%/ipsec.key: private/vpn/ipsec/clients/%/ipsec.key | build/vpn/ipsec/clients/%
@@ -28,7 +28,7 @@ private/vpn/ipsec/clients/%/ipsec.key: | private/vpn/ipsec/clients/%
 		-noout \
 		-out $@
 	nixverse secrets encrypt --in-place $@
-private/vpn/ipsec/clients/%/ipsec.crt: build/vpn/ipsec/clients/%/ipsec.key build/vpn/ipsec/ca.key private/vpn/ipsec/ca.crt
+private/vpn/ipsec/clients/%/ipsec.crt: build/vpn/ipsec/clients/%/ipsec.key build/vpn/ipsec/ca.key vpn/ipsec/ca.crt
 	if [[ -e $@ ]]; then
 		if key-cert-match $< $@; then
 			touch $@
@@ -67,7 +67,7 @@ private/vpn/ipsec/ca.key: | private/vpn/ipsec
 		-noout \
 		-out $@
 	nixverse secrets encrypt --in-place $@
-private/vpn/ipsec/ca.crt: build/vpn/ipsec/ca.key | private/vpn/ipsec
+vpn/ipsec/ca.crt: build/vpn/ipsec/ca.key
 	if [[ -e $@ ]]; then
 		if key-cert-match $< $@; then
 			touch $@
@@ -91,7 +91,7 @@ ifneq ($(vpn_disabled_clients),)
       private/vpn/ipsec/clients/$(name)/ipsec.crt \
       private/vpn/ipsec/clients/$(name)/ipsec.key \
     )
-  private/vpn/ipsec/clients.crl: build/vpn/ipsec/ca.key private/vpn/ipsec/ca.crt $(vpn_disabled_clients:%=private/vpn/ipsec/clients/%/ipsec.crt)
+  private/vpn/ipsec/clients.crl: build/vpn/ipsec/ca.key vpn/ipsec/ca.crt $(vpn_disabled_clients:%=private/vpn/ipsec/clients/%/ipsec.crt)
 	exec >$@
 	echo '-----BEGIN X509 CRL-----'
 	(

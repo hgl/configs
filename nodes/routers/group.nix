@@ -9,6 +9,8 @@
       os = "nixos";
       channel = "unstable";
       subrouter = false;
+      # Used by the mobileconfig script
+      fqdn = nodes.current.config.networking.fqdn;
       dhcp = {
         pool = {
           start = 100;

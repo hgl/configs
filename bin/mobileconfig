@@ -28,12 +28,11 @@ client_p12_data=$(
 		base64 --wrap 52 |
 		sed 's/^/			/'
 )
-routers_json=$(nixverse node value routers | jq 'to_entries | map(select(.value.type == "node")) | from_entries')
+server_addrs=$(nixverse node value routers | jq --raw-output 'to_entries | map(select(.value.type == "node")) | sort_by(.value.index) | .[].value.fqdn')
 if [[ $client_group = admins ]]; then
 	display_name=VPN
-	servers=$(jq --raw-output 'to_entries | map(.value) | sort_by(.index) | .[] | .domain' <<<"$routers_json")
 else
-	servers=$(jq --raw-output 'first(to_entries[] | .value | select(.index == 0)) | .domain' <<<"$routers_json")
+	server_addrs=$(head -n1 <<<"$server_addrs")
 fi
 if [[ $client_group = guests ]]; then
 	local_id=$client.guest
@@ -58,10 +57,10 @@ cat <<EOF
 	<key>PayloadContent</key>
 	<array>
 EOF
-while IFS=, read -r domain; do
+while IFS=, read -r server_addr; do
 	vpn_uuid=$(uuidgen | tr '[:lower:]' '[:upper:]')
 	if [[ $client_group = admins ]]; then
-		vpn_name="IPsec $domain"
+		vpn_name="IPsec $server_addr"
 	else
 		vpn_name=$display_name
 	fi
@@ -86,7 +85,7 @@ while IFS=, read -r domain; do
 			<key>IKEv2</key>
 			<dict>
 				<key>RemoteAddress</key>
-				<string>$domain</string>
+				<string>$server_addr</string>
 				<key>AuthenticationMethod</key>
 				<string>Certificate</string>
 				<key>CertificateType</key>
@@ -94,7 +93,7 @@ while IFS=, read -r domain; do
 				<key>ServerCertificateIssuerCommonName</key>
 				<string>$ca_common_name</string>
 				<key>RemoteIdentifier</key>
-				<string>$domain</string>
+				<string>$server_addr</string>
 				<key>LocalIdentifier</key>
 				<string>$local_id</string>
 				<key>PayloadCertificateUUID</key>
@@ -151,7 +150,7 @@ while IFS=, read -r domain; do
 			</dict>
 		</dict>
 EOF
-done <<<"$servers"
+done <<<"$server_addrs"
 cat <<EOF
 		<dict>
 			<key>PayloadContent</key>

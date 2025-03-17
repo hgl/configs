@@ -13,7 +13,6 @@ in
 {
   services.strongswan-swanctl = {
     enable = true;
-    includes = [ "/var/lib/strongswan/*.conf" ];
     package = pkgs'.strongswan;
     swanctl = {
       connections = {
@@ -216,8 +215,8 @@ in
     {
       "swanctl/ecdsa/server.key".source = config.sops.secrets."ipsec-server.key".path;
       "swanctl/x509/server.crt".source =
-        "${privatePath}/nodes/routers/${nodes.current.name}/ipsec/server.${lib.optionalString nodes.current.subrouter "sub."}crt";
-      "swanctl/x509ca/ca.crt".source = "${privatePath}/vpn/ipsec/ca.crt";
+        ../${nodes.current.name}/vpn/ipsec/server.${lib.optionalString nodes.current.subrouter "sub."}crt;
+      "swanctl/x509ca/ca.crt".source = ../../../vpn/ipsec/ca.crt;
     }
     // lib.optionalAttrs (lib.pathExists "${privatePath}/vpn/ipsec/clients.crl") {
       "swanctl/x509crl/clients.crl".source = "${privatePath}/vpn/ipsec/clients.crl";

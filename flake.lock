@@ -333,11 +333,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1741663640,
-        "narHash": "sha256-KZHeLDryXS0iuUWVBox8v613PT7XDKvsfvsnVG58i3w=",
+        "lastModified": 1742192128,
+        "narHash": "sha256-86FIVraW/OJ6lqueYrT+9yyH/C2smc9Fc47L7J/u1/E=",
         "ref": "refs/heads/main",
-        "rev": "02aca180d07e6cd25ff6c7c30a96c04f7bcab105",
-        "revCount": 99,
+        "rev": "24d13a9fd70393f44dbeb6dd73c3f203409f6112",
+        "revCount": 103,
         "type": "git",
         "url": "file:///Users/hgl/dev/nixverse"
       },

@@ -40,12 +40,13 @@ stdenv.mkDerivation rec {
   ];
   NIX_LDFLAGS = lib.optionalString stdenv.cc.isGNU "-lgcc_s";
   configureFlags = [
+    "--sysconfdir=/etc"
+    "--with-systemdsystemunitdir=${placeholder "out"}/etc/systemd/system"
     "--disable-defaults"
     "--disable-shared"
     "--enable-static"
     "--enable-monolithic"
     "--enable-systemd"
-    "--with-systemdsystemunitdir=${placeholder "out"}/etc/systemd/system"
     "--enable-ikev2"
     "--enable-nonce"
     "--enable-swanctl"
