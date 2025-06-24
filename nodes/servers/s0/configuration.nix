@@ -2,6 +2,7 @@
   lib,
   pkgs,
   config,
+  modules',
   ...
 }:
 
@@ -9,7 +10,10 @@
   imports = [
     ./nbhwj.nix
     ./glenhuang.nix
+    modules'.kiwivm-ga
   ];
+  services.qemuGuest.enable = true;
+  services.kiwivm-ga.enable = true;
   services.mysql = {
     package = pkgs.mariadb_114;
     settings = {
@@ -36,6 +40,9 @@
             -Server
             Strict-Transport-Security max-age=63072000
           }
+          root /srv/www/main
+          file_server
+          encode gzip zstd
         '';
       };
     };
