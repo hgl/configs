@@ -8,6 +8,7 @@
       device = "/dev/vda";
       boot.type = "efi";
       root.format = "ext4";
+      swap.enable = true;
     };
   };
   deploy = {
