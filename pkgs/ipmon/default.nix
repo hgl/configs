@@ -1,7 +1,7 @@
 {
-  buildGo123Module,
+  buildGoModule,
 }:
-buildGo123Module {
+buildGoModule {
   name = "ipmon";
   src = ./.;
   vendorHash = "sha256-T3R6Jb/frghp/RHMiXDNM4aXlmRgBDVFVrpBJOjDeWk=";
