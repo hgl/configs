@@ -11,8 +11,12 @@
     };
   };
   config = {
+    networking.resolvconf.extraConfig = ''
+      name_servers='223.5.5.5 2400:3200::1'
+    '';
     services.dnsmasq = {
       enable = true;
+      resolveLocalQueries = false;
       settings = {
         interface = [
           "lan"
