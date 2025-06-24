@@ -62,6 +62,15 @@
       };
       networkConfig = {
         DHCP = true;
+        IPv6LinkLocalAddressGenerationMode = "stable-privacy";
+        IPv6AcceptRA = true;
+      };
+      dhcpV6Config = {
+        SendHostname = false;
+        WithoutRA = "solicit";
+      };
+      dhcpPrefixDelegationConfig = {
+        UplinkInterface = ":self";
       };
     };
   };
@@ -107,6 +116,9 @@
             -Server
             Strict-Transport-Security max-age=63072000
           }
+          root /srv/www/host
+          file_server
+          encode gzip zstd
         '';
       };
     };
