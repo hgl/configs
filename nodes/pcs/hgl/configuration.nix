@@ -45,16 +45,6 @@
   networking = {
     computerName = "Glen’s Laptop";
   };
-  system.defaults = {
-    CustomUserPreferences = {
-      "com.apple.menuextra.clock".ShowAMPM = 0;
-      "com.apple.menuextra.clock".ShowDate = 2;
-      "com.apple.menuextra.clock".ShowDayOfWeek = 0;
-      "com.microsoft.VSCode".ApplePressAndHoldEnabled = false;
-      "com.apple.finder".FXPreferredViewStyle = "nlsv";
-      "com.apple.inputmethod.CoreChineseEngineFramework".shuangpinLayout = 4;
-    };
-  };
 
   system.stateVersion = 4;
 }
