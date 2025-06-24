@@ -171,6 +171,11 @@
     bashInteractive
     ripgrep
     rsync
+    aider-chat
+    claude-code
+    pandoc
+    woff2
+    libwebp
 
     (parallel-full.override { willCite = true; })
     wget
@@ -179,7 +184,7 @@
     delve
     go-tools
 
-    nodejs_18
+    nodejs_24
     nodePackages.pnpm
 
     coreutils
