@@ -63,6 +63,7 @@
         let
           pkgs = nixpkgs-unstable.legacyPackages.${system};
           pkgs' = self.packages.${system};
+          buildGoModule = pkgs.buildGo124Module;
         in
         {
           default = pkgs'.mkShellMinimal {
@@ -79,23 +80,17 @@
               ssh-to-age
               sops
               age
-              go_1_23
+              go_1_24
               cfssl
               rsync
               dig
               yq
               util-linux # needs uuidgen
               coreutils # needs base64 date
-              (delve.override {
-                buildGoModule = buildGo123Module;
-              })
-              (gopls.override {
-                buildGoModule = buildGo123Module;
-              })
-              (go-tools.override {
-                buildGoModule = buildGo123Module;
-              })
-              pkgs'.tailscale-utils
+              (delve.override { inherit buildGoModule; })
+              (gopls.override { buildGoLatestModule = buildGoModule; })
+              (go-tools.override { inherit buildGoModule; })
+              (pkgs'.tailscale-utils.override { inherit buildGoModule; })
               pkgs'.nixverse
             ];
           };
