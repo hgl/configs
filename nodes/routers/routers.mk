@@ -45,12 +45,11 @@ build/nodes/routers/%/vpn/server.domain: nodes/routers/%/group.nix | build/nodes
 private/nodes/routers/%/vpn/tailscale/authkey: private/nodes/routers/common/vpn/tailscale/authkey | private/nodes/routers/%/vpn/tailscale
 	nixverse secrets decrypt $< | nixverse secrets encrypt - $@
 
-# FIXME: use FORCE, and get expiry from the API to record it in $@.expire
-private/nodes/routers/common/vpn/tailscale/authkey: | private/nodes/routers/common/vpn/tailscale
+private/nodes/routers/common/vpn/tailscale/authkey: FORCE | private/nodes/routers/common/vpn/tailscale
 	now=$$(date +%s)
-	if [[ -e $@ && -e $@.expire ]]; then
-		expire=$$(< $@.expire)
-		if ((expire > now)); then
+	if [[ -e $@ && -e $@.expiry ]]; then
+		expiry=$$(< $@.expiry)
+		if ((expiry > now)); then
 			exit
 		fi
 	fi
@@ -61,9 +60,8 @@ private/nodes/routers/common/vpn/tailscale/authkey: | private/nodes/routers/comm
 	umask a=,u=rw
 	TS_API_CLIENT_ID=$$oauth_id \
 		TS_API_CLIENT_SECRET=$$oauth_secret \
-		tailscale-get-authkey -reusable -tags tag:router >$@
+		tailscale-authkey -reusable -preauth -tags tag:router $@
 	nixverse secrets encrypt --in-place $@
-	echo "$$(now + 3600 * 24 * 30)" >$$@.expire
 
 $(foreach node_name,$(routers_node_names), \
   private/nodes/routers/$(node_name)/ipsec \
