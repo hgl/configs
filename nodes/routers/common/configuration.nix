@@ -117,6 +117,7 @@
     tcpdump
     openssl
     btop
+    mtr
   ];
 
   system.stateVersion = "24.05";
