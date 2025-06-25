@@ -12,13 +12,7 @@
 
   boot = {
     initrd.includeDefaultModules = false;
-    loader = {
-      timeout = 0;
-      grub = {
-        enable = true;
-        device = nodes.current.install.partitions.device;
-      };
-    };
+    loader.timeout = 0;
   };
 
   nix = {
@@ -53,27 +47,7 @@
     useDHCP = false;
     firewall.enable = false;
   };
-
-  systemd.network = {
-    enable = true;
-    networks."99-default" = {
-      matchConfig = {
-        Name = "*";
-      };
-      networkConfig = {
-        DHCP = true;
-        IPv6LinkLocalAddressGenerationMode = "stable-privacy";
-        IPv6AcceptRA = true;
-      };
-      dhcpV6Config = {
-        SendHostname = false;
-        WithoutRA = "solicit";
-      };
-      dhcpPrefixDelegationConfig = {
-        UplinkInterface = ":self";
-      };
-    };
-  };
+  systemd.network.enable = true;
 
   security.acme = {
     acceptTerms = true;

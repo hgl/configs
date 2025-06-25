@@ -2,6 +2,7 @@
   lib,
   pkgs,
   config,
+  nodes,
   modules',
   ...
 }:
@@ -12,8 +13,24 @@
     ./glenhuang.nix
     modules'.kiwivm-ga
   ];
+  boot.loader.grub = {
+    enable = true;
+    device = nodes.current.install.partitions.device;
+  };
   services.qemuGuest.enable = true;
   services.kiwivm-ga.enable = true;
+
+  systemd.network = {
+    networks."99-default" = {
+      matchConfig = {
+        Name = "*";
+      };
+      networkConfig = {
+        DHCP = true;
+      };
+    };
+  };
+
   services.mysql = {
     package = pkgs.mariadb_114;
     settings = {
