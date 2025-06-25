@@ -1,4 +1,0 @@
-{
-  "interfaces": ["wan"],
-  "watch": ["IPV6_ADDRS", "IPV4_ADDRS", "PD_ADDRS"]
-}

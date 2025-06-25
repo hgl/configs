@@ -414,11 +414,11 @@ in
         '';
       };
 
-      services.ipmon = lib.mkIf (config.networking.wan.npt != [ ]) {
+      services.networkd-ipmon = lib.mkIf (config.networking.wan.npt != [ ]) {
         enable = true;
         rules.wan-npt = {
           interfaces = [ "wan" ];
-          watch = [ "PD_ADDRS" ];
+          properties = [ "PD_ADDRS" ];
           script = pkgs.writeShellScript "wan-npt" ''
             set -e
             ${lib.getExe pkgs.nftables} flush map inet wan npt

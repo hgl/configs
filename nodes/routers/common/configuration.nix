@@ -2,14 +2,12 @@
   lib,
   pkgs,
   modulesPath,
-  modules',
   nodes,
   ...
 }:
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
-    modules'.ipmon
     ./lan.nix
     ./wan.nix
     ./dnsmasq.nix

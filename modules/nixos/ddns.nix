@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
 let
@@ -62,6 +63,9 @@ let
     );
 in
 {
+  imports = [
+    inputs.networkd-ipmon.nixosModules.networkd-ipmon
+  ];
   options =
     with lib;
     with types;
@@ -111,21 +115,21 @@ in
       };
     };
   config = lib.mkIf cfg.enable {
-    services.ipmon = {
+    services.networkd-ipmon = {
       enable = true;
       rules = lib.concatMapAttrs (
         domain: props:
         lib.optionalAttrs props.ipv6 {
           "ddns-ipv6-${domain}" = {
             interfaces = [ props.interface ];
-            watch = [ "IPV6_ADDRS" ];
+            properties = [ "IPV6_ADDRS" ];
             script = update-ddns 6 domain props;
           };
         }
         // lib.optionalAttrs props.ipv4 {
           "ddns-ipv4-${domain}" = {
             interfaces = [ props.interface ];
-            watch = [ "IPV4_ADDRS" ];
+            properties = [ "IPV4_ADDRS" ];
             script = update-ddns 4 domain props;
           };
         }

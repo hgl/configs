@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-/run/current-system/sw/bin/env >>/tmp/devmon
-echo --------------------------- >>/tmp/devmon
