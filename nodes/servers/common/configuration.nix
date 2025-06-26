@@ -105,6 +105,8 @@
     btop
     iperf
     rsync
+    traceroute
+    mtr
   ];
 
   system.stateVersion = "24.05";
