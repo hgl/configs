@@ -21,12 +21,12 @@ in
 lib.mkMerge (
   [
     {
-      users.users.${if lib.elem "pcs" nodes.current.parents then "hgl" else "root"} = {
+      users.users.${if lib.elem "pcs" nodes.current.groups then "hgl" else "root"} = {
         openssh.authorizedKeys.keys = keys;
       };
     }
   ]
-  ++ lib.optional (lib.elem "servers" nodes.current.parents) {
+  ++ lib.optional (lib.elem "servers" nodes.current.groups) {
     services.caddy.virtualHosts = {
       ${nodes.current.config.networking.fqdn}.extraConfig = ''
         handle_path /keys {
@@ -44,7 +44,7 @@ lib.mkMerge (
       '';
     };
   }
-  ++ lib.optional (lib.elem "routers" nodes.current.parents) {
+  ++ lib.optional (lib.elem "routers" nodes.current.groups) {
     services.nginx.virtualHosts.${nodes.current.config.networking.fqdn}.locations."= /keys".alias =
       keysScript;
   }
