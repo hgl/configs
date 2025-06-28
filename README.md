@@ -12,12 +12,13 @@ This repo contains all my machines' configurations. It uses [Nixverse](https://g
 ```
 $ git clone --recurse-submodules git@github.com:hgl/configs.git
 $ cd configs
-$ nix run github:hgl/nixverse node deploy hgl
+$ darwin-rebuild switch --flake .#hgl
 ```
 
-After that, machines can be deployed with
+After that, the rest of the machines can be deployed with
 
 ```
+$ nixos-rebuild switch --flake .#r0
 $ nixverse node deploy servers
 ```
 
