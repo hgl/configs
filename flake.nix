@@ -69,35 +69,46 @@
           pkgs = nixpkgs-unstable.legacyPackages.${system};
           pkgs' = self.packages.${system};
           buildGoModule = pkgs.buildGo124Module;
+          packages = with pkgs; [
+            nixd
+            nixfmt-rfc-style
+            nixos-rebuild
+            gnutar
+            mkpasswd
+            openssh
+            jq
+            curl
+            gawk
+            ssh-to-age
+            sops
+            age
+            go_1_24
+            cfssl
+            rsync
+            dig
+            yq
+            util-linux # needs uuidgen
+            coreutils # needs base64 date
+            (delve.override { inherit buildGoModule; })
+            (gopls.override { buildGoLatestModule = buildGoModule; })
+            (go-tools.override { inherit buildGoModule; })
+            (pkgs'.tailscale-utils.override { inherit buildGoModule; })
+            pkgs'.nixverse
+          ];
         in
         {
-          default = pkgs'.mkShellMinimal {
-            packages = with pkgs; [
-              nixd
-              nixfmt-rfc-style
-              nixos-rebuild
-              gnutar
-              mkpasswd
-              openssh
-              jq
-              curl
-              gawk
-              ssh-to-age
-              sops
-              age
-              go_1_24
-              cfssl
-              rsync
-              dig
-              yq
-              util-linux # needs uuidgen
-              coreutils # needs base64 date
-              (delve.override { inherit buildGoModule; })
-              (gopls.override { buildGoLatestModule = buildGoModule; })
-              (go-tools.override { inherit buildGoModule; })
-              (pkgs'.tailscale-utils.override { inherit buildGoModule; })
-              pkgs'.nixverse
-            ];
+          default = derivation {
+            name = "shell";
+            inherit system packages;
+            builder = "${pkgs.bash}/bin/bash";
+            outputs = [ "out" ];
+            stdenv = pkgs.writeTextDir "setup" ''
+              set -e
+
+              for p in $packages; do
+                PATH=$p/bin:$PATH
+              done
+            '';
           };
         }
       );
