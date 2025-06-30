@@ -67,7 +67,10 @@
         system:
         let
           pkgs = nixpkgs-unstable.legacyPackages.${system};
-          pkgs' = self.packages.${system};
+          pkgs' = nixverse.loadPkgs' self {
+            inherit system;
+            nixpkgs = nixpkgs-unstable;
+          };
           buildGoModule = pkgs.buildGo124Module;
           packages = with pkgs; [
             nixd
