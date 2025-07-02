@@ -2,7 +2,6 @@
   pkgs,
   modulesPath,
   config,
-  nodes,
   ...
 }:
 {

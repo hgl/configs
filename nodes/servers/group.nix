@@ -8,16 +8,7 @@
         targetHost = "root@${nodes.current.config.networking.fqdn}";
       };
     };
-  s0 = {
-    install = {
-      partitions = {
-        device = "/dev/sda";
-        boot.type = "bios";
-        root.format = "xfs";
-        swap.enable = true;
-      };
-    };
-  };
+  s0 = { };
   s1 = {
     install = {
       partitions = {
@@ -28,4 +19,5 @@
       };
     };
   };
+  s1-test = { };
 }

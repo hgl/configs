@@ -2,23 +2,26 @@
   lib,
   pkgs,
   config,
-  nodes,
-  modules',
   ...
 }:
-
 {
   imports = [
     ./nbhwj.nix
     ./glenhuang.nix
-    modules'.kiwivm-ga
   ];
   boot.loader.grub = {
     enable = true;
-    device = nodes.current.install.partitions.device;
+    device = "/dev/sda";
   };
-  services.qemuGuest.enable = true;
-  services.kiwivm-ga.enable = true;
+  fileSystems."/" = {
+    device = "/dev/disk/by-partlabel/root";
+    fsType = "xfs";
+  };
+  swapDevices = [
+    {
+      device = "/dev/disk/by-partlabel/swap";
+    }
+  ];
 
   systemd.network = {
     networks."99-default" = {
