@@ -155,12 +155,6 @@
   };
 
   home.packages = with pkgs; [
-    nil
-    nixfmt-rfc-style
-    shfmt
-    shellcheck
-    nodePackages.bash-language-server
-    nodePackages.yaml-language-server
     remake # debug make
     dive # debug docker image
     vimgolf
@@ -173,19 +167,13 @@
     rsync
     aider-chat
     claude-code
+    gemini-cli
     pandoc
     woff2
     libwebp
 
     (parallel-full.override { willCite = true; })
     wget
-
-    gopls
-    delve
-    go-tools
-
-    nodejs_24
-    nodePackages.pnpm
 
     coreutils
     curl

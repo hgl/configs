@@ -1,7 +1,7 @@
 {
   hgl = {
     os = "darwin";
-    channel = "unstable";
+    channel = "master";
     deploy = {
       local = true;
     };

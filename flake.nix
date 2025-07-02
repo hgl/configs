@@ -3,10 +3,15 @@
     self.submodules = true;
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-stable-nixos.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs-master-darwin.url = "github:NixOS/nixpkgs/master";
     nixpkgs-stable-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
     nix-darwin-unstable = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    nix-darwin-master-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs-master-darwin";
     };
     nix-darwin-stable-darwin = {
       url = "github:LnL7/nix-darwin";
@@ -27,6 +32,10 @@
     home-manager-stable-nixos = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs-stable-nixos";
+    };
+    home-manager-master-darwin = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs-master-darwin";
     };
     home-manager-stable-darwin = {
       url = "github:nix-community/home-manager";
@@ -73,8 +82,12 @@
           };
           buildGoModule = pkgs.buildGo124Module;
           packages = with pkgs; [
-            nixd
+            nil
             nixfmt-rfc-style
+            shfmt
+            shellcheck
+            nodePackages.bash-language-server
+            nodePackages.yaml-language-server
             nixos-rebuild
             gnutar
             mkpasswd

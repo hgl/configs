@@ -24,13 +24,6 @@
   "telemetry.telemetryLevel": "off",
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
   "editor.minimap.enabled": false,
-  "nix.serverSettings": {
-    "nil": {
-      "formatting": {
-        "command": ["nixfmt"]
-      }
-    }
-  },
   "remote.SSH.useLocalServer": false,
   "html.format.enable": false,
   "svelte.enable-ts-plugin": true,
@@ -97,5 +90,12 @@
   },
   "[javascriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "nix.serverSettings": {
+    "nil": {
+      "formatting": {
+        "command": ["nixfmt"]
+      }
+    }
   }
 }
