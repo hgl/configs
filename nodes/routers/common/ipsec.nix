@@ -214,8 +214,7 @@ in
   environment.etc =
     {
       "swanctl/ecdsa/server.key".source = config.sops.secrets."ipsec-server.key".path;
-      "swanctl/x509/server.crt".source =
-        ../${nodes.current.name}/vpn/ipsec/server.${lib.optionalString nodes.current.subrouter "sub."}crt;
+      "swanctl/x509/server.crt".source = ../${nodes.current.name}/vpn/ipsec/server.crt;
       "swanctl/x509ca/ca.crt".source = ../../../vpn/ipsec/ca.crt;
     }
     // lib.optionalAttrs (lib.pathExists "${privatePath}/vpn/ipsec/clients.crl") {

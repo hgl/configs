@@ -45,4 +45,29 @@
         { name = "guest-ipsec"; }
       ];
     };
+  r1 =
+    { nodes, lib' }:
+    {
+      subrouter = true;
+      index = 1;
+      interfaces = lib'.interfaces nodes.current [
+        {
+          name = "lan";
+          ports = [
+            "enp1s0"
+            "enp2s0"
+            "eno1"
+          ];
+        }
+        {
+          name = "guest-lan";
+          vlan = true;
+        }
+        { name = "y"; }
+        { name = "tailscale"; }
+        { name = "ipsec"; }
+        { name = "wireguard"; }
+        { name = "guest-ipsec"; }
+      ];
+    };
 }

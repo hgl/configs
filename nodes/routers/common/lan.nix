@@ -56,13 +56,23 @@
             Name = "lan";
           };
           networkConfig = {
-            Address = [
-              (nodes.current.interfaces.lan.ipv6 { cidr = true; })
-              (nodes.current.interfaces.lan.ipv4 { cidr = true; })
-            ];
+            ConfigureWithoutCarrier = true;
             IPv6AcceptRA = false;
             IPv6SendRA = false;
             DHCPPrefixDelegation = true;
+          };
+          addresses = [
+            {
+              Address = nodes.current.interfaces.lan.ipv6 { cidr = true; };
+              DuplicateAddressDetection = "none";
+            }
+            {
+              Address = nodes.current.interfaces.lan.ipv4 { cidr = true; };
+              DuplicateAddressDetection = "none";
+            }
+          ];
+          linkConfig = {
+            RequiredForOnline = "no-carrier";
           };
           dhcpPrefixDelegationConfig = {
             SubnetId = nodes.current.interfaces.lan.subnetId;
@@ -86,13 +96,23 @@
             Name = "guest-lan";
           };
           networkConfig = {
-            Address = [
-              (nodes.current.interfaces.guest-lan.ipv6 { cidr = true; })
-              (nodes.current.interfaces.guest-lan.ipv4 { cidr = true; })
-            ];
+            ConfigureWithoutCarrier = true;
             IPv6AcceptRA = false;
             IPv6SendRA = false;
             DHCPPrefixDelegation = true;
+          };
+          addresses = [
+            {
+              Address = nodes.current.interfaces.guest-lan.ipv6 { cidr = true; };
+              DuplicateAddressDetection = "none";
+            }
+            {
+              Address = nodes.current.interfaces.guest-lan.ipv4 { cidr = true; };
+              DuplicateAddressDetection = "none";
+            }
+          ];
+          linkConfig = {
+            RequiredForOnline = "no-carrier";
           };
           dhcpPrefixDelegationConfig = {
             SubnetId = nodes.current.interfaces.guest-lan.subnetId;
