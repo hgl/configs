@@ -1,16 +1,14 @@
 {
   lib,
   pkgs,
+  inputs,
   modulesPath,
-  nodes,
   ...
 }:
 {
   imports = [
+    inputs.nixos-router.nixosModules.nixos-router
     "${modulesPath}/profiles/minimal.nix"
-    ./lan.nix
-    ./wan.nix
-    ./dnsmasq.nix
     ./adguardhome.nix
     ./ipsec.nix
     ./nginx.nix
@@ -21,19 +19,15 @@
   boot = {
     initrd = {
       includeDefaultModules = false;
-      # Without this booting shows "Failure to communicate with kernel device-mapper driver."
-      kernelModules = [ "dm_mod" ];
     };
     loader = {
-      timeout = 0;
+      timeout = 2;
       systemd-boot.enable = true;
     };
-    # kernelModules = [ "tcp_bbr" ];
+    kernelModules = [ "tcp_bbr" ];
     kernel.sysctl = {
-      "net.ipv4.conf.all.forwarding" = true;
-      "net.ipv6.conf.all.forwarding" = true;
-      # "net.ipv4.tcp_congestion_control" = "bbr";
-      # "net.core.default_qdisc" = "fq";
+      "net.ipv4.tcp_congestion_control" = "bbr";
+      "net.core.default_qdisc" = "fq";
     };
   };
 
@@ -58,8 +52,6 @@
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
     };
-    # installed with nixos-anywhere's --extra-files
-    hostKeys = [ ];
   };
 
   users.mutableUsers = false;
@@ -68,24 +60,10 @@
   };
   programs.fish = {
     enable = true;
-    promptInit = ''
-      function fish_prompt
-        printf '%s❯ ' (prompt_hostname)
-      end
-      function fish_right_prompt
-        echo -n -s (prompt_pwd --full-length-dirs 2) (fish_vcs_prompt) ' ' (date +%H:%M:%S)
-      end
-    '';
-    shellInit = ''
-      set -U fish_greeting
-    '';
   };
 
   networking = {
-    hostName = if nodes.current.subrouter then "${nodes.current.name}sub" else nodes.current.name;
-    useDHCP = false;
-    firewall.enable = false;
-    # search = [ node'.searchDomain ];
+    nameservers = [ "223.5.5.5" ];
     timeServers = [
       "ntp.aliyun.com"
       "ntp1.aliyun.com"
@@ -98,16 +76,30 @@
     ];
   };
 
-  systemd.network.enable = true;
-
-  # Enabled by networkd by default, we use dnsmasq for dns, so turn it off here
-  services.resolved.enable = false;
-
-  networking.nftables.enable = true;
-
-  security.acme = {
-    acceptTerms = true;
+  router = {
+    enable = true;
+    interfaces = {
+      lan = {
+        type = "bridge";
+        subnetId = 0;
+      };
+      guest-lan = {
+        type = "vlan";
+        subnetId = 1;
+        vlanId = 2;
+        quarantine = {
+          enable = true;
+        };
+      };
+      wan = {
+        type = "wan";
+        nftables.inputChain = ''
+          tcp dport 22 accept comment "Allow SSH"
+        '';
+      };
+    };
   };
+  security.acme.acceptTerms = true;
 
   environment.systemPackages = with pkgs; [
     ghostty.terminfo
@@ -116,6 +108,8 @@
     openssl
     btop
     mtr
+    smartmontools
+    dmidecode
   ];
 
   system.stateVersion = "24.05";

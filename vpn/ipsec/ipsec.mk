@@ -1,34 +1,35 @@
 # TODO: this only applies to routers group
 vpn_clients := $(shell yq --raw-output ' \
     .admins + .users + .guests | to_entries[] | \
-    select(if .value | has("disabled") then .value.disabled else false end | not) | .key \
+    select(.value.disabled | not) | .key \
   ' private/vpn/clients.yaml \
 )
 vpn_disabled_clients := $(shell yq --raw-output ' \
     .admins + .users + .guests | to_entries[] | \
-    select(if .value | has("disabled") then .value.disabled else false end) | .key \
+    select(.value.disabled) | .key \
   ' private/vpn/clients.yaml \
 )
 
 .PHONY: ipsec
 ipsec: $(foreach name,$(vpn_clients), \
   build/vpn/clients/$(name)/vpn.mobileconfig \
-  private/vpn/ipsec/clients/$(name)/ipsec.crt \
-  private/vpn/ipsec/clients/$(name)/ipsec.key \
-  private/vpn/ipsec/clients/$(name)/uuid \
+  private/vpn/clients/$(name)/ipsec/ipsec.crt \
+  private/vpn/clients/$(name)/ipsec/ipsec.key \
+  private/vpn/clients/$(name)/ipsec/uuid \
+  build/vpn/clients/$(name)/ipsec/ipsec.key \
 )
-build/vpn/clients/%/vpn.mobileconfig: private/vpn/ipsec/clients/%/uuid build/vpn/ipsec/clients/%/ipsec.key private/vpn/ipsec/clients/%/ipsec.crt vpn/ipsec/ca.crt private/vpn/clients.yaml | build/vpn/clients/%
+build/vpn/clients/%/vpn.mobileconfig: private/vpn/clients/%/ipsec/uuid build/vpn/clients/%/ipsec/ipsec.key private/vpn/clients/%/ipsec/ipsec.crt private/vpn/ipsec/ca.crt private/vpn/clients.yaml | build/vpn/clients/%
 	umask a=,u=rw
 	mobileconfig $* $(wordlist 1,5,$^) >$@
-build/vpn/ipsec/clients/%/ipsec.key: private/vpn/ipsec/clients/%/ipsec.key | build/vpn/ipsec/clients/%
+build/vpn/clients/%/ipsec/ipsec.key: private/vpn/clients/%/ipsec/ipsec.key | build/vpn/clients/%/ipsec
 	nixverse secrets decrypt $< $@
-private/vpn/ipsec/clients/%/ipsec.key: | private/vpn/ipsec/clients/%
+private/vpn/clients/%/ipsec/ipsec.key: | private/vpn/ipsec/clients/%/ipsec
 	openssl ecparam -genkey \
 		-name prime256v1 \
 		-noout \
 		-out $@
 	nixverse secrets encrypt --in-place $@
-private/vpn/ipsec/clients/%/ipsec.crt: build/vpn/ipsec/clients/%/ipsec.key build/vpn/ipsec/ca.key vpn/ipsec/ca.crt
+private/vpn/clients/%/ipsec/ipsec.crt: build/vpn/clients/%/ipsec/ipsec.key build/vpn/ipsec/ca.key private/vpn/ipsec/ca.crt
 	if [[ -e $@ ]]; then
 		if key-cert-match $< $@; then
 			touch $@
@@ -37,13 +38,14 @@ private/vpn/ipsec/clients/%/ipsec.crt: build/vpn/ipsec/clients/%/ipsec.key build
 			exit 1
 		fi
 	fi
-	client_group=$$(nixverse config | jq --raw-output --arg c $* \
-		'first(.vpn | to_entries[] | select(.value | has($$c))) | .key'
+	client_group=$$(yq --raw-output --arg c $* \
+		'first(to_entries[] | select(.value | has($$c))) | .key' \
+		private/vpn/clients.yaml
 	)
 	if [[ $$client_group = guests ]]; then
-		client_group=guest
+		client_group=guest-ipsec
 	else
-		client_group=user
+		client_group=ipsec
 	fi
 	openssl req \
 		-key $< \
@@ -56,9 +58,12 @@ private/vpn/ipsec/clients/%/ipsec.crt: build/vpn/ipsec/clients/%/ipsec.key build
 		-days 3650 \
 		-batch \
 		-out $@
-private/vpn/ipsec/clients/%/uuid: | private/vpn/ipsec/clients/%
+private/vpn/clients/%/ipsec/uuid: | private/vpn/ipsec/clients/%/ipsec
 	uuidgen >$@
 
+ipsec: private/vpn/ipsec/ca.crt \
+  private/vpn/ipsec/ca.key \
+  build/vpn/ipsec/ca.key
 build/vpn/ipsec/ca.key: private/vpn/ipsec/ca.key | build/vpn/ipsec
 	nixverse secrets decrypt $< $@
 private/vpn/ipsec/ca.key: | private/vpn/ipsec
@@ -67,7 +72,7 @@ private/vpn/ipsec/ca.key: | private/vpn/ipsec
 		-noout \
 		-out $@
 	nixverse secrets encrypt --in-place $@
-vpn/ipsec/ca.crt: build/vpn/ipsec/ca.key
+private/vpn/ipsec/ca.crt: build/vpn/ipsec/ca.key | private/vpn/ipsec
 	if [[ -e $@ ]]; then
 		if key-cert-match $< $@; then
 			touch $@
@@ -88,10 +93,10 @@ vpn/ipsec/ca.crt: build/vpn/ipsec/ca.key
 ifneq ($(vpn_disabled_clients),)
   ipsec: private/vpn/ipsec/clients.crl \
     $(foreach name,$(vpn_disabled_clients), \
-      private/vpn/ipsec/clients/$(name)/ipsec.crt \
-      private/vpn/ipsec/clients/$(name)/ipsec.key \
+      private/vpn/clients/$(name)/ipsec/ipsec.crt \
+      private/vpn/clients/$(name)/ipsec/ipsec.key \
     )
-  private/vpn/ipsec/clients.crl: build/vpn/ipsec/ca.key vpn/ipsec/ca.crt $(vpn_disabled_clients:%=private/vpn/ipsec/clients/%/ipsec.crt)
+  private/vpn/ipsec/clients.crl: build/vpn/ipsec/ca.key private/vpn/ipsec/ca.crt $(vpn_disabled_clients:%=private/vpn/clients/%/ipsec/ipsec.crt)
 	exec >$@
 	echo '-----BEGIN X509 CRL-----'
 	(
@@ -104,10 +109,10 @@ ifneq ($(vpn_disabled_clients),)
 	echo '-----END X509 CRL-----'
 endif
 
-private/vpn/ipsec private/vpn/ipsec/clients \
+private/vpn/ipsec \
 $(foreach name,$(vpn_clients) $(vpn_disabled_clients), \
-  private/vpn/ipsec/clients/$(name) \
+  private/vpn/clients/$(name)/ipsec \
   build/vpn/clients/$(name) \
-  build/vpn/ipsec/clients/$(name) \
+  build/vpn/clients/$(name)/ipsec \
 ):
 	mkdir -p $@

@@ -2,6 +2,7 @@
   lib,
   pkgs,
   nodes,
+  config,
   ...
 }:
 let
@@ -21,21 +22,21 @@ in
 lib.mkMerge (
   [
     {
-      users.users.${if lib.elem "pcs" nodes.current.groups then "hgl" else "root"} = {
+      users.users.${if nodes.current.groups ? pcs then "hgl" else "root"} = {
         openssh.authorizedKeys.keys = keys;
       };
     }
   ]
-  ++ lib.optional (lib.elem "servers" nodes.current.groups) {
+  ++ lib.optional (nodes.current.groups ? servers) {
     services.caddy.virtualHosts = {
-      ${nodes.current.config.networking.fqdn}.extraConfig = ''
+      ${config.networking.fqdn}.extraConfig = ''
         handle_path /keys {
           file_server {
             root ${keysScript}
           }
         }
       '';
-      ${nodes.current.config.networking.domain}.extraConfig = ''
+      ${config.networking.domain}.extraConfig = ''
         handle_path /keys {
           file_server {
             root ${keysScript}
@@ -44,8 +45,7 @@ lib.mkMerge (
       '';
     };
   }
-  ++ lib.optional (lib.elem "routers" nodes.current.groups) {
-    services.nginx.virtualHosts.${nodes.current.config.networking.fqdn}.locations."= /keys".alias =
-      keysScript;
+  ++ lib.optional (nodes.current.groups ? routers) {
+    services.nginx.virtualHosts.${config.networking.fqdn}.locations."= /keys".alias = keysScript;
   }
 )

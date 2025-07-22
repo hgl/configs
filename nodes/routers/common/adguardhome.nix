@@ -1,33 +1,27 @@
+{ lib, config, ... }:
 {
   services.adguardhome = {
     enable = true;
-    mutableSettings = false;
-    host = "[::1]";
-    port = 8080;
-    settings = {
-      dns = {
-        bind_hosts = [ "::1" ];
-        port = 1053;
-        protection_enabled = true;
-        cache_size = 0;
-        bootstrap_dns = [ ];
-        hostsfile_enabled = false;
-      };
-      filters = [
-        {
-          enabled = true;
-          name = "AdGuard DNS filter";
-          url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt";
-          id = 1;
-        }
-        {
-          enabled = true;
-          name = "CHN: anti-AD";
-          url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_21.txt";
-          id = 2;
-        }
-      ];
-    };
+    settings.filters =
+      lib.imap0
+        (
+          i: filter:
+          filter
+          // {
+            enabled = true;
+            id = i;
+          }
+        )
+        [
+          {
+            name = "AdGuard DNS filter";
+            url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt";
+          }
+          {
+            name = "CHN: anti-AD";
+            url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_21.txt";
+          }
+        ];
   };
 
   services.nginx.virtualHosts.ad = {
@@ -44,10 +38,10 @@
     ];
     quic = true;
     locations."/" = {
-      proxyPass = "http://[::1]:8080/";
+      proxyPass = "http://${config.services.adguardhome.host}:${toString config.services.adguardhome.port}/";
       recommendedProxySettings = true;
     };
   };
 
-  networking.hostNameAliases = [ "ad" ];
+  router.hostNameAliases = [ "ad" ];
 }

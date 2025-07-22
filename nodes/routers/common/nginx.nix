@@ -91,16 +91,7 @@
     group = config.services.nginx.group;
   };
 
-  networking.wan = {
-    allowedTraffics = [
-      {
-        destination.ports = [
-          2
-          3
-          443
-          80
-        ];
-      }
-    ];
-  };
+  router.interfaces.wan.nftables.inputChain = ''
+    meta l4proto { tcp, udp } th dport { 2, 3, 443, 80 } accept comment "Allow HTTP(S)"
+  '';
 }

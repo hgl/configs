@@ -1,6 +1,6 @@
 {
-  config,
   lib,
+  config,
   nodes,
   privatePath,
   ...
@@ -14,40 +14,38 @@
     enable = true;
     interfaceName = "tailscale";
     authKeyFile = config.sops.secrets.tailscale-authkey.path;
-    extraUpFlags =
-      let
-        routes =
+    extraUpFlags = [
+      "--advertise-routes=${
+        lib.concatStringsSep "," (
           lib.concatMap
-            (interface: [
-              (nodes.current.interfaces.${interface}.ipv4 {
-                suffix = 0;
-                cidr = true;
+            (interfaceName: [
+              (config.router.interfaces.${interfaceName}.ipv6 {
+                interfaceId = 0;
+                prefixLength = 64;
               })
-              (nodes.current.interfaces.${interface}.ipv6 {
-                suffix = 0;
-                cidr = true;
+              (config.router.interfaces.${interfaceName}.ipv4 {
+                hostId = 0;
+                prefixLength = 24;
               })
             ])
             [
               "lan"
-              "guest-lan"
               "ipsec"
-            ];
-      in
-      [
-        "--advertise-routes=${lib.concatStringsSep "," routes}"
-        "--snat-subnet-routes=false"
-        "--accept-routes"
-        "--advertise-exit-node"
-        "--ssh"
-      ];
+            ]
+        )
+      }"
+      "--snat-subnet-routes=false"
+      "--accept-routes"
+      "--advertise-exit-node"
+      "--ssh"
+    ];
   };
-  networking.wan.allowedTraffics = [
-    {
-      protocols = [ "udp" ];
-      destination.ports = [ config.services.tailscale.port ];
-    }
-  ];
+
+  router.interfaces.wan.nftables.inputChain = ''
+    udp dport ${toString config.services.tailscale.port} accept comment "Allow tailscale"
+  '';
+
+  # For site-to-site tunnel
   networking.nftables.tables.tailscale = {
     family = "inet";
     content = ''

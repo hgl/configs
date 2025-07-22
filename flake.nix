@@ -57,6 +57,10 @@
       url = "github:hgl/networkd-ipmon";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    nixos-router-unstable = {
+      url = "/Users/hgl/dev/nixos-router";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     nixverse = {
       # url = "github:hgl/nixverse";
       url = "/Users/hgl/dev/nixverse";

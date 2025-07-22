@@ -14,6 +14,7 @@ IFS=, read -r display_name client_group < <(yq --raw-output --arg c "$client" '
 ' "$clients_config")
 
 ca_common_name=$(cert json '.subject.common_name' "$ipsec_ca_crt")
+client_common_name=$(cert json '.subject.common_name' "$ipsec_crt")
 ipsec_crt_uuid=$(uuidgen | tr '[:lower:]' '[:upper:]')
 ipsec_ca_crt_uuid=$(uuidgen | tr '[:lower:]' '[:upper:]')
 ipsec_ca_crt_data=$(
@@ -28,16 +29,11 @@ client_p12_data=$(
 		base64 --wrap 52 |
 		sed 's/^/			/'
 )
-server_addrs=$(nixverse node value routers | jq --raw-output 'to_entries | map(select(.value.type == "node")) | sort_by(.value.index) | .[].value.fqdn')
+server_addrs=$(nixverse eval 'lib.concatLines (lib.mapAttrsToList (_: node: node.config.networking.fqdn) nodes.routers.nodes)')
 if [[ $client_group = admins ]]; then
 	display_name=VPN
 else
 	server_addrs=$(head -n1 <<<"$server_addrs")
-fi
-if [[ $client_group = guests ]]; then
-	local_id=$client.guest
-else
-	local_id=$client.user
 fi
 cat <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -95,7 +91,7 @@ while IFS=, read -r server_addr; do
 				<key>RemoteIdentifier</key>
 				<string>$server_addr</string>
 				<key>LocalIdentifier</key>
-				<string>$local_id</string>
+				<string>$client_common_name</string>
 				<key>PayloadCertificateUUID</key>
 				<string>$ipsec_crt_uuid</string>
 				<key>DeadPeerDetectionRate</key>
