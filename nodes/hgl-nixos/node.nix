@@ -1,4 +1,4 @@
-{ nodes }:
+{ nodes, ... }:
 {
   os = "nixos";
   channel = "unstable";
@@ -13,6 +13,6 @@
   };
   deploy = {
     targetHost = "root@${nodes.current.name}.local";
-    buildHost = "root@${nodes.current.name}.local";
+    buildOnRemote = true;
   };
 }
