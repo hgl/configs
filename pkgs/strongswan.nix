@@ -13,14 +13,14 @@
   flex,
   python3,
 }:
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "strongswan";
-  version = "6.0.0";
+  version = "6.0.2";
   src = fetchFromGitHub {
     owner = "strongswan";
     repo = "strongswan";
-    rev = version;
-    hash = "sha256-SOl5MXSnmfMo1/LTFuT1P+rQf3Wn9kdxUtUgRxrN9VM=";
+    rev = finalAttrs.version;
+    hash = "sha256-wjz41gt+Xu4XJkEXRRVl3b3ryEoEtijeqmfVFoRjnA4=";
   };
   enableParallelBuilding = true;
   dontPatchELF = true;
@@ -59,4 +59,4 @@ stdenv.mkDerivation rec {
     "--enable-pkcs1"
     "--enable-revocation"
   ];
-}
+})
