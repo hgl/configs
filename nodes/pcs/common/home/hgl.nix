@@ -8,7 +8,7 @@
 }:
 {
   imports = [
-    (modules'.fish { promptHostName = nodes.current.name != "hgl"; })
+    modules'.fish
   ];
   xdg = {
     enable = true;
@@ -171,6 +171,9 @@
     pandoc
     woff2
     libwebp
+    pstree
+
+    pnpm
 
     (parallel-full.override { willCite = true; })
     wget

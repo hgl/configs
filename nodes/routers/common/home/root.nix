@@ -5,7 +5,7 @@
 }:
 {
   imports = [
-    (modules'.fish { promptHostName = true; })
+    modules'.fish
   ];
   programs.helix = {
     enable = true;
