@@ -2,9 +2,6 @@
   hgl = {
     os = "darwin";
     channel = "master";
-    deploy = {
-      local = true;
-    };
   };
   hgl2 = {
     os = "nixos";
@@ -19,7 +16,6 @@
     };
     deploy = {
       targetHost = "root@hgl2";
-      buildHost = "root@hgl2";
     };
   };
 }
