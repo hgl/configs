@@ -4,9 +4,6 @@
   ...
 }:
 {
-  imports = [
-    modules'.ddns
-  ];
   sops.secrets = {
     ddnsCloudflareZoneId = { };
     ddnsCloudflareToken = { };
