@@ -5,10 +5,7 @@
   ...
 }:
 {
-  imports = [
-    ./nbhwj.nix
-    ./glenhuang.nix
-  ];
+  imports = [ ./nbhwj.nix ];
   boot.loader.grub = {
     enable = true;
     device = "/dev/sda";
