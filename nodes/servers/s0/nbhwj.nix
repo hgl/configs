@@ -76,7 +76,12 @@ in
         }
         rewrite @disallowed /
 
-        php_fastcgi unix/${config.services.phpfpm.pools.wordpress-nbhwj.socket}
+        php_fastcgi unix/${config.services.phpfpm.pools.wordpress-nbhwj.socket} {
+          # without these caddy fails with "resource temporarily unavailable" when access phpfrm's unix socket
+          # https://github.com/caddyserver/caddy/issues/4009
+          read_timeout 10m
+          write_timeout 10m
+        }
       '';
     };
     "www.${domain}" = {
