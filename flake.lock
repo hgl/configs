@@ -50,11 +50,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1750903843,
-        "narHash": "sha256-Ng9+f0H5/dW+mq/XOKvB9uwvGbsuiiO6HrPdAcVglCs=",
+        "lastModified": 1753140376,
+        "narHash": "sha256-7lrVrE0jSvZHrxEzvnfHFE/Wkk9DDqb+mYCodI5uuB8=",
         "owner": "nix-community",
         "repo": "disko",
-        "rev": "83c4da299c1d7d300f8c6fd3a72ac46cb0d59aae",
+        "rev": "545aba02960caa78a31bd9a8709a0ad4b6320a5c",
         "type": "github"
       },
       "original": {
@@ -64,6 +64,24 @@
       }
     },
     "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1753121425,
+        "narHash": "sha256-TVcTNvOeWWk1DXljFxVRp+E0tzG1LhrVjOGGoMHuXio=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "644e0fc48951a860279da645ba77fe4a6e814c5e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_2": {
       "inputs": {
         "nixpkgs-lib": [
           "nixverse",
@@ -162,6 +180,27 @@
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "networkd-ipmon": {
+      "inputs": {
+        "nixpkgs": [
+          "nixos-router-unstable",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1750823920,
+        "narHash": "sha256-YOXlF3/mcoqaBZGzQKaIIxBxgQ4ywZwlJUJe+GiIZRg=",
+        "owner": "hgl",
+        "repo": "networkd-ipmon",
+        "rev": "e637d2fed9b01ab687e671a90ab3ec404893edcd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hgl",
+        "repo": "networkd-ipmon",
         "type": "github"
       }
     },
@@ -291,7 +330,7 @@
     "nixos-anywhere": {
       "inputs": {
         "disko": "disko",
-        "flake-parts": "flake-parts",
+        "flake-parts": "flake-parts_2",
         "nix-vm-test": "nix-vm-test",
         "nixos-images": "nixos-images",
         "nixos-stable": "nixos-stable",
@@ -302,11 +341,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1750078927,
-        "narHash": "sha256-7iTUVUP6xgEYXdl9aCYBbYMYVsQmOvMoLUsUS2aoDNA=",
+        "lastModified": 1753451470,
+        "narHash": "sha256-gvBcgnt7tcZnGAVwarjxJcma43DjZ/1wzF/XcP/bSTg=",
         "owner": "nix-community",
         "repo": "nixos-anywhere",
-        "rev": "ff87db6a952191648ffaea97ec5559784c7223c6",
+        "rev": "da2b6f4f0905d39d68b87c4a0728318ee9fea8a3",
         "type": "github"
       },
       "original": {
@@ -342,6 +381,24 @@
         "type": "github"
       }
     },
+    "nixos-router-unstable": {
+      "inputs": {
+        "networkd-ipmon": "networkd-ipmon",
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1753150932,
+        "narHash": "sha256-HkJgoCtfY7KOfiBganX0w6reloYGo1+Hc9oINP2blsI=",
+        "path": "/Users/hgl/dev/nixos-router",
+        "type": "path"
+      },
+      "original": {
+        "path": "/Users/hgl/dev/nixos-router",
+        "type": "path"
+      }
+    },
     "nixos-stable": {
       "locked": {
         "lastModified": 1749086602,
@@ -355,6 +412,21 @@
         "owner": "NixOS",
         "ref": "nixos-25.05",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1751159883,
+        "narHash": "sha256-urW/Ylk9FIfvXfliA1ywh75yszAbiTEVgpPeinFyVZo=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "14a40a1d7fb9afa4739275ac642ed7301a9ba1ab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
         "type": "github"
       }
     },
@@ -408,11 +480,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1751382304,
-        "narHash": "sha256-p+UruOjULI5lV16FkBqkzqgFasLqfx0bihLBeFHiZAs=",
+        "lastModified": 1753432016,
+        "narHash": "sha256-cnL5WWn/xkZoyH/03NNUS7QgW5vI7D1i74g48qplCvg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "d31a91c9b3bee464d054633d5f8b84e17a637862",
+        "rev": "6027c30c8e9810896b92429f0092f624f7b1aace",
         "type": "github"
       },
       "original": {
@@ -424,6 +496,7 @@
     },
     "nixverse": {
       "inputs": {
+        "flake-parts": "flake-parts",
         "nix-darwin": "nix-darwin",
         "nixos-anywhere": "nixos-anywhere",
         "nixpkgs": [
@@ -431,8 +504,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1751430266,
-        "narHash": "sha256-Zxb+si2yl+/hHJICl4QbyzqL90/kshI5GS+Px/kaza0=",
+        "lastModified": 1753716123,
+        "narHash": "sha256-o0U40pSwHXU6H2YOmbFv+3MPubPytrR90JYt4BKrYBY=",
         "path": "/Users/hgl/dev/nixverse",
         "type": "path"
       },
@@ -453,6 +526,7 @@
         "nix-darwin-master-darwin": "nix-darwin-master-darwin",
         "nix-darwin-stable-darwin": "nix-darwin-stable-darwin",
         "nix-darwin-unstable": "nix-darwin-unstable",
+        "nixos-router-unstable": "nixos-router-unstable",
         "nixpkgs-master-darwin": "nixpkgs-master-darwin",
         "nixpkgs-stable-darwin": "nixpkgs-stable-darwin",
         "nixpkgs-stable-nixos": "nixpkgs-stable-nixos",

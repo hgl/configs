@@ -69,68 +69,9 @@
   };
 
   outputs =
-    {
-      self,
-      nixpkgs-unstable,
-      nixverse,
-      ...
-    }:
-    nixverse.load self {
-      devShells = nixverse.lib.forAllSystems (
-        system:
-        let
-          pkgs = nixpkgs-unstable.legacyPackages.${system};
-          pkgs' = nixverse.loadPkgs' self {
-            inherit system;
-            nixpkgs = nixpkgs-unstable;
-          };
-          buildGoModule = pkgs.buildGo124Module;
-          packages = with pkgs; [
-            nil
-            nixfmt-rfc-style
-            shfmt
-            shellcheck
-            nodePackages.bash-language-server
-            nodePackages.yaml-language-server
-            nixos-rebuild
-            gnutar
-            mkpasswd
-            openssh
-            jq
-            curl
-            gawk
-            ssh-to-age
-            sops
-            age
-            go_1_24
-            cfssl
-            rsync
-            dig
-            yq
-            util-linux # needs uuidgen
-            coreutils # needs base64 date
-            (delve.override { inherit buildGoModule; })
-            (gopls.override { buildGoLatestModule = buildGoModule; })
-            (go-tools.override { inherit buildGoModule; })
-            (pkgs'.tailscale-utils.override { inherit buildGoModule; })
-            pkgs'.nixverse
-          ];
-        in
-        {
-          default = derivation {
-            name = "shell";
-            inherit system packages;
-            builder = "${pkgs.bash}/bin/bash";
-            outputs = [ "out" ];
-            stdenv = pkgs.writeTextDir "setup" ''
-              set -e
-
-              for p in $packages; do
-                PATH=$p/bin:$PATH
-              done
-            '';
-          };
-        }
-      );
+    { self, nixverse, ... }:
+    nixverse.lib.load {
+      flake = self;
+      flakePath = ./.;
     };
 }
