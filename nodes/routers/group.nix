@@ -8,4 +8,6 @@
         targetHost = lib.mkDefault "root@${nodes.current.config.networking.fqdn}";
       };
     };
+  r0 = { };
+  r1 = { };
 }
