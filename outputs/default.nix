@@ -22,12 +22,13 @@
         pkgs.shellcheck
         pkgs.nodePackages.bash-language-server
         pkgs.nodePackages.yaml-language-server
+        pkgs.sops
         pkgs.mkpasswd
         pkgs.go_1_24
         (pkgs.delve.override { inherit buildGoModule; })
         (pkgs.gopls.override { buildGoLatestModule = buildGoModule; })
         (pkgs.go-tools.override { inherit buildGoModule; })
-        (pkgs'.cert)
+        pkgs'.cert
         inputs'.nixverse.packages.nixverse
       ];
       makefileInputs = [
