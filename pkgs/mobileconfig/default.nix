@@ -7,12 +7,15 @@
   gnused,
   nixverse,
 }:
-pkgs'.writeShellScriptFile ./mobileconfig.sh [
-  coreutils
-  util-linux
-  openssl
-  yq
-  gnused
-  nixverse
-  pkgs'.cert
-]
+pkgs'.writeShellScriptFile "mobileconfig" {
+  path = ./mobileconfig.sh;
+  runtimeInputs = [
+    coreutils
+    util-linux
+    openssl
+    yq
+    gnused
+    nixverse
+    pkgs'.cert
+  ];
+}

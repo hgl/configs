@@ -1,8 +1,5 @@
-#!@shell@
 # shellcheck shell=bash
 set -euo pipefail
-
-export PATH=@path@:$PATH
 
 cmd_show() {
 	openssl x509 -noout -text -in "$1"

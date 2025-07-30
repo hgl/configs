@@ -1,8 +1,5 @@
-#!@shell@
 # shellcheck shell=bash
 set -euo pipefail
-
-export PATH=@path@:$PATH
 
 client=$1
 client_uuid=$(tr '[:lower:]' '[:upper:]' <"$2")
