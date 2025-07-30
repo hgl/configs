@@ -1,3 +1,4 @@
+{ nodes, ... }:
 {
   imports = [
     ./emacs.nix
@@ -21,7 +22,7 @@
     distributedBuilds = true;
     buildMachines = [
       {
-        hostName = "hgl-nixos.local";
+        hostName = "${nodes.vm-nixos.name}.local";
         systems = [
           "x86_64-linux"
           "aarch64-linux"

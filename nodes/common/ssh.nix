@@ -1,5 +1,6 @@
 {
   lib,
+  lib',
   pkgs,
   nodes,
   config,
@@ -20,13 +21,19 @@ let
   '';
 in
 lib.mkMerge (
-  [
-    {
-      users.users.${if nodes.current.groups ? pcs then "hgl" else "root"} = {
-        openssh.authorizedKeys.keys = keys;
-      };
-    }
-  ]
+  lib.optional (lib'.hasAnyAttr [ "pcs" "servers" "routers" "vms" ] nodes.current.groups) {
+    users.users.root = {
+      openssh.authorizedKeys.keys = keys;
+    };
+  }
+  ++ lib.optional (nodes.current.name == "vm-nixos") {
+    users.users.root = {
+      # For using it as a nixos remote builder
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos"
+      ];
+    };
+  }
   ++ lib.optional (nodes.current.groups ? servers) {
     services.caddy.virtualHosts = {
       ${config.networking.fqdn}.extraConfig = ''

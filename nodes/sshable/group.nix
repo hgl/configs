@@ -1,5 +1,0 @@
-{
-  hgl-nixos = { };
-  servers = { };
-  routers = { };
-}

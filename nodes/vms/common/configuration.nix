@@ -1,9 +1,15 @@
 {
   pkgs,
+  modulesPath,
   ...
 }:
 {
+  imports = [
+    "${modulesPath}/profiles/minimal.nix"
+  ];
+
   boot = {
+    initrd.includeDefaultModules = false;
     loader = {
       timeout = 0;
       systemd-boot.enable = true;

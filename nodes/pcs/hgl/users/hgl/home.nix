@@ -6,7 +6,7 @@
 }:
 let
   mkLink = config.lib.file.mkOutOfStoreSymlink;
-  homeDir = "/Users/hgl/dev/configs/nodes/pcs/hgl/home/hgl";
+  homeDir = "/Users/hgl/dev/configs/nodes/pcs/hgl/users/hgl";
 in
 {
   home.file = {

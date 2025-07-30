@@ -1,7 +1,7 @@
 {
   hgl = {
     os = "darwin";
-    channel = "master";
+    channel = "unstable";
   };
   hgl2 = {
     os = "nixos";
