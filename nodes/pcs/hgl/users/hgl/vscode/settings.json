@@ -97,5 +97,6 @@
         "command": ["nixfmt"]
       }
     }
-  }
+  },
+  "direnv.watchForChanges": false
 }
