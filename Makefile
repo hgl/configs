@@ -4,7 +4,7 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .DEFAULT_GOAL := all
 
-include vpn/ipsec/ipsec.mk
-include nodes/routers/routers.mk
+include vpn/ipsec/Makefile
+include nodes/routers/Makefile
 
 FORCE:

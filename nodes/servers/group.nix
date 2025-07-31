@@ -1,6 +1,6 @@
 {
   common =
-    { nodes }:
+    { nodes, ... }:
     {
       os = "nixos";
       channel = "unstable";
@@ -9,15 +9,5 @@
       };
     };
   s0 = { };
-  s1 = {
-    install = {
-      partitions = {
-        device = "/dev/vda";
-        boot.type = "efi";
-        root.format = "xfs";
-        swap.enable = true;
-      };
-    };
-  };
-  s1-test = { };
+  s1 = { };
 }

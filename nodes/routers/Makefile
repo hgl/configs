@@ -15,7 +15,6 @@ private/nodes/routers/%/vpn/ipsec/server.key: | private/nodes/routers/%/vpn/ipse
 build/nodes/routers/%/vpn/ipsec/server.key: private/nodes/routers/%/vpn/ipsec/server.key | build/nodes/routers/%/vpn/ipsec
 	nixverse secrets decrypt $< $@
 private/nodes/routers/%/vpn/ipsec/server.crt: build/nodes/routers/%/vpn/ipsec/server.key build/nodes/routers/%/vpn/server.domain build/vpn/ipsec/ca.key private/vpn/ipsec/ca.crt | private/nodes/routers/%/vpn/ipsec
-	set -x
 	domain=$$(< $(word 2,$^))
 	if [[ -e $@ ]]; then
 		if key-cert-match $< $@; then

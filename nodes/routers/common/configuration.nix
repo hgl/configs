@@ -1,14 +1,14 @@
 {
   lib,
   pkgs,
-  inputs,
+  inputs',
   modulesPath,
   ...
 }:
 {
   imports = [
-    inputs.nixos-router.nixosModules.nixos-router
     "${modulesPath}/profiles/minimal.nix"
+    inputs'.nixos-router.modules.nixos-router
     ./adguardhome.nix
     ./ipsec.nix
     ./nginx.nix
