@@ -1,6 +1,7 @@
 {
   pkgs,
   pkgs',
+  nodes,
   config,
   ...
 }:
@@ -20,6 +21,18 @@ in
   home.sessionPath = [
     "/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
   ];
+
+  programs.ssh = {
+    enable = true;
+    matchBlocks = {
+      ${nodes.vm-nixos.name} = {
+        user = "root";
+        hostname = "${nodes.vm-nixos.name}.local";
+        identityFile = "~/.ssh/id_ed25519.pub";
+        identitiesOnly = true;
+      };
+    };
+  };
 
   programs.git = {
     ignores = [
