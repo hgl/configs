@@ -204,26 +204,6 @@
         "type": "github"
       }
     },
-    "networkd-ipmon-unstable": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs-unstable"
-        ]
-      },
-      "locked": {
-        "lastModified": 1750823920,
-        "narHash": "sha256-YOXlF3/mcoqaBZGzQKaIIxBxgQ4ywZwlJUJe+GiIZRg=",
-        "owner": "hgl",
-        "repo": "networkd-ipmon",
-        "rev": "e637d2fed9b01ab687e671a90ab3ec404893edcd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hgl",
-        "repo": "networkd-ipmon",
-        "type": "github"
-      }
-    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -504,8 +484,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1753924924,
-        "narHash": "sha256-DS1A64m1fxQaQvzw/IEalt7ywaT0Bc0mBFfPqDQrFUA=",
+        "lastModified": 1753961770,
+        "narHash": "sha256-wpLFNIoWYH/FEtDdvEexZGbVnyCjzrTEiKZV9gLzrhA=",
         "path": "/Users/hgl/dev/nixverse",
         "type": "path"
       },
@@ -522,7 +502,6 @@
         "home-manager-stable-darwin": "home-manager-stable-darwin",
         "home-manager-stable-nixos": "home-manager-stable-nixos",
         "home-manager-unstable": "home-manager-unstable",
-        "networkd-ipmon-unstable": "networkd-ipmon-unstable",
         "nix-darwin-master-darwin": "nix-darwin-master-darwin",
         "nix-darwin-stable-darwin": "nix-darwin-stable-darwin",
         "nix-darwin-unstable": "nix-darwin-unstable",

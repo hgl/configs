@@ -1,6 +1,5 @@
 {
   config,
-  modules',
   ...
 }:
 {

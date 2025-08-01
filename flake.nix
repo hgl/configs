@@ -53,10 +53,6 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-stable-darwin";
     };
-    networkd-ipmon-unstable = {
-      url = "github:hgl/networkd-ipmon";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
     nixos-router-unstable = {
       url = "/Users/hgl/dev/nixos-router";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
