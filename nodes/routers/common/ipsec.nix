@@ -84,19 +84,17 @@ in
   };
 
   sops.secrets."ipsec-server.key" = {
-    sopsFile = "${privatePath}/nodes/routers/${nodes.current.name}/vpn/ipsec/server.key";
+    sopsFile = "${nodes.current.privatePath}/vpn/ipsec/server.key";
     format = "binary";
   };
-  environment.etc =
-    {
-      "swanctl/ecdsa/server.key".source = config.sops.secrets."ipsec-server.key".path;
-      "swanctl/x509/server.crt".source =
-        "${privatePath}/nodes/routers/${nodes.current.name}/vpn/ipsec/server.crt";
-      "swanctl/x509ca/ca.crt".source = "${privatePath}/vpn/ipsec/ca.crt";
-    }
-    // lib.optionalAttrs (lib.pathExists "${privatePath}/vpn/ipsec/clients.crl") {
-      "swanctl/x509crl/clients.crl".source = "${privatePath}/vpn/ipsec/clients.crl";
-    };
+  environment.etc = {
+    "swanctl/ecdsa/server.key".source = config.sops.secrets."ipsec-server.key".path;
+    "swanctl/x509/server.crt".source = "${nodes.current.privatePath}/vpn/ipsec/server.crt";
+    "swanctl/x509ca/ca.crt".source = "${privatePath}/vpn/ipsec/ca.crt";
+  }
+  // lib.optionalAttrs (lib.pathExists "${privatePath}/vpn/ipsec/clients.crl") {
+    "swanctl/x509crl/clients.crl".source = "${privatePath}/vpn/ipsec/clients.crl";
+  };
 
   router.interfaces.wan.nftables.inputChain = ''
     udp dport 500 accept comment "Allow ISAKMP"

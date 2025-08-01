@@ -2,12 +2,11 @@
   lib,
   config,
   nodes,
-  privatePath,
   ...
 }:
 {
   sops.secrets.tailscale-authkey = {
-    sopsFile = "${privatePath}/nodes/routers/${nodes.current.name}/vpn/tailscale/authkey";
+    sopsFile = "${nodes.current.privatePath}/vpn/tailscale/authkey";
     format = "binary";
   };
   services.tailscale = {
