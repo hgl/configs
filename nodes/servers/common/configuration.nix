@@ -23,14 +23,6 @@
 
   time.timeZone = "Asia/Shanghai";
 
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      KbdInteractiveAuthentication = false;
-    };
-  };
-
   users.mutableUsers = false;
   users.users.root = {
     shell = pkgs.fish;

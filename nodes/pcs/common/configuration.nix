@@ -12,8 +12,8 @@
   programs.fish = {
     enable = true;
   };
-  environment.shells = with pkgs; [
-    fish
+  environment.shells = [
+    pkgs.fish
   ];
 
   users.users = {

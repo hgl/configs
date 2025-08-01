@@ -21,11 +21,21 @@ let
   '';
 in
 lib.mkMerge (
-  lib.optional (lib'.hasAnyAttr [ "pcs" "servers" "routers" "vms" ] nodes.current.groups) {
-    users.users.root = {
-      openssh.authorizedKeys.keys = keys;
-    };
-  }
+  lib.optional
+    (lib'.hasAnyAttr [ "servers" "routers" "vms" ] nodes.current.groups && nodes.current.os == "nixos")
+    {
+      users.users.root = {
+        openssh.authorizedKeys.keys = keys;
+      };
+
+      services.openssh = {
+        enable = true;
+        settings = {
+          PasswordAuthentication = false;
+          KbdInteractiveAuthentication = false;
+        };
+      };
+    }
   ++ lib.optional (nodes.current.name == "vm-nixos") {
     users.users.root = {
       # For using it as a nixos remote builder
