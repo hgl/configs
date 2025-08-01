@@ -1,4 +1,4 @@
 /build
-**/sops/age/keys.txt
-**/emacs/auto-save-list
-**/emacs/eln-cache
+**/users/*/sops/age/keys.txt
+**/users/*/emacs/auto-save-list
+**/users/*/emacs/eln-cache

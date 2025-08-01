@@ -54,6 +54,7 @@
       inputs.nixpkgs.follows = "nixpkgs-stable-darwin";
     };
     nixos-router-unstable = {
+      # url = "github:hgl/nixos-router";
       url = "/Users/hgl/dev/nixos-router";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
