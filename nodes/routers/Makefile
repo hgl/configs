@@ -11,9 +11,9 @@ private/nodes/routers/%/vpn/ipsec/server.key: | private/nodes/routers/%/vpn/ipse
 		-name prime256v1 \
 		-noout \
 		-out $@
-	nixverse secrets encrypt --in-place $@
+	nixverse secrets encrypt --node $* --in-place $@
 build/nodes/routers/%/vpn/ipsec/server.key: private/nodes/routers/%/vpn/ipsec/server.key | build/nodes/routers/%/vpn/ipsec
-	nixverse secrets decrypt $< $@
+	nixverse secrets decrypt --node $* --out $@ $<
 private/nodes/routers/%/vpn/ipsec/server.crt: build/nodes/routers/%/vpn/ipsec/server.key build/nodes/routers/%/vpn/server.domain build/vpn/ipsec/ca.key private/vpn/ipsec/ca.crt | private/nodes/routers/%/vpn/ipsec
 	domain=$$(< $(word 2,$^))
 	if [[ -e $@ ]]; then
@@ -44,7 +44,7 @@ build/nodes/routers/%/vpn/server.domain: nodes/routers/group.nix | build/nodes/r
 	nixverse eval 'nodes.$*.config.networking.fqdn' >$@
 
 private/nodes/routers/%/vpn/tailscale/authkey: private/nodes/routers/common/vpn/tailscale/authkey | private/nodes/routers/%/vpn/tailscale
-	nixverse secrets decrypt $< | nixverse secrets encrypt - $@
+	nixverse secrets decrypt $< | nixverse secrets encrypt --node $* --out $@ -
 
 private/nodes/routers/common/vpn/tailscale/authkey: FORCE | private/nodes/routers/common/vpn/tailscale
 	now=$$(date +%s)

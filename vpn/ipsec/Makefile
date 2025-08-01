@@ -22,8 +22,8 @@ build/vpn/clients/%/vpn.mobileconfig: private/vpn/clients/%/ipsec/uuid build/vpn
 	umask a=,u=rw
 	mobileconfig $* $(wordlist 1,5,$^) >$@
 build/vpn/clients/%/ipsec/ipsec.key: private/vpn/clients/%/ipsec/ipsec.key | build/vpn/clients/%/ipsec
-	nixverse secrets decrypt $< $@
-private/vpn/clients/%/ipsec/ipsec.key: | private/vpn/ipsec/clients/%/ipsec
+	nixverse secrets decrypt --out $@ $<
+private/vpn/clients/%/ipsec/ipsec.key: | private/vpn/clients/%/ipsec
 	openssl ecparam -genkey \
 		-name prime256v1 \
 		-noout \
@@ -58,14 +58,14 @@ private/vpn/clients/%/ipsec/ipsec.crt: build/vpn/clients/%/ipsec/ipsec.key build
 		-days 3650 \
 		-batch \
 		-out $@
-private/vpn/clients/%/ipsec/uuid: | private/vpn/ipsec/clients/%/ipsec
+private/vpn/clients/%/ipsec/uuid: | private/vpn/clients/%/ipsec
 	uuidgen >$@
 
 ipsec: private/vpn/ipsec/ca.crt \
   private/vpn/ipsec/ca.key \
   build/vpn/ipsec/ca.key
 build/vpn/ipsec/ca.key: private/vpn/ipsec/ca.key | build/vpn/ipsec
-	nixverse secrets decrypt $< $@
+	nixverse secrets decrypt --out $@ $<
 private/vpn/ipsec/ca.key: | private/vpn/ipsec
 	openssl ecparam -genkey \
 		-name prime256v1 \
