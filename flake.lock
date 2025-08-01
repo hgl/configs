@@ -484,8 +484,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1754028181,
-        "narHash": "sha256-2khXRXbhvKySpCxv70gNQIBHeSwafpk5ZK3p6op5y1w=",
+        "lastModified": 1754035166,
+        "narHash": "sha256-+aCu9+087HnrGSc74sDXUCUkT96URSD/7EY9lTnjQkU=",
         "path": "/Users/hgl/dev/nixverse",
         "type": "path"
       },
