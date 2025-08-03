@@ -1,13 +1,13 @@
 {
   writeShellApplication,
-  static-web-server,
+  caddy,
 }:
 writeShellApplication {
   name = "serve";
-  runtimeInputs = [ static-web-server ];
+  runtimeInputs = [ caddy ];
   text = ''
     dir=''${1:-.}
     port=''${2:-8000}
-    exec static-web-server --root "$dir" --port "$port" --directory-listing
+    exec caddy file-server --browse --root "$dir" --listen ":$port"
   '';
 }
