@@ -369,8 +369,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1754183871,
-        "narHash": "sha256-c2PVSCwux5dYQHzeJNuyRlktYSBE1dQdvTHbgy6heE0=",
+        "lastModified": 1754189416,
+        "narHash": "sha256-bBaC+zTtyw/bi3fVyTSmVEy22SYydlTNho4yGtROztc=",
         "path": "/Users/hgl/dev/nixos-router",
         "type": "path"
       },
