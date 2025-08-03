@@ -4,9 +4,7 @@
     {
       os = "nixos";
       channel = "unstable";
-      deploy = {
-        targetHost = lib.mkDefault "root@${nodes.current.config.networking.fqdn}";
-      };
+      deploy.targetHost = lib.mkDefault "root@${nodes.current.config.networking.fqdn}";
     };
   r0 = { };
   r1 = { };
