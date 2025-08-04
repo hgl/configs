@@ -13,7 +13,12 @@
     enable = true;
     interfaceName = "tailscale";
     authKeyFile = config.sops.secrets.tailscale-authkey.path;
-    extraUpFlags = [
+    extraSetFlags = [
+      "--accept-dns=false" # this prevents tailscale from overwriting /etc/resolv.conf
+      "--advertise-exit-node"
+      "--accept-routes"
+      "--snat-subnet-routes=false"
+      "--ssh"
       "--advertise-routes=${
         lib.concatStringsSep "," (
           lib.concatMap
@@ -33,10 +38,6 @@
             ]
         )
       }"
-      "--snat-subnet-routes=false"
-      "--accept-routes"
-      "--advertise-exit-node"
-      "--ssh"
     ];
   };
 
