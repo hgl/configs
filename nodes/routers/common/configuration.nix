@@ -83,6 +83,19 @@
           enable = true;
         };
       };
+      ipsec = {
+        type = "xfrm";
+        subnetId = 2;
+        xfrmId = 1;
+      };
+      guest-ipsec = {
+        type = "xfrm";
+        subnetId = 3;
+        xfrmId = 2;
+        quarantine = {
+          enable = true;
+        };
+      };
       wan = {
         type = "wan";
         nftables.inputChain = ''

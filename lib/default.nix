@@ -4,6 +4,6 @@
   ...
 }:
 {
-  inherit (inputs.nixos-router-unstable.lib) addressPortString;
+  inherit (inputs.nixos-router-unstable.lib) addressPortString decToHex;
   hasAnyAttr = list: attrs: lib.any (s: lib.hasAttr s attrs) list;
 }

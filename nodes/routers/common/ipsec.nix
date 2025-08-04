@@ -10,21 +10,6 @@ let
   concatMapXfrmAttrs = config.router.concatMapInterfaceAttrs ({ type, ... }: type == "xfrm");
 in
 {
-  router.interfaces = {
-    ipsec = {
-      type = "xfrm";
-      subnetId = 10;
-      xfrmId = 1;
-    };
-    guest-ipsec = {
-      type = "xfrm";
-      subnetId = 11;
-      xfrmId = 2;
-      quarantine = {
-        enable = true;
-      };
-    };
-  };
   services.strongswan-swanctl = {
     enable = true;
     package = pkgs'.strongswan;
