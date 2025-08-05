@@ -1,8 +1,10 @@
-{ flakeModules', ... }:
+{ lib, flakeModules', ... }:
 {
   imports = [
     flakeModules'.devShellPackages
   ];
+  systems = lib.systems.flakeExposed;
+
   perSystem =
     {
       system,
