@@ -1,0 +1,31 @@
+name: "Build Substitutes"
+on:
+  push:
+    branches: [main]
+jobs:
+  x86_64-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v14
+        with:
+          name: hgl
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - run: nix build --no-link
+  aarch64-darwin:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v14
+        with:
+          name: hgl
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - run: nix build --no-link
