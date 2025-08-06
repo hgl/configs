@@ -1,4 +1,3 @@
-{ nodes, ... }:
 {
   imports = [
     ./emacs.nix
@@ -6,28 +5,12 @@
   nixpkgs = {
     hostPlatform = "aarch64-darwin";
   };
-  nix = {
-    # linux-builder = {
-    #   enable = true;
-    #   config = {
-    #     # virtualisation.rosetta.enable = true;
-    #     boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
-    #   };
-    #   systems = [
-    #     "x86_64-linux"
-    #     "aarch64-linux"
-    #   ];
-    # };
-    # settings.trusted-users = [ "hgl" ];
-    distributedBuilds = true;
-    buildMachines = [
-      {
-        hostName = "${nodes.vm-nixos.name}.local";
-        systems = [
-          "x86_64-linux"
-          "aarch64-linux"
-        ];
-      }
+  nix.settings = {
+    substituters = [
+      "https://hgl.cachix.org"
+    ];
+    trusted-public-keys = [
+      "hgl.cachix.org-1:niFEnN9pxxWAvFsgbxCw9YaCdEfrDUV8wgWfS1HpK0M="
     ];
   };
   ids.gids.nixbld = 350;
