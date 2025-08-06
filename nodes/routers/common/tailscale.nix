@@ -1,14 +1,10 @@
 {
   lib,
-  inputs',
   config,
   nodes,
   ...
 }:
 {
-  nixpkgs.overlays = [
-    inputs'.nixos-router.overlays.tailscale
-  ];
   sops.secrets.tailscale-authkey = {
     sopsFile = "${nodes.current.privatePath}/vpn/tailscale/authkey";
     format = "binary";
@@ -36,8 +32,10 @@
               })
             ])
             [
-              "lan"
-              "ipsec"
+              config.router.interfaces.lan.name
+              config.router.interfaces.guest-lan.name
+              config.router.interfaces.ipsec.name
+              config.router.interfaces.guest-ipsec.name
             ]
         )
       }"
@@ -49,6 +47,7 @@
   '';
 
   # For site-to-site tunnel
+  # https://tailscale.com/kb/1214/site-to-site#clamp-the-mss-to-the-mtu
   networking.nftables.tables.tailscale = {
     family = "inet";
     content = ''
