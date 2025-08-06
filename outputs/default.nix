@@ -1,8 +1,15 @@
-{ lib, flakeModules', ... }:
+{
+  lib,
+  inputs,
+  getPkgs',
+  flakeModules',
+  ...
+}:
 {
   imports = [
     flakeModules'.devShellPackages
   ];
+
   systems = lib.systems.flakeExposed;
 
   perSystem =
@@ -45,4 +52,25 @@
         inputs'.nixverse.packages.nixverse
       ];
     };
+
+  flake.packages = {
+    x86_64-linux =
+      let
+        pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.x86_64-linux;
+        pkgsUnstable' = getPkgs' pkgsUnstable;
+      in
+      {
+        strongswanUnstable = pkgsUnstable'.strongswan;
+      };
+    aarch64-darwin =
+      let
+        pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.aarch64-darwin;
+        pkgsUnstable' = getPkgs' pkgsUnstable;
+      in
+      {
+        emacsUnstable = pkgsUnstable'.emacs;
+        tailscale-utilsUnstable = pkgsUnstable'.tailscale-utils;
+        nixverse = inputs.nixverse.packages.aarch64-darwin.nixverse;
+      };
+  };
 }
