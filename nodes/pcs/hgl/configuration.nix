@@ -1,3 +1,4 @@
+{ nodes, ... }:
 {
   imports = [
     ./emacs.nix
@@ -5,13 +6,25 @@
   nixpkgs = {
     hostPlatform = "aarch64-darwin";
   };
-  nix.settings = {
-    substituters = [
-      "https://hgl.cachix.org"
+  nix = {
+    distributedBuilds = true;
+    buildMachines = [
+      {
+        hostName = "${nodes.vm-nixos.name}.local";
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+        ];
+      }
     ];
-    trusted-public-keys = [
-      "hgl.cachix.org-1:niFEnN9pxxWAvFsgbxCw9YaCdEfrDUV8wgWfS1HpK0M="
-    ];
+    settings = {
+      substituters = [
+        "https://hgl.cachix.org"
+      ];
+      trusted-public-keys = [
+        "hgl.cachix.org-1:niFEnN9pxxWAvFsgbxCw9YaCdEfrDUV8wgWfS1HpK0M="
+      ];
+    };
   };
   ids.gids.nixbld = 350;
 
