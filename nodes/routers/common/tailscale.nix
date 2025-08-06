@@ -1,14 +1,10 @@
 {
   lib,
-  inputs',
   config,
   nodes,
   ...
 }:
 {
-  nixpkgs.overlays = [
-    inputs'.nixos-router.overlays.tailscale
-  ];
   sops.secrets.tailscale-authkey = {
     sopsFile = "${nodes.current.privatePath}/vpn/tailscale/authkey";
     format = "binary";
@@ -18,6 +14,7 @@
     interfaceName = "tailscale";
     authKeyFile = config.sops.secrets.tailscale-authkey.path;
     extraSetFlags = [
+      "--accept-dns=false"
       "--advertise-exit-node"
       "--accept-routes"
       "--snat-subnet-routes=false"
