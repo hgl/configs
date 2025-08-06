@@ -55,18 +55,20 @@
     };
     nixos-router-unstable = {
       url = "github:hgl/nixos-router";
+      # url = "github:hgl/nixos-router";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixverse = {
       url = "github:hgl/nixverse";
+      # url = "/Users/hgl/dev/nixverse";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
   outputs =
-    { self, nixverse, ... }:
+    inputs@{ nixverse, ... }:
     nixverse.lib.load {
-      flake = self;
+      inherit inputs;
       flakePath = ./.;
     };
 }

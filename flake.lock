@@ -487,11 +487,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1754404172,
-        "narHash": "sha256-zcU+OblOF+mG3oqf4FgMzS++xqH6ya/DHgPU36bPcMA=",
+        "lastModified": 1754448675,
+        "narHash": "sha256-9LWIaKOVfXO7NttT3InwfsqXhzsRxTVeQyQuk8/bV3w=",
         "owner": "hgl",
         "repo": "nixverse",
-        "rev": "35ca21f359b3e9095919b1526c63dc55d1651916",
+        "rev": "105491b7faa5acae7ebc31502e51a9f83dcbdf36",
         "type": "github"
       },
       "original": {
