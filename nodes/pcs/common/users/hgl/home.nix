@@ -1,7 +1,6 @@
 {
   lib,
   pkgs,
-  nodes,
   modules',
   config,
   ...
@@ -182,6 +181,7 @@
     woff2
     libwebp
     pstree
+    cachix
 
     pnpm
 
