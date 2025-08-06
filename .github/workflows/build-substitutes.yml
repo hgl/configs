@@ -3,8 +3,11 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+    paths:
+      - pkgs/**
+      - .github/workflows/build-substitutes.yml
 jobs:
-  strongswanUnstable:
+  strongswan-unstable:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,7 +19,7 @@ jobs:
         with:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#strongswanUnstable
+      - run: nix build --no-link .#strongswan-unstable
   nixverse:
     runs-on: macos-latest
     steps:
@@ -30,7 +33,7 @@ jobs:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - run: nix build --no-link .#nixverse
-  emacsUnstable:
+  emacs-unstable:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,8 +45,21 @@ jobs:
         with:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#emacsUnstable
-  tailscale-utilsUnstable:
+      - run: nix build --no-link .#emacs-unstable
+  tailscale-unstable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v14
+        with:
+          name: hgl
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - run: nix build --no-link .#tailscale-unstable
+  tailscale-utils-unstable:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +71,7 @@ jobs:
         with:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#tailscale-utilsUnstable
+      - run: nix build --no-link .#tailscale-utils-unstable
   p0:
     runs-on: ubuntu-latest
     steps:

@@ -60,7 +60,9 @@
         pkgsUnstable' = getPkgs' pkgsUnstable;
       in
       {
-        strongswanUnstable = pkgsUnstable'.strongswan;
+        strongswan-unstable = pkgsUnstable'.strongswan;
+        tailscale-unstable =
+          (pkgsUnstable.extend inputs.nixos-router-unstable.overlays.tailscale).tailscale;
       };
     aarch64-darwin =
       let
@@ -68,8 +70,8 @@
         pkgsUnstable' = getPkgs' pkgsUnstable;
       in
       {
-        emacsUnstable = pkgsUnstable'.emacs;
-        tailscale-utilsUnstable = pkgsUnstable'.tailscale-utils;
+        emacs-unstable = pkgsUnstable'.emacs;
+        tailscale-utils-unstable = pkgsUnstable'.tailscale-utils;
         nixverse = inputs.nixverse.packages.aarch64-darwin.nixverse;
       };
   };
