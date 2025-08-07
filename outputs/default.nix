@@ -61,8 +61,6 @@
       in
       {
         strongswan-unstable = pkgsUnstable'.strongswan;
-        tailscale-unstable =
-          (pkgsUnstable.extend inputs.nixos-router-unstable.overlays.tailscale).tailscale;
       };
     aarch64-darwin =
       let
