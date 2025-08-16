@@ -65,6 +65,9 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[makefile]": {
+    "editor.tabSize": 8
+  },
   "editor.renderWhitespace": "all",
   "terminal.integrated.scrollback": 100000,
   "go.toolsEnvVars": {
