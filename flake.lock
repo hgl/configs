@@ -369,17 +369,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1754480870,
-        "narHash": "sha256-ycbpQJvgf8ood+xfNyPuVEC98ecshqj0ed2r/IkZyaM=",
-        "owner": "hgl",
-        "repo": "nixos-router",
-        "rev": "8945ff77231a2e4f25f2a4ac9f882572f827be79",
-        "type": "github"
+        "lastModified": 1755257089,
+        "narHash": "sha256-oO0HLOntDpFxgthfpwTsgRsqGx/6qJ++yDwtVTle6Bk=",
+        "path": "/Users/hgl/dev/nixos-router",
+        "type": "path"
       },
       "original": {
-        "owner": "hgl",
-        "repo": "nixos-router",
-        "type": "github"
+        "path": "/Users/hgl/dev/nixos-router",
+        "type": "path"
       }
     },
     "nixos-stable": {
@@ -487,17 +484,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1754448675,
-        "narHash": "sha256-9LWIaKOVfXO7NttT3InwfsqXhzsRxTVeQyQuk8/bV3w=",
-        "owner": "hgl",
-        "repo": "nixverse",
-        "rev": "105491b7faa5acae7ebc31502e51a9f83dcbdf36",
-        "type": "github"
+        "lastModified": 1755320534,
+        "narHash": "sha256-JeSihw4kWSE6nD6Bv0xDkDSNTRYWRiXQmmDDLZImmRk=",
+        "path": "/Users/hgl/dev/nixverse",
+        "type": "path"
       },
       "original": {
-        "owner": "hgl",
-        "repo": "nixverse",
-        "type": "github"
+        "path": "/Users/hgl/dev/nixverse",
+        "type": "path"
       }
     },
     "root": {
