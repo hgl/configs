@@ -1,8 +1,14 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  nodes,
+  config,
+  ...
+}:
 let
   user = "wordpress-nbhwj";
   dbName = user;
   domain = "nbhwj.com";
+  dir = "/srv/www/wordpress/nbhwj";
 in
 {
   services.mysql = {
@@ -19,7 +25,12 @@ in
   };
   users.users.${user} = {
     group = config.services.caddy.group;
+    extraGroups = [ "systemd-journal" ];
     isSystemUser = true;
+    shell = pkgs.bash;
+    openssh.authorizedKeys.keyFiles = [
+      "${nodes.r0.privatePath}/fs/root/.ssh/id_nbhwj.pub"
+    ];
   };
   services.phpfpm.pools.wordpress-nbhwj = {
     inherit user;
@@ -45,7 +56,7 @@ in
     };
   };
   systemd.tmpfiles.rules = [
-    "d /srv/www/wordpress/nbhwj - ${user} ${config.users.users.${user}.group}"
+    "d ${dir} - ${user} ${config.users.users.${user}.group}"
   ];
   services.caddy.virtualHosts = {
     ${domain} = {
@@ -55,7 +66,7 @@ in
           -Server
           Strict-Transport-Security max-age=63072000
         }
-        root /srv/www/wordpress/nbhwj
+        root ${dir}
         file_server
         encode gzip zstd
 
