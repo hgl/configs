@@ -17,7 +17,7 @@
   };
   systemd.services.backup-nbhwj = {
     description = "backup nbhwj";
-    path = [ pkgs.ssh ];
+    path = [ pkgs.openssh ];
     script = ''
       NBHWJ_KEY_ID1=$(< ${config.sops.secrets.backupNbhwjKeyID1.path}) \
       NBHWJ_KEY1=$(< ${config.sops.secrets.backupNbhwjKey1.path}) \
