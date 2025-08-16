@@ -1,50 +1,58 @@
-$(foreach node_name,$(routers_node_names),$(eval \
-  nodes/$(node_name): ipsec \
-    private/nodes/routers/$(node_name)/vpn/ipsec/server.key \
-    private/nodes/routers/$(node_name)/vpn/ipsec/server.crt \
-    private/nodes/routers/$(node_name)/vpn/tailscale/authkey \
-	build/nodes/routers/$(node_name)/vpn/ipsec/server.key \
-))
+define DefineRouter
+  # $(1): node name
 
-private/nodes/routers/%/vpn/ipsec/server.key: | private/nodes/routers/%/vpn/ipsec
+  nodes/$(1): ipsec \
+    private/nodes/routers/$(1)/vpn/ipsec/server.key \
+    private/nodes/routers/$(1)/vpn/ipsec/server.crt \
+    private/nodes/routers/$(1)/vpn/tailscale/authkey
+
+  private/nodes/routers/$(1)/vpn/ipsec/server.key: | private/nodes/routers/$(1)/vpn/ipsec
 	openssl ecparam -genkey \
 		-name prime256v1 \
 		-noout \
-		-out $@
-	nixverse secrets encrypt --node $* --in-place $@
-build/nodes/routers/%/vpn/ipsec/server.key: private/nodes/routers/%/vpn/ipsec/server.key | build/nodes/routers/%/vpn/ipsec
-	nixverse secrets decrypt --node $* --out $@ $<
-private/nodes/routers/%/vpn/ipsec/server.crt: build/nodes/routers/%/vpn/ipsec/server.key build/nodes/routers/%/vpn/server.domain build/vpn/ipsec/ca.key private/vpn/ipsec/ca.crt | private/nodes/routers/%/vpn/ipsec
-	domain=$$(< $(word 2,$^))
-	if [[ -e $@ ]]; then
-		if key-cert-match $< $@; then
+		-out $$@
+	nixverse secrets encrypt --node $(1) --in-place $$@
+  build/nodes/$(1)/vpn/ipsec/server.key: private/nodes/routers/$(1)/vpn/ipsec/server.key | build/nodes/$(1)/vpn/ipsec
+	nixverse secrets decrypt --node $(1) --out $$@ $$<
+  private/nodes/routers/$(1)/vpn/ipsec/server.crt: build/nodes/$(1)/vpn/ipsec/server.key build/nodes/$(1)/vpn/server.domain build/vpn/ipsec/ca.key private/vpn/ipsec/ca.crt | private/nodes/routers/$(1)/vpn/ipsec
+	domain=$$$$(< $$(word 2,$$^))
+	if [[ -e $$@ ]]; then
+		if key-cert-match $$< $$@; then
 			if
-				[[ "$$(cert json '.subject.common_name' $@)" = $$domain ]] &&
-				[[ "$$(cert json '.sans[0]' $@)" = $$domain ]]
+				[[ "$$$$(cert json '.subject.common_name' $$@)" = $$$$domain ]] &&
+				[[ "$$$$(cert json '.sans[0]' $$@)" = $$$$domain ]]
 			then
-				touch $@
+				touch $$@
 				exit
 			fi
-		elif [[ $$? != 1 ]]; then
+		elif [[ $$$$? != 1 ]]; then
 			exit 1
 		fi
 	fi
 	openssl req \
-		-key $< \
-		-CAkey $(word 3,$^) \
-		-CA $(word 4,$^) \
+		-key $$< \
+		-CAkey $$(word 3,$$^) \
+		-CA $$(word 4,$$^) \
 		-config '' \
-		-subj "/CN=$$domain" \
-		-addext "subjectAltName=DNS:$$domain" \
+		-subj "/CN=$$$$domain" \
+		-addext "subjectAltName=DNS:$$$$domain" \
 		-addext 'extendedKeyUsage=serverAuth' \
 		-days 3650 \
 		-batch \
-		-out $@
-build/nodes/routers/%/vpn/server.domain: nodes/routers/group.nix | build/nodes/routers/%/vpn
-	nixverse eval 'nodes.$*.config.networking.fqdn' >$@
+		-out $$@
+  build/nodes/$(1)/vpn/server.domain: nodes/routers/group.nix | build/nodes/$(1)/vpn
+	nixverse eval 'nodes.$(1).config.networking.fqdn' >$$@
 
-private/nodes/routers/%/vpn/tailscale/authkey: private/nodes/routers/common/vpn/tailscale/authkey | private/nodes/routers/%/vpn/tailscale
-	nixverse secrets decrypt $< | nixverse secrets encrypt --node $* --out $@ -
+  private/nodes/routers/$(1)/vpn/tailscale/authkey: private/nodes/routers/common/vpn/tailscale/authkey | private/nodes/routers/$(1)/vpn/tailscale
+	nixverse secrets decrypt $$< | nixverse secrets encrypt --node $(1) --out $$@ -
+
+  private/nodes/routers/$(1)/vpn/ipsec \
+  private/nodes/routers/$(1)/vpn/tailscale \
+  build/nodes/$(1)/vpn/ipsec \
+  build/nodes/$(1)/vpn:
+	mkdir -p $$@
+endef
+$(foreach node_name,$(group_routers_nodes),$(eval $(call DefineRouter,$(node_name))))
 
 private/nodes/routers/common/vpn/tailscale/authkey: FORCE | private/nodes/routers/common/vpn/tailscale
 	now=$$(date +%s)
@@ -64,11 +72,5 @@ private/nodes/routers/common/vpn/tailscale/authkey: FORCE | private/nodes/router
 		tailscale-authkey -reusable -preauth -tags tag:router $@
 	nixverse secrets encrypt --in-place $@
 
-$(foreach node_name,$(routers_node_names), \
-  private/nodes/routers/$(node_name)/vpn/ipsec \
-  private/nodes/routers/$(node_name)/vpn/tailscale \
-  build/nodes/routers/$(node_name)/vpn/ipsec \
-  build/nodes/routers/$(node_name)/vpn \
-) \
 private/nodes/routers/common/vpn/tailscale:
 	mkdir -p $@
