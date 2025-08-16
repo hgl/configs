@@ -164,6 +164,7 @@
   };
 
   home.packages = with pkgs; [
+    findutils
     remake # debug make
     dive # debug docker image
     vimgolf
@@ -182,6 +183,8 @@
     libwebp
     pstree
     cachix
+    restic
+    rclone
 
     pnpm
 
