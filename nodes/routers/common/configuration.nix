@@ -98,7 +98,7 @@
       };
       wan = {
         type = "wan";
-        nftables.inputChain = ''
+        nftables.chains.filter.input.filter = ''
           tcp dport 22 accept comment "Allow SSH"
         '';
       };

@@ -7,47 +7,45 @@
   ...
 }:
 let
-  concatMapXfrmAttrs = config.router.concatMapInterfaceAttrs ({ type, ... }: type == "xfrm");
+  xfrmInterfaces = lib.filterAttrs (_: interface: interface.type == "xfrm") config.router.interfaces;
 in
 {
   services.strongswan-swanctl = {
     enable = true;
     package = pkgs'.strongswan;
     swanctl = {
-      connections = concatMapXfrmAttrs (interface: {
-        ${interface.name} = {
-          version = 2;
-          if_id_in = toString interface.xfrmId;
-          if_id_out = toString interface.xfrmId;
-          pools = [
-            "${interface.name}v6"
-            "${interface.name}"
-          ];
-          proposals = [
-            "aes128gcm16-prfsha256-curve25519"
-            "aes128gcm16-prfsha256-ecp256"
-          ];
-          local.default = {
-            auth = "pubkey";
-            id = config.networking.fqdn;
-          };
-          remote.default = {
-            auth = "pubkey";
-            id = "*.${interface.name}";
-          };
-          children.default = {
-            local_ts = [
-              "0.0.0.0/0"
-              "::/0"
-            ];
-            esp_proposals = [
-              "aes128gcm16-curve25519"
-              "aes128gcm16-ecp256"
-            ];
-          };
+      connections = lib.mapAttrs (_: interface: {
+        version = 2;
+        if_id_in = toString interface.xfrmId;
+        if_id_out = toString interface.xfrmId;
+        pools = [
+          "${interface.name}v6"
+          "${interface.name}"
+        ];
+        proposals = [
+          "aes128gcm16-prfsha256-curve25519"
+          "aes128gcm16-prfsha256-ecp256"
+        ];
+        local.default = {
+          auth = "pubkey";
+          id = config.networking.fqdn;
         };
-      });
-      pools = concatMapXfrmAttrs (interface: {
+        remote.default = {
+          auth = "pubkey";
+          id = "*.${interface.name}";
+        };
+        children.default = {
+          local_ts = [
+            "0.0.0.0/0"
+            "::/0"
+          ];
+          esp_proposals = [
+            "aes128gcm16-curve25519"
+            "aes128gcm16-ecp256"
+          ];
+        };
+      }) xfrmInterfaces;
+      pools = lib.concatMapAttrs (_: interface: {
         "${interface.name}v6" = {
           addrs = "${interface.ipv6 {
             interfaceId = 2;
@@ -59,7 +57,7 @@ in
           addrs = "${interface.poolv4.startIp}-${interface.poolv4.endIp}";
           dns = [ (interface.ipv4 { hostId = 1; }) ];
         };
-      });
+      }) xfrmInterfaces;
     };
   };
 
@@ -81,7 +79,7 @@ in
     "swanctl/x509crl/clients.crl".source = "${privatePath}/vpn/ipsec/clients.crl";
   };
 
-  router.interfaces.wan.nftables.inputChain = ''
+  router.interfaces.wan.nftables.chains.filter.input.filter = ''
     udp dport 500 accept comment "Allow ISAKMP"
     udp dport 4500 accept comment "Allow IPsec NAT-T"
     meta l4proto esp accept comment "Allow ESP"

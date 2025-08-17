@@ -42,13 +42,13 @@
     ];
   };
 
-  router.interfaces.wan.nftables.inputChain = ''
+  router.interfaces.wan.nftables.chains.filter.input.filter = ''
     udp dport ${toString config.services.tailscale.port} accept comment "Allow tailscale"
   '';
 
   # For site-to-site tunnel
   # https://tailscale.com/kb/1214/site-to-site#clamp-the-mss-to-the-mtu
-  networking.nftables.tables.tailscale = {
+  networking.nftables.tables."interface-${config.services.tailscale.interfaceName}" = {
     family = "inet";
     content = ''
       chain forward {
