@@ -293,8 +293,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1755492393,
-        "narHash": "sha256-dkeIqf/W4g/URXhejmuXLp8VeKK04fK2QWbNxMS6yuk=",
+        "lastModified": 1755494099,
+        "narHash": "sha256-BEPw72IQjtGN5FaJMLbaS37j35gTqX0byYzjOpD1CdI=",
         "path": "/Users/hgl/dev/nix-networkd",
         "type": "path"
       },

@@ -15,6 +15,7 @@ let
     "${lib.head bind_hosts}#${toString port}";
 in
 {
+  services.resolved.enable = false;
   services.dnsmasq = {
     enable = true;
     settings = {
