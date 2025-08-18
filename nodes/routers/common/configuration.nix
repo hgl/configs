@@ -9,6 +9,7 @@
   imports = [
     "${modulesPath}/profiles/minimal.nix"
     inputs'.nixos-router.modules.nixos-router
+    ./dnsmasq.nix
     ./adguardhome.nix
     ./ipsec.nix
     ./nginx.nix
@@ -68,8 +69,11 @@
     ];
   };
 
+  boot.kernel.sysctl = {
+    "net.ipv4.conf.all.forwarding" = true;
+    "net.ipv6.conf.all.forwarding" = true;
+  };
   router = {
-    enable = true;
     interfaces = {
       lan = {
         type = "bridge";
@@ -104,6 +108,7 @@
       };
     };
   };
+
   security.acme.acceptTerms = true;
 
   environment.systemPackages = with pkgs; [

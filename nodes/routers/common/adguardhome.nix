@@ -2,26 +2,39 @@
 {
   services.adguardhome = {
     enable = true;
-    settings.filters =
-      lib.imap0
-        (
-          i: filter:
-          filter
-          // {
-            enabled = true;
-            id = i;
-          }
-        )
-        [
-          {
-            name = "AdGuard DNS filter";
-            url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt";
-          }
-          {
-            name = "CHN: anti-AD";
-            url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_21.txt";
-          }
-        ];
+    mutableSettings = false;
+    host = "[::1]";
+    port = 5380;
+    settings = {
+      dns = {
+        bind_hosts = [ "::1" ];
+        port = 1053;
+        cache_size = 0;
+        upstream_dns = config.networking.nameservers;
+        bootstrap_dns = [ ];
+        hostsfile_enabled = true;
+      };
+      filters =
+        lib.imap0
+          (
+            i: filter:
+            filter
+            // {
+              enabled = true;
+              id = i;
+            }
+          )
+          [
+            {
+              name = "AdGuard DNS filter";
+              url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt";
+            }
+            {
+              name = "CHN: anti-AD";
+              url = "https://adguardteam.github.io/HostlistsRegistry/assets/filter_21.txt";
+            }
+          ];
+    };
   };
 
   services.nginx.virtualHosts.ad = {

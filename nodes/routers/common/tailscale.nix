@@ -18,6 +18,7 @@
       "--accept-routes"
       "--snat-subnet-routes=false"
       "--ssh"
+      "--accept-dns=false"
       "--advertise-routes=${
         lib.concatStringsSep "," (
           lib.concatMap
@@ -40,6 +41,18 @@
         )
       }"
     ];
+  };
+
+  services.dnsmasq.settings = {
+    # insecure, but is required for local resolver to work
+    # for site-to-site tailscale
+    stop-dns-rebind = false;
+    # TODO: find out why using IPv6 here resulting in hanging DNS queries
+    server =
+      lib.mapAttrsToList (_: router: "//${router.config.router.interfaces.lan.ipv4 { hostId = 1; }}") (
+        lib.removeAttrs nodes.routers.nodes [ nodes.current.name ]
+      )
+      ++ [ "/ts.net/100.100.100.100" ];
   };
 
   router.interfaces.wan.nftables.chains.filter.input.filter = ''
