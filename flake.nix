@@ -21,13 +21,18 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nix-networkd-unstable = {
-      # url = "github:hgl/nix-networkd";
-      url = "/Users/hgl/dev/nix-networkd";
+      url = "github:hgl/nix-networkd";
+      # url = "/Users/hgl/dev/nix-networkd";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    virby-unstable-darwin = {
+      url = "github:hgl/virby-nix-darwin/dhcp";
+      # url = "/Users/hgl/contrib/virby-nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixverse = {
-      # url = "github:hgl/nixverse";
-      url = "/Users/hgl/dev/nixverse";
+      url = "github:hgl/nixverse";
+      # url = "/Users/hgl/dev/nixverse";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };

@@ -1,29 +1,15 @@
-{ nodes, ... }:
 {
   imports = [
+    ./virby.nix
     ./emacs.nix
   ];
   nixpkgs = {
     hostPlatform = "aarch64-darwin";
   };
   nix = {
-    distributedBuilds = true;
-    buildMachines = [
-      {
-        hostName = "${nodes.vm-nixos.name}.local";
-        systems = [
-          "x86_64-linux"
-          "aarch64-linux"
-        ];
-      }
-    ];
     settings = {
-      substituters = [
-        "https://hgl.cachix.org"
-      ];
-      trusted-public-keys = [
-        "hgl.cachix.org-1:niFEnN9pxxWAvFsgbxCw9YaCdEfrDUV8wgWfS1HpK0M="
-      ];
+      substituters = [ "https://hgl.cachix.org" ];
+      trusted-public-keys = [ "hgl.cachix.org-1:niFEnN9pxxWAvFsgbxCw9YaCdEfrDUV8wgWfS1HpK0M=" ];
     };
   };
   ids.gids.nixbld = 350;
@@ -36,7 +22,6 @@
 
   users.users = {
     hgl.home = "/Users/hgl";
-    root.home = "/var/root";
   };
 
   networking = {

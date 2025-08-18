@@ -72,5 +72,8 @@
         tailscale-utils-unstable = pkgsUnstable'.tailscale-utils;
         nixverse = inputs.nixverse.packages.aarch64-darwin.nixverse;
       };
+    aarch64-linux = {
+      virby-unstable = inputs.virby-unstable-darwin.packages.aarch64-linux.vm-image;
+    };
   };
 }

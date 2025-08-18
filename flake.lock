@@ -174,13 +174,16 @@
       },
       "locked": {
         "lastModified": 1755494099,
-        "narHash": "sha256-BEPw72IQjtGN5FaJMLbaS37j35gTqX0byYzjOpD1CdI=",
-        "path": "/Users/hgl/dev/nix-networkd",
-        "type": "path"
+        "narHash": "sha256-zIwXYvbqxbHOHksK3rPFXYhMZFQJ5KqCEqfkBwl1Yw4=",
+        "owner": "hgl",
+        "repo": "nix-networkd",
+        "rev": "69158229adfa72482c1cd5363da9589e9f5675e9",
+        "type": "github"
       },
       "original": {
-        "path": "/Users/hgl/dev/nix-networkd",
-        "type": "path"
+        "owner": "hgl",
+        "repo": "nix-networkd",
+        "type": "github"
       }
     },
     "nix-vm-test": {
@@ -348,14 +351,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1755320534,
-        "narHash": "sha256-JeSihw4kWSE6nD6Bv0xDkDSNTRYWRiXQmmDDLZImmRk=",
-        "path": "/Users/hgl/dev/nixverse",
-        "type": "path"
+        "lastModified": 1755320530,
+        "narHash": "sha256-zrETnqKnB2Ux6wDcO9rFF8Ipe/d/Liry8RczGNDteTs=",
+        "owner": "hgl",
+        "repo": "nixverse",
+        "rev": "4f86082b009ed66b5c6b984acf1bd75137e75c78",
+        "type": "github"
       },
       "original": {
-        "path": "/Users/hgl/dev/nixverse",
-        "type": "path"
+        "owner": "hgl",
+        "repo": "nixverse",
+        "type": "github"
       }
     },
     "root": {
@@ -368,7 +374,8 @@
         "nixpkgs-stable-nixos": "nixpkgs-stable-nixos",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixverse": "nixverse",
-        "sops-nix-unstable": "sops-nix-unstable"
+        "sops-nix-unstable": "sops-nix-unstable",
+        "virby-unstable-darwin": "virby-unstable-darwin"
       }
     },
     "sops-nix-unstable": {
@@ -410,6 +417,27 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "virby-unstable-darwin": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1755587539,
+        "narHash": "sha256-Aj3nw5bVpvaaJvhLE5mTWFg9KchppEdfiTp3STxd9w4=",
+        "owner": "hgl",
+        "repo": "virby-nix-darwin",
+        "rev": "8d9536e021895b763c9685e6aaca746b3aafdf39",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hgl",
+        "ref": "dhcp",
+        "repo": "virby-nix-darwin",
         "type": "github"
       }
     }
