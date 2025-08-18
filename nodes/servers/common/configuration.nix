@@ -1,17 +1,25 @@
 {
   pkgs,
   modulesPath,
+  inputs',
   config,
   ...
 }:
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
+    inputs'.nix-networkd.modules.nix-networkd
   ];
 
   boot = {
     initrd.includeDefaultModules = false;
     loader.timeout = 0;
+
+    kernelModules = [ "tcp_bbr" ];
+    kernel.sysctl = {
+      "net.ipv4.tcp_congestion_control" = "bbr";
+      "net.core.default_qdisc" = "fq";
+    };
   };
 
   nix = {
@@ -33,12 +41,6 @@
   environment.shells = with pkgs; [
     fish
   ];
-
-  networking = {
-    useDHCP = false;
-    firewall.enable = false;
-  };
-  systemd.network.enable = true;
 
   security.acme = {
     acceptTerms = true;
