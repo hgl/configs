@@ -1,8 +1,6 @@
 # My Configurations
 
-This repo contains all my machines' configurations. It uses [Nixverse](https://github.com/hgl/nixverse).
-
-Each router uses [NixOS Router](https://github.com/hgl/nixos-router).
+This repo contains all my machines' configurations. It uses [Nixverse](https://github.com/hgl/nixverse) and [nix-networkd](https://github.com/hgl/nix-networkd).
 
 ## How to bootstrap
 

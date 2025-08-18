@@ -8,7 +8,7 @@
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
-    inputs'.nixos-router.modules.nixos-router
+    inputs'.nix-networkd.modules.nix-networkd
     ./dnsmasq.nix
     ./adguardhome.nix
     ./ipsec.nix
@@ -73,7 +73,7 @@
     "net.ipv4.conf.all.forwarding" = true;
     "net.ipv6.conf.all.forwarding" = true;
   };
-  router = {
+  networkd = {
     interfaces = {
       lan = {
         type = "bridge";

@@ -7,7 +7,7 @@
     ddnsCloudflareZoneId = { };
     ddnsCloudflareToken = { };
   };
-  router.interfaces.wan.ddns = [
+  networkd.interfaces.wan.ddns = [
     {
       domains = [ config.networking.fqdn ];
       provider = {

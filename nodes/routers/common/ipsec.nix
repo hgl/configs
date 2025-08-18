@@ -7,7 +7,9 @@
   ...
 }:
 let
-  xfrmInterfaces = lib.filterAttrs (_: interface: interface.type == "xfrm") config.router.interfaces;
+  xfrmInterfaces = lib.filterAttrs (
+    _: interface: interface.type == "xfrm"
+  ) config.networkd.interfaces;
 in
 {
   services.strongswan-swanctl = {
@@ -79,7 +81,7 @@ in
     "swanctl/x509crl/clients.crl".source = "${privatePath}/vpn/ipsec/clients.crl";
   };
 
-  router.interfaces.wan.nftables.chains.filter.input.filter = ''
+  networkd.interfaces.wan.nftables.chains.filter.input.filter = ''
     udp dport 500 accept comment "Allow ISAKMP"
     udp dport 4500 accept comment "Allow IPsec NAT-T"
     meta l4proto esp accept comment "Allow ESP"

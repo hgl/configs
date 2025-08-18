@@ -7,7 +7,7 @@
 let
   dnsInterfaces = lib.filterAttrs (
     _: interface: interface.dns.enable or false
-  ) config.router.interfaces;
+  ) config.networkd.interfaces;
   adguardhome =
     let
       inherit (config.services.adguardhome.settings.dns) bind_hosts port;
@@ -51,7 +51,7 @@ in
               config.networking.hostName
               config.networking.fqdn
             ]
-            ++ config.router.hostNameAliases
+            ++ config.networkd.hostNameAliases
           )
         )
       ) dnsInterfaces;

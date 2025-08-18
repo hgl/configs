@@ -90,7 +90,7 @@
     group = config.services.nginx.group;
   };
 
-  router.interfaces.wan.nftables.chains.filter.input.filter = ''
+  networkd.interfaces.wan.nftables.chains.filter.input.filter = ''
     meta l4proto { tcp, udp } th dport { 2, 3, 443, 80 } accept comment "Allow HTTP(S)"
   '';
 }

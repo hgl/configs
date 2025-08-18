@@ -56,5 +56,5 @@
     };
   };
 
-  router.hostNameAliases = [ "ad" ];
+  networkd.hostNameAliases = [ "ad" ];
 }

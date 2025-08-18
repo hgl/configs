@@ -23,20 +23,20 @@
         lib.concatStringsSep "," (
           lib.concatMap
             (interfaceName: [
-              (config.router.interfaces.${interfaceName}.ipv6 {
+              (config.networkd.interfaces.${interfaceName}.ipv6 {
                 interfaceId = 0;
                 prefixLength = 64;
               })
-              (config.router.interfaces.${interfaceName}.ipv4 {
+              (config.networkd.interfaces.${interfaceName}.ipv4 {
                 hostId = 0;
                 prefixLength = 24;
               })
             ])
             [
-              config.router.interfaces.lan.name
-              config.router.interfaces.guest-lan.name
-              config.router.interfaces.ipsec.name
-              config.router.interfaces.guest-ipsec.name
+              config.networkd.interfaces.lan.name
+              config.networkd.interfaces.guest-lan.name
+              config.networkd.interfaces.ipsec.name
+              config.networkd.interfaces.guest-ipsec.name
             ]
         )
       }"
@@ -49,13 +49,13 @@
     stop-dns-rebind = false;
     # TODO: find out why using IPv6 here resulting in hanging DNS queries
     server =
-      lib.mapAttrsToList (_: router: "//${router.config.router.interfaces.lan.ipv4 { hostId = 1; }}") (
+      lib.mapAttrsToList (_: router: "//${router.config.networkd.interfaces.lan.ipv4 { hostId = 1; }}") (
         lib.removeAttrs nodes.routers.nodes [ nodes.current.name ]
       )
       ++ [ "/ts.net/100.100.100.100" ];
   };
 
-  router.interfaces.wan.nftables.chains.filter.input.filter = ''
+  networkd.interfaces.wan.nftables.chains.filter.input.filter = ''
     udp dport ${toString config.services.tailscale.port} accept comment "Allow tailscale"
   '';
 

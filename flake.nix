@@ -53,9 +53,9 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs-stable-darwin";
     };
-    nixos-router-unstable = {
-      # url = "github:hgl/nixos-router";
-      url = "/Users/hgl/dev/nixos-router";
+    nix-networkd-unstable = {
+      # url = "github:hgl/nix-networkd";
+      url = "/Users/hgl/dev/nix-networkd";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixverse = {

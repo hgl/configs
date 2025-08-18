@@ -186,7 +186,7 @@
     "networkd-ipmon": {
       "inputs": {
         "nixpkgs": [
-          "nixos-router-unstable",
+          "nix-networkd-unstable",
           "nixpkgs"
         ]
       },
@@ -285,6 +285,24 @@
         "type": "github"
       }
     },
+    "nix-networkd-unstable": {
+      "inputs": {
+        "networkd-ipmon": "networkd-ipmon",
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1755487234,
+        "narHash": "sha256-LrsaLIjCEoJfugTD5P1GzqygE07AZ3inwpjHg1JDjws=",
+        "path": "/Users/hgl/dev/nix-networkd",
+        "type": "path"
+      },
+      "original": {
+        "path": "/Users/hgl/dev/nix-networkd",
+        "type": "path"
+      }
+    },
     "nix-vm-test": {
       "inputs": {
         "nixpkgs": [
@@ -359,24 +377,6 @@
         "owner": "nix-community",
         "repo": "nixos-images",
         "type": "github"
-      }
-    },
-    "nixos-router-unstable": {
-      "inputs": {
-        "networkd-ipmon": "networkd-ipmon",
-        "nixpkgs": [
-          "nixpkgs-unstable"
-        ]
-      },
-      "locked": {
-        "lastModified": 1755257089,
-        "narHash": "sha256-oO0HLOntDpFxgthfpwTsgRsqGx/6qJ++yDwtVTle6Bk=",
-        "path": "/Users/hgl/dev/nixos-router",
-        "type": "path"
-      },
-      "original": {
-        "path": "/Users/hgl/dev/nixos-router",
-        "type": "path"
       }
     },
     "nixos-stable": {
@@ -505,7 +505,7 @@
         "nix-darwin-master-darwin": "nix-darwin-master-darwin",
         "nix-darwin-stable-darwin": "nix-darwin-stable-darwin",
         "nix-darwin-unstable": "nix-darwin-unstable",
-        "nixos-router-unstable": "nixos-router-unstable",
+        "nix-networkd-unstable": "nix-networkd-unstable",
         "nixpkgs-master-darwin": "nixpkgs-master-darwin",
         "nixpkgs-stable-darwin": "nixpkgs-stable-darwin",
         "nixpkgs-stable-nixos": "nixpkgs-stable-nixos",

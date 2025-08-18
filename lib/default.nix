@@ -5,7 +5,7 @@
 }:
 {
   inherit (inputs.nixverse.lib) concatMapAttrsToList;
-  inherit (inputs.nixos-router-unstable.lib) decToHex;
+  inherit (inputs.nix-networkd-unstable.lib) decToHex;
   addressPortString =
     {
       address ? "",
