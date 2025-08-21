@@ -152,11 +152,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1751313918,
-        "narHash": "sha256-HsJM3XLa43WpG+665aGEh8iS8AfEwOIQWk3Mke3e7nk=",
+        "lastModified": 1755275010,
+        "narHash": "sha256-lEApCoWUEWh0Ifc3k1JdVjpMtFFXeL2gG1qvBnoRc2I=",
         "owner": "LnL7",
         "repo": "nix-darwin",
-        "rev": "e04a388232d9a6ba56967ce5b53a8a6f713cdfcf",
+        "rev": "7220b01d679e93ede8d7b25d6f392855b81dd475",
         "type": "github"
       },
       "original": {
@@ -427,16 +427,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1755587539,
-        "narHash": "sha256-Aj3nw5bVpvaaJvhLE5mTWFg9KchppEdfiTp3STxd9w4=",
-        "owner": "hgl",
+        "lastModified": 1755685582,
+        "narHash": "sha256-SWjn2vmKtLLLplEfjBuJH6jsoaU56S2QNoS4vrAfl7U=",
+        "owner": "quinneden",
         "repo": "virby-nix-darwin",
-        "rev": "8d9536e021895b763c9685e6aaca746b3aafdf39",
+        "rev": "3637914f7faaeb312e02416e3fbffd9f89da943d",
         "type": "github"
       },
       "original": {
-        "owner": "hgl",
-        "ref": "dhcp",
+        "owner": "quinneden",
         "repo": "virby-nix-darwin",
         "type": "github"
       }

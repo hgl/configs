@@ -26,8 +26,7 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     virby-unstable-darwin = {
-      url = "github:hgl/virby-nix-darwin/dhcp";
-      # url = "/Users/hgl/contrib/virby-nix-darwin";
+      url = "github:quinneden/virby-nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixverse = {
