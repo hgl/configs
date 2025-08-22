@@ -10,8 +10,7 @@ vpn_disabled_clients := $(shell yq --raw-output ' \
   ' private/vpn/clients.yaml \
 )
 
-.PHONY: ipsec
-define VPNClient
+define DefineVPNClient
   # $(1): client name
 
   build/vpn/clients/$(1)/vpn.mobileconfig: private/vpn/clients/$(1)/ipsec/uuid build/vpn/clients/$(1)/ipsec/ipsec.key private/vpn/clients/$(1)/ipsec/ipsec.crt private/vpn/ipsec/ca.crt private/vpn/clients.yaml | build/vpn/clients/$(1)
@@ -62,8 +61,9 @@ define VPNClient
   build/vpn/clients/$(1)/ipsec:
 	mkdir -p $$@
 endef
-$(foreach name,$(vpn_clients) $(vpn_disabled_clients),$(eval $(call VPNClient,$(name))))
+$(foreach name,$(vpn_clients) $(vpn_disabled_clients),$(eval $(call DefineVPNClient,$(name))))
 
+.PHONY: ipsec
 ipsec: $(vpn_clients:%=build/vpn/clients/%/vpn.mobileconfig)
 
 build/vpn/ipsec/ca.key: private/vpn/ipsec/ca.key | build/vpn/ipsec
