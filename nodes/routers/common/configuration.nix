@@ -1,16 +1,15 @@
 {
   lib,
   pkgs,
-  inputs',
   modulesPath,
   ...
 }:
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
-    inputs'.nix-networkd.modules.nix-networkd
     ./dnsmasq.nix
     ./adguardhome.nix
+    ./networkd.nix
     ./ipsec.nix
     ./nginx.nix
     ./ddns.nix
@@ -72,41 +71,6 @@
   boot.kernel.sysctl = {
     "net.ipv4.conf.all.forwarding" = true;
     "net.ipv6.conf.all.forwarding" = true;
-  };
-  networkd = {
-    interfaces = {
-      lan = {
-        type = "bridge";
-        subnetId = 0;
-      };
-      guest-lan = {
-        type = "vlan";
-        subnetId = 1;
-        vlanId = 2;
-        quarantine = {
-          enable = true;
-        };
-      };
-      ipsec = {
-        type = "xfrm";
-        subnetId = 2;
-        xfrmId = 1;
-      };
-      guest-ipsec = {
-        type = "xfrm";
-        subnetId = 3;
-        xfrmId = 2;
-        quarantine = {
-          enable = true;
-        };
-      };
-      wan = {
-        type = "wan";
-        nftables.chains.filter.input.filter = ''
-          tcp dport 22 accept comment "Allow SSH"
-        '';
-      };
-    };
   };
 
   security.acme.acceptTerms = true;
