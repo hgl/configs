@@ -11,6 +11,9 @@ let
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG hgl"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDrXT3k9ISbCa/VRCjQynAegfMQ5KhNIeh2WmC3C876u hgl-phone"
   ];
+  builderKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos root"
+  ];
   # Make nixos installer accept ssh keys by running
   # curl -L <domain> | sudo sh
   keysScript = pkgs.writeText "keys" ''
@@ -25,7 +28,7 @@ lib.mkMerge (
     (lib'.hasAnyAttr [ "servers" "routers" "vms" ] nodes.current.groups && nodes.current.os == "nixos")
     {
       users.users.root = {
-        openssh.authorizedKeys.keys = keys;
+        openssh.authorizedKeys.keys = keys ++ lib.optionals (nodes.current.groups ? vms) builderKeys;
       };
 
       services.openssh = {

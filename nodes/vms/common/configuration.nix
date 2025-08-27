@@ -17,8 +17,6 @@
     };
   };
 
-  virtualisation.rosetta.enable = true;
-
   nix = {
     optimise = {
       automatic = true;
@@ -32,16 +30,8 @@
   users.mutableUsers = false;
   users.users.root = {
     shell = pkgs.fish;
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos root"
-    ];
   };
-  programs.fish = {
-    enable = true;
-  };
-  environment.shells = with pkgs; [
-    fish
-  ];
+  programs.fish.enable = true;
 
   networking = {
     useDHCP = false;

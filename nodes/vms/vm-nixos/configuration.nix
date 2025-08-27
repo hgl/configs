@@ -1,0 +1,3 @@
+{
+  virtualisation.rosetta.enable = true;
+}
