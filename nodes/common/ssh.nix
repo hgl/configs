@@ -48,19 +48,15 @@ lib.mkMerge (
     };
   }
   ++ lib.optional (nodes.current.groups ? servers) {
-    services.caddy.virtualHosts = {
+    services.nginx.virtualHosts = {
       ${config.networking.fqdn}.extraConfig = ''
-        handle_path /keys {
-          file_server {
-            root ${keysScript}
-          }
+        location /keys {
+          try_files ${keysScript} =404;
         }
       '';
       ${config.networking.domain}.extraConfig = ''
-        handle_path /keys {
-          file_server {
-            root ${keysScript}
-          }
+        location /keys {
+          try_files ${keysScript} =404;
         }
       '';
     };

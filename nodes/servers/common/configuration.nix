@@ -2,13 +2,13 @@
   pkgs,
   modulesPath,
   inputs',
-  config,
   ...
 }:
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
     inputs'.nix-networkd.modules.nix-networkd
+    ./nginx.nix
   ];
 
   boot = {
@@ -41,55 +41,6 @@
   environment.shells = with pkgs; [
     fish
   ];
-
-  security.acme = {
-    acceptTerms = true;
-    defaults = {
-      webroot = "/var/lib/acme/acme-challenge";
-    };
-  };
-
-  services.caddy = {
-    enable = true;
-    globalConfig = ''
-      auto_https off
-    '';
-    virtualHosts = {
-      acme = {
-        hostName = "http://";
-        logFormat = ''
-          output file ${config.services.caddy.logDir}/access-http.log
-        '';
-        extraConfig = ''
-          header -Server
-          handle /.well-known/acme-challenge/* {
-            file_server {
-              root ${config.security.acme.defaults.webroot}
-            }
-          }
-          handle {
-            redir https://{host}{uri} 301
-          }
-        '';
-      };
-      ${config.networking.fqdn} = {
-        useACMEHost = config.networking.fqdn;
-        serverAliases = [ "https://" ];
-        logFormat = ''
-          output file ${config.services.caddy.logDir}/access-${config.networking.fqdn}.log
-        '';
-        extraConfig = ''
-          header {
-            -Server
-            Strict-Transport-Security max-age=63072000
-          }
-          root /srv/www/host
-          file_server
-          encode gzip zstd
-        '';
-      };
-    };
-  };
 
   environment.systemPackages = with pkgs; [
     ghostty.terminfo
