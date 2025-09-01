@@ -4,8 +4,13 @@
   modules',
   ...
 }:
+let
+  hostUnix = "/run/nginx/host.sock";
+  hostDir = "/srv/www/host";
+in
 {
   imports = [
+    modules'.nginx
     modules'.nginx-preread
   ];
 
@@ -27,33 +32,40 @@
     preread = {
       enable = true;
       upstreams = {
-        default = "[::1]:444";
+        default = "unix:${hostUnix}";
       };
     };
-
-    defaultListen = [
-      {
-        addr = "[::1]";
-        port = 444;
-        ssl = true;
-      }
-      {
-        addr = "[::]";
-        port = 80;
-        ssl = false;
-      }
-      {
-        addr = "*";
-        port = 80;
-        ssl = false;
-      }
-    ];
     virtualHosts = {
       ${config.networking.fqdn} = {
-        root = "/srv/www/host";
-        quic = true;
+        listen = [
+          {
+            addr = "unix:${hostUnix}";
+            mode = "ssl";
+          }
+          # {
+          #   addr = "[::]";
+          #   port = 443;
+          #   mode = "quic";
+          # }
+          # {
+          #   addr = "*";
+          #   port = 443;
+          #   mode = "quic";
+          # }
+          {
+            addr = "[::]";
+            port = 80;
+          }
+          {
+            addr = "*";
+            port = 80;
+          }
+        ];
+        root = hostDir;
         forceSSL = true;
         enableACME = true;
+        reuseport = true;
+        default = true;
         extraConfig = ''
           add_header Strict-Transport-Security "max-age=63072000" always;
           add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
@@ -63,6 +75,6 @@
   };
 
   systemd.tmpfiles.rules = [
-    "d /srv/www/host - ${config.services.nginx.user} ${config.services.nginx.group}"
+    "d ${hostDir} - ${config.services.nginx.user} ${config.services.nginx.group}"
   ];
 }

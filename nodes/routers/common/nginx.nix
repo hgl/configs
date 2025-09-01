@@ -1,9 +1,13 @@
 {
+  modules',
   config,
   pkgs,
   ...
 }:
 {
+  imports = [
+    modules'.nginx
+  ];
   services.nginx = {
     enable = true;
     package = pkgs.nginxQuic;
@@ -15,42 +19,58 @@
       {
         addr = "[::]";
         port = 2;
-        ssl = true;
+        mode = "ssl";
       }
       {
         addr = "*";
         port = 2;
-        ssl = true;
+        mode = "ssl";
+      }
+      {
+        addr = "[::]";
+        port = 2;
+        mode = "quic";
+      }
+      {
+        addr = "*";
+        port = 2;
+        mode = "quic";
       }
       {
         addr = "[::]";
         port = 443;
-        ssl = true;
+        mode = "ssl";
       }
       {
         addr = "*";
         port = 443;
-        ssl = true;
+        mode = "ssl";
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        mode = "quic";
+      }
+      {
+        addr = "*";
+        port = 443;
+        mode = "quic";
       }
       {
         addr = "[::]";
         port = 3;
-        ssl = false;
       }
       {
         addr = "*";
         port = 3;
-        ssl = false;
       }
       {
         addr = "[::]";
         port = 80;
-        ssl = false;
       }
       {
         addr = "*";
         port = 80;
-        ssl = false;
       }
     ];
     commonHttpConfig = ''

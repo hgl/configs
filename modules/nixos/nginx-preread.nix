@@ -5,7 +5,7 @@ let
 in
 {
   options.services.nginx.preread = {
-    enable = lib.mkEnableOption "preread servers";
+    enable = lib.mkEnableOption "Nginx SNI preread";
     upstreams = lib.mkOption {
       type = types.submodule {
         freeformType = types.attrsOf types.nonEmptyStr;
@@ -28,8 +28,8 @@ in
       }
 
       server {
-        listen 443;
-        listen [::]:443;
+        listen 443 reuseport;
+        listen [::]:443 reuseport;
 
         ssl_preread on;
         proxy_pass $upstream;

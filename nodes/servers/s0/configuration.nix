@@ -1,11 +1,11 @@
 {
   lib,
   pkgs,
-  config,
   ...
 }:
 {
   imports = [
+    ./nginx.nix
     ./nbhwj.nix
     ./backup-nbhwj
   ];
@@ -50,15 +50,7 @@
       error_log = lib.mkForce "/var/log/phpfpm/error.log";
     };
   };
-  services.nginx.virtualHosts.${config.networking.domain} = {
-    quic = true;
-    forceSSL = true;
-    enableACME = true;
-    extraConfig = ''
-      add_header Strict-Transport-Security "max-age=63072000" always;
-      add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
-    '';
-  };
+
   systemd.tmpfiles.rules = [
     "d /srv/www/wordpress"
     "d /var/log/phpfpm"
