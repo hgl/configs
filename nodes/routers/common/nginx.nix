@@ -15,6 +15,7 @@
     recommendedTlsSettings = true;
     recommendedGzipSettings = true;
     recommendedBrotliSettings = true;
+    experimentalZstdSettings = true;
     defaultListen = [
       {
         addr = "[::]";

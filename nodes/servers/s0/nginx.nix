@@ -1,16 +1,13 @@
 { config, ... }:
-let
-  mainUnix = "/run/nginx/main.sock";
-in
 {
   services.nginx = {
     preread.upstreams = {
-      ${config.services.networking.domain} = "unix:${mainUnix}";
+      ${config.networking.domain} = "unix:/run/nginx/main.sock";
     };
     virtualHosts.${config.networking.domain} = {
       listen = [
         {
-          addr = "unix:${mainUnix}";
+          addr = config.services.nginx.preread.upstreams.${config.networking.domain};
           mode = "ssl";
         }
         {

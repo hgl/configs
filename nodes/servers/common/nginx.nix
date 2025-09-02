@@ -4,10 +4,6 @@
   modules',
   ...
 }:
-let
-  hostUnix = "/run/nginx/host.sock";
-  hostDir = "/srv/www/host";
-in
 {
   imports = [
     modules'.nginx
@@ -28,18 +24,19 @@ in
     recommendedTlsSettings = true;
     recommendedGzipSettings = true;
     recommendedBrotliSettings = true;
+    experimentalZstdSettings = true;
 
     preread = {
       enable = true;
       upstreams = {
-        default = "unix:${hostUnix}";
+        default = "unix:/run/nginx/host.sock";
       };
     };
     virtualHosts = {
       ${config.networking.fqdn} = {
         listen = [
           {
-            addr = "unix:${hostUnix}";
+            addr = config.services.nginx.preread.upstreams.default;
             mode = "ssl";
           }
           # {
@@ -61,7 +58,7 @@ in
             port = 80;
           }
         ];
-        root = hostDir;
+        root = "/srv/www/host";
         forceSSL = true;
         enableACME = true;
         reuseport = true;
@@ -75,6 +72,8 @@ in
   };
 
   systemd.tmpfiles.rules = [
-    "d ${hostDir} - ${config.services.nginx.user} ${config.services.nginx.group}"
+    "d ${
+      config.services.nginx.virtualHosts.${config.networking.fqdn}.root
+    } - ${config.services.nginx.user} ${config.services.nginx.group}"
   ];
 }
