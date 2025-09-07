@@ -82,7 +82,25 @@
     '';
     virtualHosts = {
       http = {
-        serverName = "_";
+        listen = [
+          {
+            addr = "[::]";
+            port = 3;
+          }
+          {
+            addr = "*";
+            port = 3;
+          }
+          {
+            addr = "[::]";
+            port = 80;
+          }
+          {
+            addr = "*";
+            port = 80;
+          }
+        ];
+        serverName = "\"\"";
         default = true;
         extraConfig = ''
           return 301 https://$host:$https_port$request_uri;
@@ -90,7 +108,6 @@
       };
       ${config.networking.fqdn} = {
         root = "/srv/www";
-        quic = true;
         onlySSL = true;
         enableACME = true;
         acmeRoot = null;

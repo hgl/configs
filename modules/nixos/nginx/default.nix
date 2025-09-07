@@ -341,7 +341,7 @@ let
                 ssl = true;
               }
               // listen
-            ) (filter (listen: listen.mode or null == null) listenLines)
+            ) (filter (listen: listen.mode or null != null) listenLines)
           )
           # If this vhost is supposed to serve HTTP
           # We provide listen lines for those without explicit ssl or ssl = false.
