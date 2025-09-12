@@ -33,7 +33,8 @@
       };
     };
     virtualHosts = {
-      ${config.networking.fqdn} = {
+      host = {
+        serverName = config.networking.fqdn;
         listen = [
           {
             addr = config.services.nginx.preread.upstreams.default;
@@ -72,8 +73,6 @@
   };
 
   systemd.tmpfiles.rules = [
-    "d ${
-      config.services.nginx.virtualHosts.${config.networking.fqdn}.root
-    } - ${config.services.nginx.user} ${config.services.nginx.group}"
+    "d ${config.services.nginx.virtualHosts.host.root} - ${config.services.nginx.user} ${config.services.nginx.group}"
   ];
 }

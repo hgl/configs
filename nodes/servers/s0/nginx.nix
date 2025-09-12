@@ -4,7 +4,8 @@
     preread.upstreams = {
       ${config.networking.domain} = "unix:/run/nginx/main.sock";
     };
-    virtualHosts.${config.networking.domain} = {
+    virtualHosts.main = {
+      serverName = config.networking.domain;
       listen = [
         {
           addr = config.services.nginx.preread.upstreams.${config.networking.domain};

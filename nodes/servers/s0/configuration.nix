@@ -8,6 +8,7 @@
     ./nginx.nix
     ./nbhwj.nix
     ./backup-nbhwj
+    ./matrix.nix
   ];
   boot.loader.grub = {
     enable = true;

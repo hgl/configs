@@ -3,7 +3,6 @@
   lib',
   pkgs,
   nodes,
-  config,
   ...
 }:
 let
@@ -49,12 +48,12 @@ lib.mkMerge (
   }
   ++ lib.optional (nodes.current.groups ? servers) {
     services.nginx.virtualHosts = {
-      ${config.networking.fqdn}.extraConfig = ''
+      host.extraConfig = ''
         location /keys {
           try_files ${keysScript} =404;
         }
       '';
-      ${config.networking.domain}.extraConfig = ''
+      main.extraConfig = ''
         location /keys {
           try_files ${keysScript} =404;
         }
@@ -62,6 +61,6 @@ lib.mkMerge (
     };
   }
   ++ lib.optional (nodes.current.groups ? routers) {
-    services.nginx.virtualHosts.${config.networking.fqdn}.locations."= /keys".alias = keysScript;
+    services.nginx.virtualHosts.host.locations."= /keys".alias = keysScript;
   }
 )

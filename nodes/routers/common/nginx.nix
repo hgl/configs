@@ -106,7 +106,8 @@
           return 301 https://$host:$https_port$request_uri;
         '';
       };
-      ${config.networking.fqdn} = {
+      host = {
+        serverName = config.networking.fqdn;
         root = "/srv/www";
         onlySSL = true;
         enableACME = true;
