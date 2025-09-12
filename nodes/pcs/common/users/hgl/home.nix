@@ -185,14 +185,22 @@
     cachix
     restic
     rclone
+    delve
 
     pnpm
+    nil
+    nixfmt-rfc-style
+    shfmt
+    shellcheck
+    tmux
+    nodejs_24
+    pwgen
 
     (parallel-full.override { willCite = true; })
     wget
 
     coreutils
-    curl
+    curlHTTP3
     openssl
     rsync
     # xterm-256color terminfo shipped by apple doesn't contain italic control
