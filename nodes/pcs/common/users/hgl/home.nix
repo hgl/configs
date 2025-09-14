@@ -14,9 +14,15 @@
   };
   programs.ssh = {
     enable = true;
-    controlMaster = "auto";
-    controlPersist = "10m";
+    enableDefaultConfig = false;
     matchBlocks = {
+      "*" = {
+        controlMaster = "auto";
+        controlPersist = "10m";
+        serverAliveInterval = 0;
+        serverAliveCountMax = 3;
+        controlPath = "~/.ssh/master-%r@%n:%p";
+      };
       "github.com" = {
         hostname = "github.com";
         user = "git";
@@ -151,7 +157,7 @@
 
   programs.go = {
     enable = true;
-    package = pkgs.go_1_23;
+    package = pkgs.go_1_24;
     goPath = "Library/go";
   };
 
@@ -195,6 +201,7 @@
     tmux
     nodejs_24
     pwgen
+    python313
 
     (parallel-full.override { willCite = true; })
     wget
