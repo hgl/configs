@@ -1,21 +1,14 @@
+{ modulesPath, pkgs, ... }:
 {
-  pkgs,
-  modulesPath,
-  ...
-}:
-{
-  imports = [
-    "${modulesPath}/profiles/minimal.nix"
-  ];
-
+  imports = [ "${modulesPath}/profiles/minimal.nix" ];
   boot = {
-    initrd.includeDefaultModules = false;
     loader = {
       timeout = 0;
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
   };
+  virtualisation.rosetta.enable = true;
 
   nix = {
     optimise = {
@@ -57,5 +50,13 @@
     '';
   };
 
-  system.stateVersion = "24.05";
+  # fileSystems."/mnt/share" = {
+  #   device = "share";
+  #   fsType = "virtiofs";
+  # };
+  # systemd.tmpfiles.rules = [
+  #   "L /home/hgl/dev - - - - /mnt/share/dev"
+  # ];
+
+  system.stateVersion = "25.05";
 }
