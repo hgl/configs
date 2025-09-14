@@ -9,7 +9,7 @@
       dns = {
         bind_hosts = [ "::1" ];
         port = 1053;
-        cache_size = 0;
+        cache_enabled = false;
         upstream_dns = config.networking.nameservers;
         bootstrap_dns = [ ];
         hostsfile_enabled = true;
