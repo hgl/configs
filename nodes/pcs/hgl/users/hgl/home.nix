@@ -27,9 +27,6 @@ in
     matchBlocks = {
       ${nodes.vm-nixos.name} = {
         user = "root";
-        hostname = "${nodes.vm-nixos.name}.local";
-        identityFile = "~/.ssh/id_ed25519.pub";
-        identitiesOnly = true;
       };
     };
   };
@@ -46,7 +43,7 @@ in
   };
 
   home.shellAliases = {
-    e = "${pkgs'.emacs}/bin/emacsclient";
+    # e = "${pkgs'.emacs}/bin/emacsclient";
   };
 
   home.packages = [

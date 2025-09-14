@@ -13,6 +13,7 @@ let
   builderKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos root"
   ];
+
   # Make nixos installer accept ssh keys by running
   # curl -L <domain> | sudo sh
   keysScript = pkgs.writeText "keys" ''
@@ -27,7 +28,8 @@ lib.mkMerge (
     (lib'.hasAnyAttr [ "servers" "routers" "vms" ] nodes.current.groups && nodes.current.os == "nixos")
     {
       users.users.root = {
-        openssh.authorizedKeys.keys = keys ++ lib.optionals (nodes.current.groups ? vms) builderKeys;
+        openssh.authorizedKeys.keys =
+          keys ++ lib.optionals (nodes.current.name == nodes.vm-nixos-builder.name) builderKeys;
       };
 
       services.openssh = {
@@ -39,11 +41,8 @@ lib.mkMerge (
       };
     }
   ++ lib.optional (nodes.current.name == "vm-nixos") {
-    users.users.root = {
-      # For using it as a nixos remote builder
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos"
-      ];
+    users.users.hgl = {
+      openssh.authorizedKeys.keys = keys;
     };
   }
   ++ lib.optional (nodes.current.groups ? servers) {
