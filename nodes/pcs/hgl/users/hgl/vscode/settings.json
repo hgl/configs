@@ -101,5 +101,6 @@
       }
     }
   },
-  "direnv.watchForChanges": false
+  "direnv.watchForChanges": false,
+  "python.analysis.typeCheckingMode": "strict"
 }
