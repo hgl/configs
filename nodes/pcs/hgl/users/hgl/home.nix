@@ -43,10 +43,11 @@ in
   };
 
   home.shellAliases = {
-    # e = "${pkgs'.emacs}/bin/emacsclient";
+    e = "emacsclient";
   };
 
   home.packages = [
+    pkgs'.emacs-macport
     pkgs.mkalias
     pkgs'.dnsclear
     pkgs'.serve
