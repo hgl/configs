@@ -47,16 +47,8 @@ lib.mkMerge (
   }
   ++ lib.optional (nodes.current.groups ? servers) {
     services.nginx.virtualHosts = {
-      host.extraConfig = ''
-        location /keys {
-          try_files ${keysScript} =404;
-        }
-      '';
-      main.extraConfig = ''
-        location /keys {
-          try_files ${keysScript} =404;
-        }
-      '';
+      host.locations."= /keys".alias = keysScript;
+      main.locations."= /keys".alias = keysScript;
     };
   }
   ++ lib.optional (nodes.current.groups ? routers) {
