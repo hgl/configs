@@ -55,11 +55,13 @@
   },
   "vue.autoInsert.dotValue": true,
   "[svelte]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "svelte.svelte-vscode"
   },
   "emmet.includeLanguages": {
     "vue-html": "html",
-    "vue": "html"
+    "vue": "html",
+    "javascriptreact": "html",
+    "typescriptreact": "html"
   },
   "gitlens.views.commitDetails.files.layout": "tree",
   "[jsonc]": {
@@ -102,5 +104,6 @@
     }
   },
   "direnv.watchForChanges": false,
-  "python.analysis.typeCheckingMode": "strict"
+  "python.analysis.typeCheckingMode": "strict",
+  "debug.javascript.autoAttachFilter": "disabled"
 }
