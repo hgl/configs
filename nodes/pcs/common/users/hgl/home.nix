@@ -33,6 +33,9 @@
   };
   home.file.".ssh/id_ed25519.pub".text =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG";
+  home.file.".npmrc".text = ''
+    prefix=~/.npm
+  '';
   programs.git = {
     userName = "Glen Huang";
     enable = true;
@@ -184,6 +187,7 @@
     aider-chat
     claude-code
     gemini-cli
+    codex
     pandoc
     woff2
     libwebp
@@ -200,6 +204,7 @@
     shellcheck
     tmux
     nodejs_24
+    yarn
     pwgen
     python313
 
