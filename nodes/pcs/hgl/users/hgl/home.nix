@@ -23,7 +23,6 @@ in
   ];
 
   programs.ssh = {
-    enable = true;
     matchBlocks = {
       ${nodes.vm-nixos.name} = {
         user = "root";

@@ -160,8 +160,7 @@
 
   programs.go = {
     enable = true;
-    package = pkgs.go_1_24;
-    goPath = "Library/go";
+    env.GOPATH = "${config.home.homeDirectory}/Library/go";
   };
 
   home.sessionPath = [
@@ -212,7 +211,7 @@
     wget
 
     coreutils
-    curlHTTP3
+    curl
     openssl
     rsync
     # xterm-256color terminfo shipped by apple doesn't contain italic control
