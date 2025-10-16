@@ -1,7 +1,8 @@
 { pkgs, ... }:
 {
   imports = [
-    ./x.nix
+    ./utm-qemu.nix
+    ./gui-gnome.nix
   ];
   boot = {
     loader = {
@@ -10,11 +11,12 @@
       efi.canTouchEfiVariables = true;
     };
   };
-  virtualisation.vmware.guest.enable = true;
   # virtualisation.rosetta.enable = true;
-  # services.spice-vdagentd.enable = true;
 
   nix = {
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
     optimise = {
       automatic = true;
       persistent = true;
@@ -53,21 +55,6 @@
     vulkan-tools
     virtualglLib
   ];
-
-  system.fsPackages = [ pkgs.open-vm-tools ];
-
-  fileSystems."/home/hgl/dev" = {
-    device = ".host:/dev";
-    fsType = "fuse./run/current-system/sw/bin/vmhgfs-fuse";
-    options = [
-      "umask=22"
-      "uid=1000"
-      "gid=100"
-      "allow_other"
-      "defaults"
-      "auto_unmount"
-    ];
-  };
 
   system.stateVersion = "24.05";
 }
