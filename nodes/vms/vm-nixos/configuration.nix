@@ -1,8 +1,10 @@
 { pkgs, ... }:
 {
   imports = [
-    ./utm-qemu.nix
-    ./gui-gnome.nix
+    ./hardware-configuration-vf.nix
+    ./utm-vf.nix
+    ./gui-greetd.nix
+    ./gui-hyprland.nix
   ];
   boot = {
     loader = {
@@ -11,7 +13,6 @@
       efi.canTouchEfiVariables = true;
     };
   };
-  # virtualisation.rosetta.enable = true;
 
   nix = {
     extraOptions = ''
@@ -41,7 +42,20 @@
   programs.fish.enable = true;
 
   networking = {
+    useDHCP = false;
     firewall.enable = false;
+  };
+  systemd.network = {
+    enable = true;
+    networks."99-default" = {
+      matchConfig = {
+        Name = "*";
+      };
+      networkConfig = {
+        DHCP = true;
+        MulticastDNS = true;
+      };
+    };
   };
 
   services.pipewire = {

@@ -7,6 +7,7 @@
 {
   imports = [
     modules'.fish
+    ./gui-hyprland.nix
   ];
   xdg = {
     enable = true;
@@ -25,16 +26,6 @@
       init.defaultBranch = "main";
     };
   };
-  # wayland.windowManager.hyprland = {
-  #   enable = true;
-  #   settings = {
-  #     "$mod" = "SUPER";
-  #     bind = [
-  #       "$mod, Q, killactive"
-  #       "ALT, space, exec, rofi -show drun"
-  #     ];
-  #   };
-  # };
 
   # programs.rofi = {
   #   enable = true;
@@ -57,6 +48,10 @@
   home.packages = with pkgs; [
     virtualglLib
   ];
+
+  programs.foot = {
+    enable = true;
+  };
 
   home.stateVersion = osConfig.system.stateVersion;
 }

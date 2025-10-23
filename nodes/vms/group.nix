@@ -6,8 +6,7 @@
       channel = lib.mkDefault "unstable";
     };
   vm-nixos = {
-    install.targetHost = "root@192.168.7.2";
-    deploy.targetHost = "root@192.168.7.2";
+    deploy.targetHost = "root@192.168.64.3";
   };
   vm-nixos-builder = {
     install.targetHost = "root@192.168.3.28";
