@@ -1,9 +1,8 @@
 {
   emacs-macport,
-  emacsPackagesFor,
 }:
 let
-  emacsWithIcon = emacs-macport.overrideAttrs (
+  emacs = emacs-macport.overrideAttrs (
     finalAttrs: previousAttrs: {
       postInstall = previousAttrs.postInstall + ''
         cp ${./savchenkovaleriy-big-sur.icns} $out/Applications/Emacs.app/Contents/Resources/Emacs.icns
@@ -11,4 +10,4 @@ let
     }
   );
 in
-(emacsPackagesFor emacsWithIcon).emacsWithPackages (epkgs: [ epkgs.vterm ])
+emacs.pkgs.withPackages (epkgs: [ epkgs.vterm ])

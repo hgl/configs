@@ -5,6 +5,6 @@
 }:
 {
   system.activationScripts.applications.text = ''
-    ${pkgs.mkalias}/bin/mkalias ${pkgs'.emacs}/Applications/Emacs.app /Applications/Emacs.app
+    ${pkgs.mkalias}/bin/mkalias ${pkgs'.emacs-macport}/Applications/Emacs.app /Applications/Emacs.app
   '';
 }

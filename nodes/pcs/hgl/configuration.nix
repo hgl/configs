@@ -1,7 +1,7 @@
-{ nodes, inputs', ... }:
+{ nodes, ... }:
 {
   imports = [
-    # ./emacs.nix
+    ./emacs.nix
   ];
   nixpkgs = {
     hostPlatform = "aarch64-darwin";
@@ -38,6 +38,8 @@
   networking = {
     computerName = "Glen’s Laptop";
   };
+
+  system.primaryUser = "hgl";
 
   system.stateVersion = 6;
 }
