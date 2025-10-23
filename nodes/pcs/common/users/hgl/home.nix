@@ -107,41 +107,20 @@
     enable = true;
   };
 
-  # programs.ghostty = {
-  #   enable = true;
-  #   settings = {
-  #     font-family = "Monaco";
-  #   };
-  #   enableBashIntegration = true;
-  #   enableFishIntegration = true;
-  # };
-  xdg.configFile =
-    let
-      keyValueSettings = {
-        listsAsDuplicateKeys = true;
-        mkKeyValue = lib.generators.mkKeyValueDefault { } " = ";
-      };
-      keyValue = pkgs.formats.keyValue keyValueSettings;
-    in
-    lib.mkMerge [
-      {
-        "ghostty/config" = {
-          source = keyValue.generate "ghostty-config" {
-            font-family = "Monaco";
-            font-size = "12.5";
-            theme = "nord";
-            window-padding-x = "15";
-            window-padding-y = "15";
-            confirm-close-surface = false;
-          };
-        };
-      }
-
-      (lib.mapAttrs' (name: value: {
-        name = "ghostty/themes/${name}";
-        value.source = keyValue.generate "ghostty-${name}-theme" value;
-      }) { })
-    ];
+  programs.ghostty = {
+    enable = true;
+    package = null;
+    settings = {
+      font-family = "Monaco";
+      font-size = "12.5";
+      theme = "nord";
+      window-padding-x = "15";
+      window-padding-y = "15";
+      confirm-close-surface = false;
+      adjust-cell-height = -2;
+      font-thicken = true;
+    };
+  };
 
   programs.direnv = {
     enable = true;
