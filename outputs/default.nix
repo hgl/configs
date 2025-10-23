@@ -68,7 +68,7 @@
         pkgsUnstable' = getPkgs' pkgsUnstable;
       in
       {
-        emacs-unstable = pkgsUnstable'.emacs;
+        emacs-unstable = pkgsUnstable'.emacs-macport;
         tailscale-utils-unstable = pkgsUnstable'.tailscale-utils;
         nixverse = inputs.nixverse.packages.aarch64-darwin.nixverse;
       };
