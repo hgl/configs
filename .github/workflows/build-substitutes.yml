@@ -33,21 +33,6 @@ jobs:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
       - run: nix build --no-link .#nixverse
-  virby-unstable:
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
-      - uses: DeterminateSystems/nix-installer-action@main
-        with:
-          extra-conf: "system-features = benchmark big-parallel kvm nixos-test uid-range"
-      - uses: cachix/cachix-action@v14
-        with:
-          name: hgl
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#virby-unstable
   emacs-unstable:
     runs-on: macos-latest
     steps:
