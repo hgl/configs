@@ -71,7 +71,7 @@ jobs:
         with:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#p0 &>/dev/null
+      - run: nix build --no-link .#p0
   p1:
     runs-on: ubuntu-latest
     steps:
@@ -97,4 +97,4 @@ jobs:
         with:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#p2 &>/dev/null
+      - run: nix build --no-link .#p2
