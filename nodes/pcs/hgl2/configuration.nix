@@ -1,9 +1,7 @@
 {
-  lib,
-  pkgs,
-  ...
-}:
-{
+  imports = [
+    ./gui.nix
+  ];
   boot = {
     loader = {
       timeout = 0;
@@ -11,6 +9,8 @@
       efi.canTouchEfiVariables = true;
     };
   };
+  hardware.graphics.enable = true;
+  nixpkgs.config.allowUnfree = true;
 
   nix = {
     optimise.automatic = true;
@@ -64,35 +64,19 @@
     };
   };
 
-  security.polkit.enable = true;
-  services.greetd = {
+  programs._1password.enable = true;
+  programs._1password-gui = {
     enable = true;
-    settings.default_session = {
-      command = "${lib.getExe pkgs.cage} -s -- ${lib.getExe pkgs.greetd.regreet}";
-      user = "greeter";
-    };
+    polkitPolicyOwners = [ "hgl" ];
   };
-  programs.regreet = {
-    enable = true;
-  };
-  services.fprintd = {
-    enable = true;
-    tod = {
-      enable = true;
-      driver = pkgs.libfprint-2-tod1-goodix-550a;
-    };
-  };
-  programs.uwsm = {
-    enable = true;
-    waylandCompositors.sway = {
-      prettyName = "Sway";
-      comment = "Sway";
-      binPath = lib.getExe pkgs.sway;
-    };
-  };
-  security.pam.services.swaylock.fprintAuth = true;
-  environment.systemPackages = with pkgs; [
-    nextcloud-client
-  ];
+
+  # services.fprintd = {
+  #   enable = true;
+  #   tod = {
+  #     enable = true;
+  #     driver = pkgs.libfprint-2-tod1-goodix-550a;
+  #   };
+  # };
+
   system.stateVersion = "24.11";
 }

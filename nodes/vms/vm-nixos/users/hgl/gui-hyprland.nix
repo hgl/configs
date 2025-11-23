@@ -5,8 +5,11 @@
       bind = [
         "SUPER, Q, killactive"
         "SUPER, Return, exec, foot"
-        "ALT, space, exec, rofi -show drun"
       ];
     };
+  };
+
+  programs.foot = {
+    enable = true;
   };
 }

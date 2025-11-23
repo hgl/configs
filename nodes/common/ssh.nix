@@ -1,6 +1,5 @@
 {
   lib,
-  lib',
   pkgs,
   nodes,
   ...
@@ -25,24 +24,45 @@ let
 in
 lib.mkMerge (
   lib.optional
-    (lib'.hasAnyAttr [ "servers" "routers" "vms" ] nodes.current.groups && nodes.current.os == "nixos")
+    (lib.elem nodes.current.name [
+      "vm-nixos"
+      "hgl"
+      "hgl2"
+    ])
     {
-      users.users.root = {
-        openssh.authorizedKeys.keys =
-          keys ++ lib.optionals (nodes.current.name == nodes.vm-nixos-builder.name) builderKeys;
-      };
-
-      services.openssh = {
-        enable = true;
-        settings = {
-          PasswordAuthentication = false;
-          KbdInteractiveAuthentication = false;
-        };
+      users.users.hgl = {
+        openssh.authorizedKeys.keys = keys;
       };
     }
-  ++ lib.optional (nodes.current.name == "vm-nixos") {
-    users.users.hgl = {
+  ++ lib.optional (nodes.current.os == "nixos") {
+    users.users.root = {
       openssh.authorizedKeys.keys = keys;
+    };
+
+    services.openssh = {
+      enable = true;
+      settings = {
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+      };
+    };
+  }
+  ++ lib.optional (nodes.current.os == "darwin") {
+    users.users.root = {
+      openssh.authorizedKeys.keys = keys;
+    };
+
+    services.openssh = {
+      enable = true;
+      extraConfig = ''
+        PasswordAuthentication no
+        KbdInteractiveAuthentication no
+      '';
+    };
+  }
+  ++ lib.optional (nodes.current.name == "vm-nixos-builder") {
+    users.users.root = {
+      openssh.authorizedKeys.keys = builderKeys;
     };
   }
   ++ lib.optional (nodes.current.groups ? servers) {

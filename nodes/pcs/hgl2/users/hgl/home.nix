@@ -1,28 +1,26 @@
-{ pkgs, ... }:
 {
-  wayland.windowManager.sway = {
+  pkgs,
+  ...
+}:
+{
+  wayland.windowManager.hyprland = {
     enable = true;
-    config = {
-      modifier = "Mod4";
-      terminal = "foot";
-      startup = [
-        { command = "foot"; }
-        {
-          command = "waybar";
-          always = true;
-        }
+    settings = {
+      bind = [
+        "SUPER, Q, killactive"
+        "SUPER, Return, exec, foot"
       ];
     };
   };
 
-  programs.waybar.enable = true;
-
   home.packages = with pkgs; [
-    foot
-    _1password-gui
     usbutils
     pciutils
   ];
+
+  programs.foot = {
+    enable = true;
+  };
 
   programs.chromium = {
     enable = true;
