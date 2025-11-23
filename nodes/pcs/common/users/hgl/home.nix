@@ -84,6 +84,7 @@
     pkgs.gnumake
     pkgs.gnutar
     pkgs.iperf
+    pkgs.age
 
     pkgs.nil
     pkgs.nixfmt-rfc-style
