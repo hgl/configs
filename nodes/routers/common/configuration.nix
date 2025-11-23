@@ -84,6 +84,7 @@
     mtr
     smartmontools
     dmidecode
+    iperf
   ];
 
   system.stateVersion = "24.05";
