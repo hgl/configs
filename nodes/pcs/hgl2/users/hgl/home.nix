@@ -1,8 +1,15 @@
 {
   pkgs,
+  inputs',
   ...
 }:
 {
+  imports = [
+    inputs'.vscode-server.modules.default
+  ];
+
+  services.vscode-server.enable = true;
+
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
