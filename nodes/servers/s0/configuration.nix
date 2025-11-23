@@ -9,19 +9,7 @@
     ./backup-nbhwj
     ./matrix.nix
   ];
-  boot.loader.grub = {
-    enable = true;
-    device = "/dev/sda";
-  };
-  fileSystems."/" = {
-    device = "/dev/disk/by-partlabel/root";
-    fsType = "xfs";
-  };
-  swapDevices = [
-    {
-      device = "/dev/disk/by-partlabel/swap";
-    }
-  ];
+  boot.loader.grub.enable = true;
 
   systemd.network = {
     networks."99-default" = {
