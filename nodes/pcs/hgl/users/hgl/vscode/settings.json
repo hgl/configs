@@ -43,7 +43,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "remote.SSH.remotePlatform": {
-    "hgl-nixos": "linux"
+    "hgl-nixos": "linux",
+    "hgl2": "linux"
   },
   "breadcrumbs.enabled": false,
   "editor.stickyScroll.enabled": false,
