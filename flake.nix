@@ -23,6 +23,10 @@
       # url = "/Users/hgl/dev/nix-networkd";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    vscode-server-unstable = {
+      url = "github:nix-community/nixos-vscode-server";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     nixverse = {
       url = "github:hgl/nixverse";
       # url = "/Users/hgl/dev/nixverse";

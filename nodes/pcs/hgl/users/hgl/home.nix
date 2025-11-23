@@ -33,6 +33,9 @@ in
       ${nodes.vm-nixos.name} = {
         user = "root";
       };
+      ${nodes.hgl2.name} = {
+        user = "hgl";
+      };
     };
   };
 
