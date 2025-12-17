@@ -21,7 +21,7 @@
       ...
     }:
     let
-      buildGoModule = pkgs.buildGo124Module;
+      buildGoModule = pkgs.buildGoModule;
     in
     {
       devShellPackages = [
@@ -33,7 +33,7 @@
         pkgs.nodePackages.yaml-language-server
         pkgs.sops
         pkgs.mkpasswd
-        pkgs.go_1_24
+        pkgs.go
         (pkgs.delve.override { inherit buildGoModule; })
         (pkgs.gopls.override { buildGoLatestModule = buildGoModule; })
         (pkgs.go-tools.override { inherit buildGoModule; })
