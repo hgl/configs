@@ -65,10 +65,6 @@
   };
   documentation.enable = false;
   environment.systemPackages = with pkgs; [
-    ghostty
-    vulkan-tools
-    virtualglLib
-    strace
   ];
 
   system.stateVersion = "24.05";

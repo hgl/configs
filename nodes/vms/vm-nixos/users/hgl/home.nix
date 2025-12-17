@@ -46,7 +46,7 @@
   };
 
   home.packages = with pkgs; [
-    virtualglLib
+
   ];
 
   programs.foot = {
