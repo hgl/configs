@@ -102,7 +102,7 @@ in
         listen = [
           {
             addr = "unix:${config.services.wordpress-nbhwj.sockets.nginx}";
-            mode = "ssl";
+            ssl = true;
           }
           {
             addr = "[::]";

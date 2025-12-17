@@ -1,12 +1,10 @@
 {
   config,
-  pkgs,
   modules',
   ...
 }:
 {
   imports = [
-    modules'.nginx
     modules'.nginx-preread
   ];
 
@@ -19,7 +17,6 @@
 
   services.nginx = {
     enable = true;
-    package = pkgs.nginxQuic;
     recommendedOptimisation = true;
     recommendedTlsSettings = true;
     recommendedGzipSettings = true;
@@ -33,24 +30,15 @@
         ${config.networking.domain} = "unix:/run/nginx/main.sock";
       };
     };
+
     virtualHosts = {
       host = {
         serverName = config.networking.fqdn;
         listen = [
           {
             addr = config.services.nginx.preread.upstreams.default;
-            mode = "ssl";
+            ssl = true;
           }
-          # {
-          #   addr = "[::]";
-          #   port = 443;
-          #   mode = "quic";
-          # }
-          # {
-          #   addr = "*";
-          #   port = 443;
-          #   mode = "quic";
-          # }
           {
             addr = "[::]";
             port = 80;
@@ -74,7 +62,7 @@
         listen = [
           {
             addr = config.services.nginx.preread.upstreams.${config.networking.domain};
-            mode = "ssl";
+            ssl = true;
           }
           {
             addr = "[::]";

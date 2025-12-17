@@ -1,16 +1,10 @@
 {
-  modules',
   config,
-  pkgs,
   ...
 }:
 {
-  imports = [
-    modules'.nginx
-  ];
   services.nginx = {
     enable = true;
-    package = pkgs.nginxQuic;
     recommendedOptimisation = true;
     recommendedTlsSettings = true;
     recommendedGzipSettings = true;
@@ -20,42 +14,22 @@
       {
         addr = "[::]";
         port = 2;
-        mode = "ssl";
+        ssl = true;
       }
       {
         addr = "*";
         port = 2;
-        mode = "ssl";
-      }
-      {
-        addr = "[::]";
-        port = 2;
-        mode = "quic";
-      }
-      {
-        addr = "*";
-        port = 2;
-        mode = "quic";
+        ssl = true;
       }
       {
         addr = "[::]";
         port = 443;
-        mode = "ssl";
+        ssl = true;
       }
       {
         addr = "*";
         port = 443;
-        mode = "ssl";
-      }
-      {
-        addr = "[::]";
-        port = 443;
-        mode = "quic";
-      }
-      {
-        addr = "*";
-        port = 443;
-        mode = "quic";
+        ssl = true;
       }
       {
         addr = "[::]";

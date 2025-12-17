@@ -64,7 +64,7 @@ in
       listen = [
         {
           addr = config.services.nginx.preread.upstreams.${delegatedDomain};
-          mode = "ssl";
+          ssl = true;
         }
         {
           addr = "[::]";
