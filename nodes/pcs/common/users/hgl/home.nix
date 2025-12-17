@@ -33,20 +33,22 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG";
 
   programs.git = {
-    userName = "Glen Huang";
     enable = true;
-    userEmail = "me@glenhuang.com";
     ignores = [
       ".vscode"
       "*.code-workspace"
       ".direnv"
     ];
-    extraConfig = {
+    settings = {
       init.defaultBranch = "main";
+      user = {
+        name = "Glen Huang";
+        email = "me@glenhuang.com";
+        signingkey = "~/.ssh/id_ed25519.pub";
+      };
       gpg = {
         format = "ssh";
       };
-      user.signingkey = "~/.ssh/id_ed25519.pub";
     };
   };
 
@@ -65,9 +67,9 @@
     '';
   };
 
-  services.syncthing = {
-    enable = true;
-  };
+  # services.syncthing = {
+  #   enable = true;
+  # };
 
   home.packages = [
     pkgs.coreutils
@@ -90,6 +92,7 @@
     pkgs.nixfmt-rfc-style
     pkgs.shfmt
     pkgs.shellcheck
+    pkgs.mumble
   ];
 
   home.stateVersion = "24.11";

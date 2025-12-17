@@ -43,7 +43,7 @@ in
     ignores = [
       ".DS_Store"
     ];
-    extraConfig = {
+    settings = {
       gpg = {
         ssh.program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
       };
