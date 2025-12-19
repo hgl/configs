@@ -34,18 +34,22 @@
       {
         addr = "[::]";
         port = 3;
+        ssl = false;
       }
       {
         addr = "*";
         port = 3;
+        ssl = false;
       }
       {
         addr = "[::]";
         port = 80;
+        ssl = false;
       }
       {
         addr = "*";
         port = 80;
+        ssl = false;
       }
     ];
     commonHttpConfig = ''
