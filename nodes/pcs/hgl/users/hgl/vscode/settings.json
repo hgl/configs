@@ -106,5 +106,8 @@
   },
   "direnv.watchForChanges": false,
   "python.analysis.typeCheckingMode": "strict",
-  "debug.javascript.autoAttachFilter": "disabled"
+  "debug.javascript.autoAttachFilter": "disabled",
+  "http.systemCertificatesNode": true,
+  "geminicodeassist.inlineSuggestions.nextEditPredictions": true,
+  "geminicodeassist.displayInlineContextHint": false
 }
