@@ -92,7 +92,6 @@
     pkgs.nixfmt-rfc-style
     pkgs.shfmt
     pkgs.shellcheck
-    pkgs.mumble
   ];
 
   home.stateVersion = "24.11";
