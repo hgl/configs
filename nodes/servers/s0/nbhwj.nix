@@ -104,16 +104,8 @@ in
             addr = "unix:${config.services.wordpress-nbhwj.sockets.nginx}";
             ssl = true;
           }
-          {
-            addr = "[::]";
-            port = 80;
-          }
-          {
-            addr = "*";
-            port = 80;
-          }
         ];
-        forceSSL = true;
+        onlySSL = true;
         enableACME = true;
         root = config.services.wordpress-nbhwj.dir;
         locations = {
@@ -159,6 +151,8 @@ in
           };
         };
         extraConfig = ''
+          add_header Strict-Transport-Security "max-age=63072000" always;
+          add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
           if ($server_name != "${mainDomain}") {
             return 301 https://${mainDomain}$request_uri;
           }

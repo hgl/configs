@@ -32,13 +32,8 @@
     };
 
     virtualHosts = {
-      host = {
-        serverName = config.networking.fqdn;
+      http = {
         listen = [
-          {
-            addr = config.services.nginx.preread.upstreams.default;
-            ssl = true;
-          }
           {
             addr = "[::]";
             port = 80;
@@ -48,13 +43,28 @@
             port = 80;
           }
         ];
+        serverName = "\"\"";
+        default = true;
+        extraConfig = ''
+          return 301 https://$host$request_uri;
+        '';
+      };
+      host = {
+        serverName = config.networking.fqdn;
+        listen = [
+          {
+            addr = config.services.nginx.preread.upstreams.default;
+            ssl = true;
+          }
+        ];
         root = "/srv/www/host";
-        forceSSL = true;
+        onlySSL = true;
         enableACME = true;
-        reuseport = true;
+        # reuseport = true;
         default = true;
         extraConfig = ''
           add_header Strict-Transport-Security "max-age=63072000" always;
+          add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
         '';
       };
       main = {
@@ -64,16 +74,8 @@
             addr = config.services.nginx.preread.upstreams.${config.networking.domain};
             ssl = true;
           }
-          {
-            addr = "[::]";
-            port = 80;
-          }
-          {
-            addr = "*";
-            port = 80;
-          }
         ];
-        forceSSL = true;
+        onlySSL = true;
         enableACME = true;
         extraConfig = ''
           add_header Strict-Transport-Security "max-age=63072000" always;

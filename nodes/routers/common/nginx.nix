@@ -31,26 +31,6 @@
         port = 443;
         ssl = true;
       }
-      {
-        addr = "[::]";
-        port = 3;
-        ssl = false;
-      }
-      {
-        addr = "*";
-        port = 3;
-        ssl = false;
-      }
-      {
-        addr = "[::]";
-        port = 80;
-        ssl = false;
-      }
-      {
-        addr = "*";
-        port = 80;
-        ssl = false;
-      }
     ];
     commonHttpConfig = ''
       map $server_port $https_port {
@@ -89,6 +69,7 @@
         root = "/srv/www";
         onlySSL = true;
         enableACME = true;
+        default = true;
         acmeRoot = null;
         extraConfig = ''
           add_header Strict-Transport-Security "max-age=63072000" always;
