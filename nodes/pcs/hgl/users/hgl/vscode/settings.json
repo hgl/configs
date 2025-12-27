@@ -3,7 +3,7 @@
     "editor.insertSpaces": false
   },
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
+    "editor.defaultFormatter": "charliermarsh.ruff"
   },
   "editor.dragAndDrop": false,
   "editor.fontSize": 13,
@@ -105,9 +105,14 @@
     }
   },
   "direnv.watchForChanges": false,
-  "python.analysis.typeCheckingMode": "strict",
   "debug.javascript.autoAttachFilter": "disabled",
   "http.systemCertificatesNode": true,
   "geminicodeassist.inlineSuggestions.nextEditPredictions": true,
-  "geminicodeassist.displayInlineContextHint": false
+  "geminicodeassist.displayInlineContextHint": false,
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "python.analysis.typeCheckingMode": "strict"
 }
