@@ -49,6 +49,7 @@
       gpg = {
         format = "ssh";
       };
+      push.autoSetupRemote = true;
     };
   };
 
