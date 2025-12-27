@@ -49,7 +49,6 @@
         port = 80;
       }
     ];
-    quic = true;
     locations."/" = {
       proxyPass = "http://${config.services.adguardhome.host}:${toString config.services.adguardhome.port}/";
       recommendedProxySettings = true;
