@@ -93,19 +93,10 @@ in
       }"
     ];
     services.nginx = {
-      preread.upstreams = lib.genAttrs config.services.wordpress-nbhwj.domains (
-        domain: "unix:${config.services.wordpress-nbhwj.sockets.nginx}"
-      );
       virtualHosts.wordpress-nbhwj = {
         serverName = mainDomain;
         serverAliases = lib.drop 1 config.services.wordpress-nbhwj.domains;
-        listen = [
-          {
-            addr = "unix:${config.services.wordpress-nbhwj.sockets.nginx}";
-            ssl = true;
-          }
-        ];
-        onlySSL = true;
+        forceSSL = true;
         enableACME = true;
         root = config.services.wordpress-nbhwj.dir;
         locations = {
@@ -153,7 +144,7 @@ in
         extraConfig = ''
           add_header Strict-Transport-Security "max-age=63072000" always;
           add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
-          if ($server_name != "${mainDomain}") {
+          if ($server_name != ${mainDomain}) {
             return 301 https://${mainDomain}$request_uri;
           }
         '';

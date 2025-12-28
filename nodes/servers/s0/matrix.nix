@@ -7,7 +7,6 @@
 let
   domain = "glenhuang.com";
   delegatedDomain = "matrix.${domain}";
-  socket = "/run/nginx/matrix.sock";
   port = 8448;
 in
 {
@@ -58,23 +57,8 @@ in
     ];
   };
   services.nginx = {
-    preread.upstreams.${delegatedDomain} = "unix:${socket}";
     virtualHosts.matrix = {
       serverName = delegatedDomain;
-      listen = [
-        {
-          addr = config.services.nginx.preread.upstreams.${delegatedDomain};
-          ssl = true;
-        }
-        {
-          addr = "[::]";
-          port = 80;
-        }
-        {
-          addr = "*";
-          port = 80;
-        }
-      ];
       forceSSL = true;
       enableACME = true;
       locations = {
