@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - pkgs/**
+      - outputs/**
       - .github/workflows/build-substitutes.yml
 jobs:
   strongswan-unstable:
@@ -72,7 +73,7 @@ jobs:
         with:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#p0
+      - run: nix build --no-link .#p0 &>/dev/null
   p1:
     runs-on: ubuntu-latest
     steps:
@@ -98,4 +99,4 @@ jobs:
         with:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#p2
+      - run: nix build --no-link .#p2 &>/dev/null

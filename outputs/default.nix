@@ -1,7 +1,5 @@
 {
   lib,
-  inputs,
-  getPkgs',
   flakeModules',
   ...
 }:
@@ -24,6 +22,19 @@
       buildGoModule = pkgs.buildGoModule;
     in
     {
+      packages =
+        {
+          x86_64-linux = {
+            strongswan-unstable = pkgs'.strongswan;
+          };
+          aarch64-darwin = {
+            emacs-unstable = pkgs'.emacs-macport;
+            tailscale-utils-unstable = pkgs'.tailscale-utils;
+            nixverse = inputs'.nixverse.packages.nixverse;
+          };
+        }
+        .${system} or { };
+
       devShellPackages = [
         pkgs.nil
         pkgs.nixfmt-rfc-style
@@ -52,25 +63,4 @@
         inputs'.nixverse.packages.nixverse
       ];
     };
-
-  flake.packages = {
-    x86_64-linux =
-      let
-        pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.x86_64-linux;
-        pkgsUnstable' = getPkgs' pkgsUnstable;
-      in
-      {
-        strongswan-unstable = pkgsUnstable'.strongswan;
-      };
-    aarch64-darwin =
-      let
-        pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.aarch64-darwin;
-        pkgsUnstable' = getPkgs' pkgsUnstable;
-      in
-      {
-        emacs-unstable = pkgsUnstable'.emacs-macport;
-        tailscale-utils-unstable = pkgsUnstable'.tailscale-utils;
-        nixverse = inputs.nixverse.packages.aarch64-darwin.nixverse;
-      };
-  };
 }
