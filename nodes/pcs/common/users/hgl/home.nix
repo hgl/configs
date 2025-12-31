@@ -74,18 +74,20 @@
 
   home.packages = [
     pkgs.coreutils
+    pkgs.gnused
+    pkgs.gawk
+    pkgs.gnumake
+    pkgs.gnutar
+    pkgs.wget
     pkgs.curl
+    pkgs.jq
     pkgs.openssl
     pkgs.rsync
     pkgs.dig
     pkgs.openssh
-    pkgs.jq
-    pkgs.bashInteractive
+    pkgs.bash
     pkgs.ripgrep
     pkgs.pstree
-    pkgs.wget
-    pkgs.gnumake
-    pkgs.gnutar
     pkgs.iperf
     pkgs.age
 
