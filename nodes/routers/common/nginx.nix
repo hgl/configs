@@ -1,4 +1,5 @@
 {
+  lib,
   config,
   ...
 }:
@@ -52,20 +53,13 @@
         '';
       };
       host = {
-        listen = [
-          {
-            addr = "[::]";
-            port = 2;
-            ssl = true;
-            extraParameters = [ "ipv6only=off" ];
+        listen = map (
+          listen:
+          listen
+          // lib.optionalAttrs (listen.addr == "[::]") {
+            extraParameters = listen.extraParameters or [ ] ++ [ "ipv6only=off" ];
           }
-          {
-            addr = "[::]";
-            port = 443;
-            ssl = true;
-            extraParameters = [ "ipv6only=off" ];
-          }
-        ];
+        ) config.services.nginx.defaultListen;
         serverName = config.networking.fqdn;
         root = "/srv/www";
         onlySSL = true;
