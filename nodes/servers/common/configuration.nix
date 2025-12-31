@@ -9,6 +9,7 @@
     "${modulesPath}/profiles/minimal.nix"
     inputs'.nix-networkd.modules.nix-networkd
     ./bbr.nix
+    ./dns.nix
     ./nginx.nix
   ];
 
