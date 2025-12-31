@@ -8,18 +8,13 @@
   imports = [
     "${modulesPath}/profiles/minimal.nix"
     inputs'.nix-networkd.modules.nix-networkd
+    ./bbr.nix
     ./nginx.nix
   ];
 
   boot = {
     initrd.includeDefaultModules = false;
     loader.timeout = 0;
-
-    kernelModules = [ "tcp_bbr" ];
-    kernel.sysctl = {
-      "net.ipv4.tcp_congestion_control" = "bbr";
-      "net.core.default_qdisc" = "fq";
-    };
   };
 
   nix = {
