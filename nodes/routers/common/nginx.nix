@@ -10,26 +10,20 @@
     recommendedGzipSettings = true;
     recommendedBrotliSettings = true;
     experimentalZstdSettings = true;
+
+    # By default, a vhost should listen to https both internal and public
     defaultListen = [
       {
         addr = "[::]";
         port = 2;
         ssl = true;
-      }
-      {
-        addr = "*";
-        port = 2;
-        ssl = true;
+        extraParameters = [ "ipv6only=off" ];
       }
       {
         addr = "[::]";
         port = 443;
         ssl = true;
-      }
-      {
-        addr = "*";
-        port = 443;
-        ssl = true;
+        extraParameters = [ "ipv6only=off" ];
       }
     ];
     commonHttpConfig = ''
@@ -38,24 +32,19 @@
         80 443;
       }
     '';
+
     virtualHosts = {
       http = {
         listen = [
           {
             addr = "[::]";
             port = 3;
-          }
-          {
-            addr = "*";
-            port = 3;
+            extraParameters = [ "ipv6only=off" ];
           }
           {
             addr = "[::]";
             port = 80;
-          }
-          {
-            addr = "*";
-            port = 80;
+            extraParameters = [ "ipv6only=off" ];
           }
         ];
         serverName = "\"\"";
@@ -68,6 +57,7 @@
         serverName = config.networking.fqdn;
         root = "/srv/www";
         onlySSL = true;
+        quic = true;
         enableACME = true;
         default = true;
         acmeRoot = null;
