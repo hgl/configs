@@ -74,7 +74,7 @@
   "editor.renderWhitespace": "all",
   "terminal.integrated.scrollback": 100000,
   "go.toolsEnvVars": {
-    "GOEXPERIMENT": "aliastypeparams",
+    "GOEXPERIMENT": "jsonv2",
     "GODEBUG": "gotypesalias=1"
   },
   "1password.editor.suggestStorage": false,
