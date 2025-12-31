@@ -43,7 +43,6 @@
       {
         addr = "[::]";
         port = 80;
-        extraParameters = [ "ipv6only=off" ];
       }
     ];
     locations."/" = {
