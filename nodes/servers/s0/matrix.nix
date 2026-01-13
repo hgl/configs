@@ -43,6 +43,7 @@ in
           ];
         }
       ];
+      max_upload_size = "500M";
     };
     extraConfigFiles = [ config.sops.templates."matrix/registrationSharedSecret".path ];
   };
