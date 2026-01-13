@@ -87,6 +87,7 @@
     pkgs.openssh
     pkgs.bash
     pkgs.ripgrep
+    pkgs.ffmpeg
     pkgs.pstree
     pkgs.iperf
     pkgs.age
