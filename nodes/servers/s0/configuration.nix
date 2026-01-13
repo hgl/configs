@@ -5,6 +5,7 @@
 }:
 {
   imports = [
+    ./nginx.nix
     ./nbhwj.nix
     ./backup-nbhwj
     ./matrix.nix

@@ -66,10 +66,10 @@ lib.mkMerge (
     };
   }
   ++ lib.optional (nodes.current.groups ? servers) {
-    services.nginx.virtualHosts = {
-      host.locations."= /keys".alias = keysScript;
-      main.locations."= /keys".alias = keysScript;
-    };
+    services.nginx.virtualHosts.host.locations."= /keys".alias = keysScript;
+  }
+  ++ lib.optional (nodes.current.name == "s0") {
+    services.nginx.virtualHosts.main.locations."= /keys".alias = keysScript;
   }
   ++ lib.optional (nodes.current.groups ? routers) {
     services.nginx.virtualHosts.host.locations."= /keys".alias = keysScript;

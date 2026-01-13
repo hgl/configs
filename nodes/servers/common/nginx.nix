@@ -23,28 +23,17 @@
       real_ip_header proxy_protocol;
     '';
 
-    virtualHosts = {
-      host = {
-        serverName = config.networking.fqdn;
-        root = "/srv/www/host";
-        forceSSL = true;
-        enableACME = true;
-        reuseport = true;
-        default = true;
-        extraConfig = ''
-          add_header Strict-Transport-Security "max-age=63072000" always;
-          add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
-        '';
-      };
-      main = {
-        serverName = config.networking.domain;
-        forceSSL = true;
-        enableACME = true;
-        extraConfig = ''
-          add_header Strict-Transport-Security "max-age=63072000" always;
-          add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
-        '';
-      };
+    virtualHosts.host = {
+      serverName = config.networking.fqdn;
+      root = "/srv/www/host";
+      forceSSL = true;
+      enableACME = true;
+      reuseport = true;
+      default = true;
+      extraConfig = ''
+        add_header Strict-Transport-Security "max-age=63072000" always;
+        add_header Alt-Svc 'h3=":$server_port"; ma=2592000';
+      '';
     };
   };
 
