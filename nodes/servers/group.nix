@@ -1,12 +1,14 @@
 {
   common =
-    { nodes, ... }:
+    { lib, nodes, ... }:
     {
       os = "nixos";
       channel = "unstable";
       deploy = {
-        targetHost = "root@${nodes.current.config.networking.fqdn}";
+        useSubstitutes = lib.mkDefault false;
+        targetHost = lib.mkDefault "root@${nodes.current.config.networking.fqdn}";
       };
     };
   s0 = { };
+  s1 = { };
 }
