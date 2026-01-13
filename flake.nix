@@ -21,7 +21,7 @@
     };
     nix-networkd-unstable = {
       url = "github:hgl/nix-networkd";
-      # url = "/Users/hgl/dev/nix-networkd";
+      # url = "/Users/hgl/dev/nix/nix-networkd";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     vscode-server-unstable = {
@@ -30,7 +30,7 @@
     };
     nixverse = {
       url = "github:hgl/nixverse";
-      # url = "/Users/hgl/dev/nixverse";
+      # url = "/Users/hgl/dev/nix/nixverse";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
