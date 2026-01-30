@@ -1,6 +1,7 @@
 {
   pkgs,
   osConfig,
+  config,
   modules',
   ...
 }:
@@ -14,16 +15,19 @@
   };
   programs.firefox.enable = true;
   programs.git = {
-    userName = "Glen Huang";
     enable = true;
-    userEmail = "me@glenhuang.com";
     ignores = [
       ".vscode"
       "*.code-workspace"
       ".direnv"
     ];
-    extraConfig = {
+    settings = {
       init.defaultBranch = "main";
+      user = {
+        name = "Glen Huang";
+        email = "me@glenhuang.com";
+      };
+      push.autoSetupRemote = true;
     };
   };
 
@@ -45,8 +49,16 @@
     '';
   };
 
-  home.packages = with pkgs; [
+  services.emacs = {
+    enable = true;
+    defaultEditor = true;
+    client.enable = true;
+  };
 
+  home.packages = with pkgs; [
+    config.services.emacs.package
+    nerd-fonts.symbols-only
+    btop
   ];
 
   programs.foot = {

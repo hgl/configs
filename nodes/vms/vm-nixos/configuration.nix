@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
   imports = [
-    ./hardware-configuration-vf.nix
     ./utm-vf.nix
     ./gui-greetd.nix
     ./gui-hyprland.nix
