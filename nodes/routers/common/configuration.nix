@@ -77,14 +77,6 @@
 
   environment.systemPackages = with pkgs; [
     ghostty.terminfo
-    dig
-    tcpdump
-    openssl
-    btop
-    mtr
-    smartmontools
-    dmidecode
-    iperf
   ];
 
   system.stateVersion = "24.05";
