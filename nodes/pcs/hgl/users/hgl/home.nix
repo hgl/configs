@@ -15,11 +15,11 @@ in
     modules'.go
     modules'.node
     modules'.python
+    ./emacs
   ];
   home.file = {
     ".hushlogin".text = "";
     ".config/sops".source = mkLink "${homeDir}/sops";
-    ".config/emacs".source = mkLink "${homeDir}/emacs";
     ".config/karabiner/assets/complex_modifications".source = mkLink "${homeDir}/karabiner";
     "Library/Application Support/Code/User/settings.json".source =
       mkLink "${homeDir}/vscode/settings.json";
@@ -114,7 +114,6 @@ in
   };
 
   home.packages = [
-    pkgs'.emacs-macport
     pkgs.mkalias
     pkgs'.dnsclear
     pkgs'.serve
