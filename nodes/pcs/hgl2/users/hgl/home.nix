@@ -29,6 +29,14 @@
     enable = true;
   };
 
+  services.emacs = {
+    enable = true;
+    defaultEditor = true;
+    client = {
+      enable = true;
+    };
+  };
+
   programs.chromium = {
     enable = true;
     commandLineArgs = [
