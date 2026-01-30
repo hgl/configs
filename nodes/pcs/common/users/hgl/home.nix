@@ -93,7 +93,7 @@
     pkgs.age
 
     pkgs.nil
-    pkgs.nixfmt-rfc-style
+    pkgs.nixfmt
     pkgs.shfmt
     pkgs.shellcheck
   ];

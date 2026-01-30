@@ -30,7 +30,7 @@ writeShellApplication {
                 pkgs = nixpkgs.legacyPackages.\''${system};
                 packages = with pkgs; [
                   nil
-                  nixfmt-rfc-style
+                  nixfmt
                   $packages
                 ];
               in
