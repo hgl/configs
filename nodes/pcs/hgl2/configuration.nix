@@ -1,8 +1,7 @@
-{ modules', ... }:
 {
   imports = [
-    (modules'.virt-manager { user = "hgl"; })
     ./gui.nix
+    ./virt-manager.nix
   ];
   boot = {
     loader = {
