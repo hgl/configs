@@ -115,14 +115,18 @@
     "flags": ["unstable_native_nodejs_ts_config"]
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
   },
   "eslint.codeActionsOnSave.options": {
     "flags": ["unstable_native_nodejs_ts_config"],
     "allowInlineConfig": false
   },
   "python.analysis.typeCheckingMode": "strict",
-  "eslint.useESLintClass": true,
   "eslint.validate": ["javascript", "typescript", "svelte"],
-  "eslint.format.enable": true
+  "stylelint.validate": ["css", "postcss", "svelte"],
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false
 }
