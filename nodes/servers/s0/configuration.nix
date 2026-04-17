@@ -9,6 +9,7 @@
     ./nbhwj.nix
     ./backup-nbhwj
     ./matrix.nix
+    ./kimai.nix
   ];
   boot.loader.grub.enable = true;
 
