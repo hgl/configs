@@ -44,6 +44,26 @@
     '';
   };
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      # Address a bug in nftable 1.1.6
+      # https://marc.info/?l=netfilter&m=177258727013124&w=2
+      nftables =
+        let
+          inherit (pkgs) fetchurl;
+        in
+        prev.nftables.overrideAttrs (oldAttrs: {
+          patches = oldAttrs.patches ++ [
+            (fetchurl {
+              name = "0005-mnl-fix.patch";
+              url = "https://git.netfilter.org/nftables/patch/?id=e83e32c8d1cd228d751fb92b756306c6eb6c0759";
+              hash = "sha256-OoDWsx9kkbVMXCoM2QcCfntn5xpitbqunLxl8dez98k=";
+            })
+          ];
+        });
+    })
+  ];
+
   time.timeZone = "Asia/Shanghai";
 
   users.mutableUsers = false;
