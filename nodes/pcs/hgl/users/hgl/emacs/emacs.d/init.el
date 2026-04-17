@@ -1,71 +1,62 @@
-;; Emacs minibuffer configurations.
+(use-package xdg)
+(setq xdg-cache-emacs (expand-file-name "emacs" (xdg-cache-home)))
+
 (use-package emacs
   :init
-  ;; No startup message
-  (setq inhibit-startup-message t
-        inhibit-startup-echo-area-message "hgl")
-
-  ;; No message in scratch buffer
-  (setq initial-scratch-message nil)
-
-  ;; Initial buffer
-  (setq initial-buffer-choice nil)
-
-  ;; No frame title
-  ;; (setq frame-title-format nil)
-
-  ;; No scroll bars
-  (if (fboundp 'scroll-bar-mode) (set-scroll-bar-mode nil))
-
-  ;; No toolbar
-  (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-
-  ;; No menu bar
-  ;; (if (display-graphic-p)
-  ;;    (menu-bar-mode t) ;; When nil, focus problem on OSX
-  ;;  (menu-bar-mode -1))
-
-  ;; Text mode is initial mode
-  (setq initial-major-mode 'text-mode)
-
-  ;; Text mode is default major mode
-  (setq default-major-mode 'text-mode)
-
-  ;; Mac specific
-  (when (eq system-type 'darwin)
-    (setq ns-use-native-fullscreen t
-          mac-command-modifier 'meta
-          mac-use-title-bar t))
-
+  (tool-bar-mode -1)
+  (setq frame-title-format "%b")
+  (global-display-line-numbers-mode)
   (server-start)
-  (setq server-client-instructions nil)
 
-  :bind (
-    ("M-q" . save-buffers-kill-terminal)
-    ("M-c" . kill-ring-save)
-    ("M-x" . ses-kill-override)
-    ("M-v" . clipboard-yank)
-    ("M-w" . kill-current-buffer)
-    ("M-s" . save-buffer)
-    :map minibuffer-local-map
-    ("<escape>" . keyboard-escape-quit)
-    :map minibuffer-local-ns-map
-    ("<escape>" . keyboard-escape-quit)
-    :map minibuffer-local-completion-map
-    ("<escape>" . keyboard-escape-quit)
-    :map minibuffer-local-must-match-map
-    ("<escape>" . keyboard-escape-quit)
-    :map minibuffer-local-isearch-map
-    ("<escape>" . keyboard-escape-quit))
+  :bind (("M-q" . save-buffers-kill-terminal)
+         ("M-c" . kill-ring-save)
+         ("M-x" . ses-kill-override)
+         ("M-v" . clipboard-yank)
+         ("M-w" . kill-current-buffer)
+         ("M-s" . save-buffer)
+         :map minibuffer-local-map
+         ("<escape>" . keyboard-escape-quit)
+         :map minibuffer-local-ns-map
+         ("<escape>" . keyboard-escape-quit)
+         :map minibuffer-local-completion-map
+         ("<escape>" . keyboard-escape-quit)
+         :map minibuffer-local-must-match-map
+         ("<escape>" . keyboard-escape-quit)
+         :map minibuffer-local-isearch-map
+         ("<escape>" . keyboard-escape-quit))
 
   :custom
+  (inhibit-startup-screen t)
+  (initial-buffer-choice nil)
+  (inhibit-startup-echo-area-message (user-login-name))
+  (initial-scratch-message nil)
+  (scroll-bar-mode nil) 
+  (initial-major-mode 'text-mode)
+  (default-major-mode 'text-mode)
+  (server-client-instructions nil)
+  (display-line-numbers-type 'relative)
+  ;; Mac specific
+  (when (eq system-type 'darwin)
+    (ns-use-native-fullscreen t)
+    (mac-command-modifier 'meta)
+    (mac-use-title-bar t))
+
+  (backup-directory-alist `(("." . ,(expand-file-name "backups" xdg-cache-emacs))))
+  (auto-save-list-file-prefix (expand-file-name "auto-save/saves-" xdg-cache-emacs))
+  (auto-save-file-name-transforms `((".*" ,(expand-file-name "auto-save/" xdg-cache-emacs) t)))
+  (lock-file-name-transforms `((".*" ,(expand-file-name "locks/" xdg-cache-emacs) t)))
+  (hel-whitelist-file (expand-file-name "hel/multiple-cursors" xdg-cache-emacs))
+  (project-list-file (expand-file-name "projects" xdg-cache-emacs))
+  (savehist-file (expand-file-name "history" xdg-cache-emacs))
+  (transient-history-file (expand-file-name "transient/history.el" xdg-cache-emacs))
+
   ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
   ;; to switch display modes.
   (context-menu-mode t)
   ;; Support opening new minibuffers from inside existing minibuffers.
   (enable-recursive-minibuffers t)
   ;; Hide commands in M-x which do not work in the current mode.  Vertico
-  ;; commands are hidden in normal buffers. This setting is useful beyond
+  ;; Commands are hidden in normal buffers. This setting is useful beyond
   ;; Vertico.
   (read-extended-command-predicate #'command-completion-default-include-p)
   ;; Do not allow the cursor in the minibuffer prompt
@@ -89,6 +80,9 @@
   (read-extended-command-predicate #'command-completion-default-include-p))
 
 (use-package hel
+  :init
+  (setq hel-normal-state-cursor `(bar, "#81A1C1"))
+  (setq hel-insert-state-cursor `(bar, "white"))
   :custom
   (hel-want-minibuffer nil)
   :config
@@ -103,9 +97,13 @@
     "<SPC> p p" 'project-find-file
     "<SPC> p c" 'project-compile
     "<SPC> g g" 'magit
-    "<SPC> b b" 'consult-buffer
-    "<SPC> w q" 'kill-buffer-and-window
-    "<SPC> w 1" 'delete-other-windows))
+    "<SPC> b b" 'consult-buffer)
+  (hel-keymap-global-set :state '(normal motion)
+    "<SPC> w" 'hel-window-map))
+
+(use-package paredit)
+(use-package hel-paredit
+  :hook (emacs-lisp-mode-hook . hel-paredit-mode))
 
 (use-package editorconfig
   :config
@@ -287,3 +285,19 @@
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
+
+(use-package elisp-autofmt
+  :commands (elisp-autofmt-mode elisp-autofmt-buffer)
+  :hook (emacs-lisp-mode . elisp-autofmt-mode))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

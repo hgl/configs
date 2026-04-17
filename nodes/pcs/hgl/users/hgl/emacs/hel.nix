@@ -1,25 +1,70 @@
 {
+  lib,
   trivialBuild,
   fetchFromGitHub,
+  runCommand,
   s,
   dash,
   avy,
   pcre2el,
+  org,
   paredit,
 }:
-trivialBuild {
-  name = "hel";
+let
   src = fetchFromGitHub {
     owner = "anuvyklack";
     repo = "hel";
-    rev = "df736c007d07eb5a68e82f9fc25f3b4580f5aa47";
-    hash = "sha256-LECZu4guC6bJ9b93NQNlHHlzc3BFmcP0JCGRPv1OMEM=";
+    rev = "e362a0d806759d87b2787ff76bdb8f6232010bf3";
+    hash = "sha256-V9s1y8SJjU/wqMwRoPGvhuGBxybaOnXP0VmYMFL6C5M=";
   };
-  packageRequires = [
-    s
-    dash
-    avy
-    pcre2el
-    paredit
-  ];
-}
+  buildExt =
+    {
+      name,
+      packageRequires ? [ ],
+      isDir ? false,
+    }:
+    trivialBuild {
+      inherit name packageRequires;
+      src = runCommand "${name}-src" { } ''
+        mkdir $out
+        cp ${src}/extensions/${name}.el $out
+      '';
+    };
+  hel = trivialBuild {
+    name = "hel";
+    inherit src;
+    packageRequires = [
+      s
+      dash
+      avy
+      pcre2el
+    ];
+    passthru = {
+      extensions = {
+        hel-leader = buildExt {
+          name = "hel-leader";
+          packageRequires = [
+            s
+            dash
+            hel
+          ];
+        };
+        hel-org = buildExt {
+          name = "hel-org";
+          packageRequires = [
+            org
+            hel
+          ];
+        };
+        hel-paredit = buildExt {
+          name = "hel-paredit";
+          packageRequires = [
+            paredit
+            hel
+          ];
+        };
+      };
+    };
+  };
+in
+hel
