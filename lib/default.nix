@@ -5,7 +5,7 @@
 }:
 {
   inherit (inputs.nixverse.lib) concatMapAttrsToList;
-  inherit (inputs.nix-networkd-unstable.lib) decToHex;
+  inherit (inputs.nix-networkd-unstable-nixos.lib) decToHex;
   addressPortString =
     {
       address ? "",
@@ -19,6 +19,6 @@
   concatImap0ListToAttrs =
     f: list: lib.zipAttrsWith (name: values: lib.last values) (lib.imap0 f list);
   types = {
-    inherit (inputs.nix-networkd-unstable.lib.types) taggedSubmodule;
+    inherit (inputs.nix-networkd-unstable-nixos.lib.types) taggedSubmodule;
   };
 }
