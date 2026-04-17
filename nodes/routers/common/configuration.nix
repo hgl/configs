@@ -7,7 +7,7 @@
 {
   imports = [
     "${modulesPath}/profiles/minimal.nix"
-    ./dnsmasq.nix
+    ./dns.nix
     ./adguardhome.nix
     ./networkd.nix
     ./ipsec.nix
