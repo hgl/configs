@@ -116,33 +116,5 @@ in
   home.packages = [
     pkgs.mkalias
     pkgs'.dnsclear
-    pkgs'.serve
-    pkgs'.init
-    pkgs.remake # debug make
-    pkgs.dive # debug docker image
-
-    pkgs.aider-chat
-    pkgs.claude-code
-    pkgs.gemini-cli
-    pkgs.codex
-    pkgs.pandoc
-    pkgs.woff2
-    pkgs.libwebp
-    pkgs.unzip
-    pkgs.cachix
-    pkgs.restic
-    pkgs.rclone
-    pkgs.delve
-    pkgs.vimgolf
-    pkgs.findutils
-
-    (pkgs.parallel-full.override { willCite = true; })
-    # xterm-256color terminfo shipped by apple doesn't contain italic control
-    # code, install this package gives a more complete xterm-256color terminfo
-    pkgs.ncurses
-
-    pkgs.android-tools
-    pkgs.oci-cli
-    pkgs.weechat
   ];
 }

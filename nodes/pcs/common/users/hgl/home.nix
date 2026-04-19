@@ -1,5 +1,6 @@
 {
   pkgs,
+  pkgs',
   modules',
   ...
 }:
@@ -72,31 +73,64 @@
   #   enable = true;
   # };
 
-  home.packages = [
-    pkgs.coreutils
-    pkgs.gnused
-    pkgs.gawk
-    pkgs.gnumake
-    pkgs.gnutar
-    pkgs.wget
-    pkgs.curl
-    pkgs.jq
-    pkgs.openssl
-    pkgs.rsync
-    pkgs.dig
-    pkgs.openssh
-    pkgs.bash
-    pkgs.ripgrep
-    pkgs.ffmpeg
-    pkgs.pstree
-    pkgs.iperf
-    pkgs.age
+  home.packages =
+    with pkgs';
+    [
+      serve
+      init
+    ]
+    ++ (with pkgs; [
+      coreutils
+      gnused
+      gawk
+      gnumake
+      gnutar
+      wget
+      curl
+      jq
+      openssl
+      rsync
+      dig
+      openssh
+      bash
+      ripgrep
+      ffmpeg
+      pstree
+      iperf
+      age
 
-    pkgs.nil
-    pkgs.nixfmt
-    pkgs.shfmt
-    pkgs.shellcheck
-  ];
+      nil
+      nixfmt
+      shfmt
+      shellcheck
 
-  home.stateVersion = "24.11";
+      remake # debug make
+      dive # debug docker image
+
+      aider-chat
+      claude-code
+      gemini-cli
+      codex
+      llama-cpp
+
+      unzip
+      cachix
+      restic
+      rclone
+      delve
+      vimgolf
+      findutils
+
+      (parallel-full.override { willCite = true; })
+      # xterm-256color terminfo shipped by apple doesn't contain italic control
+      # code, install this package gives a more complete xterm-256color terminfo
+      ncurses
+
+      android-tools
+      oci-cli
+      weechat
+      mozjpeg
+    ]);
+
+  home.stateVersion = "26.05";
 }
