@@ -56,7 +56,7 @@
   },
   "vue.autoInsert.dotValue": true,
   "[svelte]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "svelte.svelte-vscode"
   },
   "emmet.includeLanguages": {
     "vue-html": "html",
@@ -124,9 +124,12 @@
   },
   "python.analysis.typeCheckingMode": "strict",
   "eslint.validate": ["javascript", "typescript", "svelte"],
-  "stylelint.validate": ["css", "postcss", "svelte"],
+  "stylelint.validate": ["css", "svelte"],
   "javascript.updateImportsOnFileMove.enabled": "always",
   "css.validate": false,
   "less.validate": false,
-  "scss.validate": false
+  "scss.validate": false,
+  "claudeCode.preferredLocation": "panel",
+  "chat.disableAIFeatures": true,
+  "task.allowAutomaticTasks": "off"
 }
