@@ -19,8 +19,7 @@
             packages = with pkgs; [
               nil
               nixfmt
-              nodejs
-              pnpm
+              python3
             ];
           };
       });
