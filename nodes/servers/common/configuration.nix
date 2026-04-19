@@ -47,6 +47,7 @@
     rsync
     traceroute
     mtr
+    lshw
   ];
 
   system.stateVersion = "24.05";
