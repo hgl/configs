@@ -55,8 +55,8 @@ in
     enable = true;
     package = null;
     settings = {
-      font-family = "Monaco";
-      font-size = "12.5";
+      font-family = "SF Mono";
+      font-size = "13";
       theme = "nord";
       window-padding-x = "15";
       window-padding-y = "15";
