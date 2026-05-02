@@ -128,7 +128,7 @@
       weechat
       mozjpeg
     ])
-    ++ (with inputs'.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
+    ++ (with inputs'.llm-agents.packages; [
       claude-code
       codex
     ]);

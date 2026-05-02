@@ -1,10 +1,10 @@
 {
   hgl = {
-    os = "darwin";
+    system = "aarch64-darwin";
     channel = "unstable";
   };
   hgl2 = {
-    os = "nixos";
+    system = "x86_64-linux";
     channel = "unstable";
     install = {
       targetHost = "root@nixos";

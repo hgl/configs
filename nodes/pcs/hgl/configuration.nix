@@ -15,9 +15,6 @@
     "${modulesPath}/services/postgresql"
   ];
 
-  nixpkgs = {
-    hostPlatform = "aarch64-darwin";
-  };
   nix = {
     optimise.automatic = true;
     settings = {
