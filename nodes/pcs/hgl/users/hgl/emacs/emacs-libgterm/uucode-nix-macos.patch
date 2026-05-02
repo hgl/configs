@@ -1,0 +1,37 @@
+diff --git a/build.zig b/build.zig
+index e4f397b..af290bc 100644
+--- a/build.zig
++++ b/build.zig
+@@ -461,7 +461,7 @@ fn buildTables(
+     build_tables_mod.addImport("build_config", build_config_mod);
+     build_tables_mod.addImport("types.zig", types_mod);
+     const run_build_tables_exe = b.addRunArtifact(build_tables_exe);
+-    run_build_tables_exe.setCwd(b.path(""));
++    run_build_tables_exe.addDirectoryArg(b.path(""));
+     const tables_path = run_build_tables_exe.addOutputFileArg("tables.zig");
+ 
+     return .{
+diff --git a/src/build/tables.zig b/src/build/tables.zig
+index cc58076..4dfe957 100644
+--- a/src/build/tables.zig
++++ b/src/build/tables.zig
+@@ -20,12 +20,16 @@ pub fn main() !void {
+     defer main_arena.deinit();
+     const main_allocator = main_arena.allocator();
+ 
+-    const ucd = try Ucd.init(main_allocator, table_configs);
+-
+     var args_iter = try std.process.argsWithAllocator(main_allocator);
+     _ = args_iter.skip(); // Skip program name
+ 
+-    // Get output path (only argument now)
++    // First arg: uucode source dir; chdir so ucd/ data files are accessible.
++    const src_dir = args_iter.next() orelse std.debug.panic("No src dir arg!", .{});
++    try std.posix.chdir(src_dir);
++
++    const ucd = try Ucd.init(main_allocator, table_configs);
++
++    // Second arg: output path for the generated tables.zig
+     const output_path = args_iter.next() orelse std.debug.panic("No output file arg!", .{});
+ 
+     std.log.debug("Writing to file: {s}", .{output_path});

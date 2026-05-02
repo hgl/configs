@@ -1,0 +1,121 @@
+diff --git a/pkg/apple-sdk/build.zig b/pkg/apple-sdk/build.zig
+index c573c3910..20899cfb1 100644
+--- a/pkg/apple-sdk/build.zig
++++ b/pkg/apple-sdk/build.zig
+@@ -41,14 +41,28 @@ pub fn addPaths(
+     });
+ 
+     if (!gop.found_existing) {
+-        // Detect our SDK using the "findNative" Zig stdlib function.
+-        // This is really important because it forces using `xcrun` to
+-        // find the SDK path.
+-        const libc = try std.zig.LibCInstallation.findNative(.{
+-            .allocator = b.allocator,
+-            .target = &step.rootModuleTarget(),
+-            .verbose = false,
+-        });
++        // Detect our SDK. If SDKROOT is set, use it directly as the
++        // SDK root to avoid spawning xcrun subprocesses. Otherwise fall back
++        // to "findNative" which uses xcrun to locate the SDK.
++        const libc: std.zig.LibCInstallation = blk: {
++            if (b.graph.env_map.get("SDKROOT")) |sdk_root| {
++                if (sdk_root.len > 0) {
++                    const include_dir = try std.fs.path.join(
++                        b.allocator,
++                        &.{ sdk_root, "usr/include" },
++                    );
++                    break :blk .{
++                        .include_dir = include_dir,
++                        .sys_include_dir = include_dir,
++                    };
++                }
++            }
++            break :blk try std.zig.LibCInstallation.findNative(.{
++                .allocator = b.allocator,
++                .target = &step.rootModuleTarget(),
++                .verbose = false,
++            });
++        };
+ 
+         // Render the file compatible with the `--libc` Zig flag.
+         var stream: std.io.Writer.Allocating = .init(b.allocator);
+diff --git a/src/build/GhosttyLibVt.zig b/src/build/GhosttyLibVt.zig
+index ffd4962d9..7baea5877 100644
+--- a/src/build/GhosttyLibVt.zig
++++ b/src/build/GhosttyLibVt.zig
+@@ -472,6 +472,9 @@ pub fn xcframework(
+ 
+ /// Returns true if the Apple SDK for the given target is installed.
+ fn detectAppleSDK(target: std.Target) bool {
++    if (std.posix.getenv("SDKROOT")) |sdk_root| {
++        if (sdk_root.len > 0) return true;
++    }
+     _ = std.zig.LibCInstallation.findNative(.{
+         .allocator = std.heap.page_allocator,
+         .target = &target,
+diff --git a/src/build/SharedDeps.zig b/src/build/SharedDeps.zig
+index f0457d6b5..3295077a1 100644
+--- a/src/build/SharedDeps.zig
++++ b/src/build/SharedDeps.zig
+@@ -143,11 +143,25 @@ pub fn add(
+             .optimize = optimize,
+         });
+         if (target.result.os.tag.isDarwin()) {
+-            const libc = try std.zig.LibCInstallation.findNative(.{
+-                .allocator = b.allocator,
+-                .target = &target.result,
+-                .verbose = false,
+-            });
++            const libc: std.zig.LibCInstallation = blk: {
++                if (b.graph.env_map.get("SDKROOT")) |sdk_root| {
++                    if (sdk_root.len > 0) {
++                        const include_dir = try std.fs.path.join(
++                            b.allocator,
++                            &.{ sdk_root, "usr/include" },
++                        );
++                        break :blk .{
++                            .include_dir = include_dir,
++                            .sys_include_dir = include_dir,
++                        };
++                    }
++                }
++                break :blk try std.zig.LibCInstallation.findNative(.{
++                    .allocator = b.allocator,
++                    .target = &target.result,
++                    .verbose = false,
++                });
++            };
+             c.addSystemIncludePath(.{ .cwd_relative = libc.sys_include_dir.? });
+         }
+         step.root_module.addImport("locale-c", c.createModule());
+@@ -166,11 +180,25 @@ pub fn add(
+             });
+             switch (target.result.os.tag) {
+                 .macos => {
+-                    const libc = try std.zig.LibCInstallation.findNative(.{
+-                        .allocator = b.allocator,
+-                        .target = &target.result,
+-                        .verbose = false,
+-                    });
++                    const libc: std.zig.LibCInstallation = blk: {
++                        if (b.graph.env_map.get("SDKROOT")) |sdk_root| {
++                            if (sdk_root.len > 0) {
++                                const include_dir = try std.fs.path.join(
++                                    b.allocator,
++                                    &.{ sdk_root, "usr/include" },
++                                );
++                                break :blk .{
++                                    .include_dir = include_dir,
++                                    .sys_include_dir = include_dir,
++                                };
++                            }
++                        }
++                        break :blk try std.zig.LibCInstallation.findNative(.{
++                            .allocator = b.allocator,
++                            .target = &target.result,
++                            .verbose = false,
++                        });
++                    };
+                     c.addSystemIncludePath(.{ .cwd_relative = libc.sys_include_dir.? });
+                 },
+                 else => {},

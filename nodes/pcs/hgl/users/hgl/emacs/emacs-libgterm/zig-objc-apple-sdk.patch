@@ -1,0 +1,24 @@
+diff --git a/build.zig b/build.zig
+index a55bd38..ae915fe 100644
+--- a/build.zig
++++ b/build.zig
+@@ -66,10 +66,15 @@ pub fn addAppleSDK(b: *std.Build, m: *std.Build.Module) !void {
+     // This executes `xcrun` to get the SDK path. We don't want to execute
+     // this multiple times so we cache the value.
+     if (!gop.found_existing) {
+-        gop.value_ptr.* = std.zig.system.darwin.getSdk(
+-            b.allocator,
+-            &m.resolved_target.?.result,
+-        );
++        gop.value_ptr.* = sdk: {
++            if (b.graph.env_map.get("SDKROOT")) |sdkroot| {
++                if (sdkroot.len > 0) break :sdk sdkroot;
++            }
++            break :sdk std.zig.system.darwin.getSdk(
++                b.allocator,
++                &m.resolved_target.?.result,
++            );
++        };
+     }
+ 
+     // The active SDK we want to use

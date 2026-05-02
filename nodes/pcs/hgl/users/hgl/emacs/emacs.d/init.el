@@ -30,7 +30,7 @@
   (initial-buffer-choice nil)
   (inhibit-startup-echo-area-message (user-login-name))
   (initial-scratch-message nil)
-  (scroll-bar-mode nil) 
+  (scroll-bar-mode nil)
   (initial-major-mode 'text-mode)
   (default-major-mode 'text-mode)
   (server-client-instructions nil)
@@ -100,6 +100,7 @@
     "<SPC> b b" 'consult-buffer)
   (hel-keymap-global-set :state '(normal motion)
     "<SPC> w" 'hel-window-map))
+(use-package hel-vterm)
 
 (use-package paredit)
 (use-package hel-paredit
@@ -289,15 +290,7 @@
 (use-package elisp-autofmt
   :commands (elisp-autofmt-mode elisp-autofmt-buffer)
   :hook (emacs-lisp-mode . elisp-autofmt-mode))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+(use-package gterm
+  :custom
+  (gterm-shell (getenv "SHELL")))

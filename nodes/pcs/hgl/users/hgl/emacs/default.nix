@@ -10,6 +10,9 @@ let
     epkgs:
     let
       hel = epkgs.callPackage ./hel.nix { };
+      emacs-libgterm = epkgs.callPackage ./emacs-libgterm {
+        emacs = pkgs.emacs-macport;
+      };
       elisp-autofmt = epkgs.elisp-autofmt.overrideAttrs (
         finalAttrs: previousAttrs: {
           postInstall = ''
@@ -24,6 +27,7 @@ let
       hel
       hel.extensions.hel-org
       hel.extensions.hel-paredit
+      hel.extensions.hel-vterm
       treesit-grammars.with-all-grammars
       vterm
       magit
@@ -41,6 +45,7 @@ let
       doom-themes
       doom-modeline
       elisp-autofmt
+      emacs-libgterm
     ]
   );
 in
