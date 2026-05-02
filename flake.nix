@@ -1,9 +1,8 @@
 {
   inputs = {
     self.submodules = true;
-    nixpkgs-unstable-nixos.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # nixpkgs-unstable.url = "/Users/hgl/contrib/nixpkgs";
+    nixpkgs-unstable-nixos.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-darwin-unstable = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
