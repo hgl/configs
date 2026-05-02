@@ -50,7 +50,7 @@
     # TODO: find out why using IPv6 here resulting in hanging DNS queries
     server =
       lib.mapAttrsToList (_: router: "//${router.config.networkd.interfaces.lan.ipv4 { hostId = 1; }}") (
-        lib.removeAttrs nodes.routers.nodes [ nodes.current.name ]
+        lib.removeAttrs nodes.routers.hosts [ nodes.current.name ]
       )
       ++ [ "/ts.net/100.100.100.100" ];
   };
