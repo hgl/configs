@@ -32,6 +32,10 @@
       # url = "/Users/hgl/dev/nix/nix-networkd";
       inputs.nixpkgs.follows = "nixpkgs-unstable-nixos";
     };
+    llm-agents-unstable = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     nixverse = {
       url = "github:hgl/nixverse";
       # url = "/Users/hgl/dev/nix/nixverse";

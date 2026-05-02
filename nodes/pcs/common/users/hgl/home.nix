@@ -2,6 +2,7 @@
   pkgs,
   pkgs',
   modules',
+  inputs',
   ...
 }:
 {
@@ -107,10 +108,6 @@
       remake # debug make
       dive # debug docker image
 
-      aider-chat
-      claude-code
-      gemini-cli
-      codex
       llama-cpp
 
       unzip
@@ -130,6 +127,10 @@
       oci-cli
       weechat
       mozjpeg
+    ])
+    ++ (with inputs'.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
+      claude-code
+      codex
     ]);
 
   home.stateVersion = "26.05";
