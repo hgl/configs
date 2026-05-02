@@ -40,6 +40,7 @@ in
   };
 
   programs.git = {
+    lfs.enable = true;
     ignores = [
       ".DS_Store"
     ];
