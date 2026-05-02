@@ -1,15 +1,15 @@
 {
   "[shellscript]": {
-    "editor.insertSpaces": false
+    "editor.insertSpaces": false,
   },
   "[python]": {
-    "editor.defaultFormatter": "charliermarsh.ruff"
+    "editor.defaultFormatter": "charliermarsh.ruff",
   },
   "editor.dragAndDrop": false,
   "editor.fontSize": 13,
   "editor.rulers": [80],
   "extensions.experimental.affinity": {
-    "asvetliakov.vscode-neovim": 1
+    "asvetliakov.vscode-neovim": 1,
   },
   "extensions.ignoreRecommendations": true,
   "files.autoSave": "afterDelay",
@@ -29,22 +29,22 @@
   "svelte.enable-ts-plugin": true,
   "workbench.colorTheme": "Nord",
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "diffEditor.ignoreTrimWhitespace": false,
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "[nginx]": {
-    "editor.defaultFormatter": "raynigon.nginx-formatter"
+    "editor.defaultFormatter": "raynigon.nginx-formatter",
   },
   "terminal.integrated.enableMultiLinePasteWarning": false,
   "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "remote.SSH.remotePlatform": {
     "hgl-nixos": "linux",
-    "hgl2": "linux"
+    "hgl2": "linux",
   },
   "breadcrumbs.enabled": false,
   "editor.stickyScroll.enabled": false,
@@ -52,57 +52,57 @@
   "editor.multiCursorLimit": 30000,
   "editor.formatOnSave": true,
   "[vue]": {
-    "editor.defaultFormatter": "Vue.volar"
+    "editor.defaultFormatter": "Vue.volar",
   },
   "vue.autoInsert.dotValue": true,
   "[svelte]": {
-    "editor.defaultFormatter": "svelte.svelte-vscode"
+    "editor.defaultFormatter": "svelte.svelte-vscode",
   },
   "emmet.includeLanguages": {
     "vue-html": "html",
     "vue": "html",
     "javascriptreact": "html",
-    "typescriptreact": "html"
+    "typescriptreact": "html",
   },
   "gitlens.views.commitDetails.files.layout": "tree",
   "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "[makefile]": {
-    "editor.tabSize": 8
+    "editor.tabSize": 8,
   },
   "editor.renderWhitespace": "all",
   "terminal.integrated.scrollback": 100000,
   "go.toolsEnvVars": {
     "GOEXPERIMENT": "jsonv2",
-    "GODEBUG": "gotypesalias=1"
+    "GODEBUG": "gotypesalias=1",
   },
   "1password.editor.suggestStorage": false,
   "terminal.integrated.defaultProfile.osx": "fish",
   "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "debug.disassemblyView.showSourceCode": false,
   "editor.accessibilitySupport": "off",
   "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "github.copilot.enable": {
     "*": true,
     "plaintext": false,
     "markdown": false,
     "scminput": false,
-    "javascript": false
+    "javascript": false,
   },
   "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
   "nix.serverSettings": {
     "nil": {
       "formatting": {
-        "command": ["nixfmt"]
-      }
-    }
+        "command": ["nixfmt"],
+      },
+    },
   },
   "direnv.watchForChanges": false,
   "debug.javascript.autoAttachFilter": "disabled",
@@ -112,15 +112,15 @@
   "eslint.workingDirectories": [{ "mode": "auto" }],
   "eslint.runtime": "node",
   "eslint.options": {
-    "flags": ["unstable_native_nodejs_ts_config"]
+    "flags": ["unstable_native_nodejs_ts_config"],
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
-    "source.fixAll.stylelint": "explicit"
+    "source.fixAll.stylelint": "explicit",
   },
   "eslint.codeActionsOnSave.options": {
     "flags": ["unstable_native_nodejs_ts_config"],
-    "allowInlineConfig": false
+    "allowInlineConfig": false,
   },
   "python.analysis.typeCheckingMode": "strict",
   "eslint.validate": ["javascript", "typescript", "svelte"],
@@ -131,5 +131,6 @@
   "scss.validate": false,
   "claudeCode.preferredLocation": "panel",
   "chat.disableAIFeatures": true,
-  "task.allowAutomaticTasks": "off"
+  "task.allowAutomaticTasks": "off",
+  "search.useParentIgnoreFiles": true,
 }
