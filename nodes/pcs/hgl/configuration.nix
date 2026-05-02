@@ -1,9 +1,20 @@
-{ nodes, ... }:
+{
+  nodes,
+  config,
+  pkgs,
+  modules',
+  modulesPath,
+  ...
+}:
 {
   imports = [
+    modules'.postgresql
     ./emacs.nix
-    ./clan.nix
   ];
+  disabledModules = [
+    "${modulesPath}/services/postgresql"
+  ];
+
   nixpkgs = {
     hostPlatform = "aarch64-darwin";
   };
@@ -29,6 +40,19 @@
     enable = true;
     touchIdAuth = true;
     reattach = true;
+  };
+
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql_18_jit;
+    authentication = ''
+      local all all peer         map=main
+      host  all all 127.0.0.1/32 scram-sha-256
+      host  all all ::1/128      scram-sha-256
+    '';
+    identMap = ''
+      main ${config.system.primaryUser} postgres
+    '';
   };
 
   users.users = {
