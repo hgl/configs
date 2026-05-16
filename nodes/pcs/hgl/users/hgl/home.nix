@@ -115,6 +115,7 @@ in
   };
 
   home.packages = [
+    pkgs'.slack-cli-darwin
     pkgs.mkalias
     pkgs'.dnsclear
   ];
