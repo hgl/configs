@@ -11,7 +11,7 @@
   disabledModules = [ "${modulesPath}/services/postgresql" ];
   imports = [
     modules'.postgresql
-    inputs'.emacs.modules.emacs
+    inputs'.emacs.modules.emacs-macport
   ];
 
   nix = {

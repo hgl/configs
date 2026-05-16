@@ -1,5 +1,4 @@
 {
-  pkgs,
   config,
   inputs',
   ...
@@ -9,10 +8,8 @@ let
   homeDir = "/Users/hgl/dev/configs/nodes/pcs/hgl/users/hgl";
 in
 {
-  home.file.".config/emacs".source = mkLink "${homeDir}/emacs/emacs.d";
-
-  home.packages = [
-    inputs'.emacs.packages.emacs-macport
-    pkgs.nerd-fonts.symbols-only
+  imports = [
+    inputs'.emacs.modules.emacs-macport
   ];
+  home.file.".config/emacs".source = mkLink "${homeDir}/emacs/emacs.d";
 }
