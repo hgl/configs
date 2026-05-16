@@ -36,9 +36,13 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    rust-overlay-unstable = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     nixverse = {
-      url = "github:hgl/nixverse";
-      # url = "/Users/hgl/dev/nix/nixverse";
+      # url = "github:hgl/nixverse";
+      url = "/Users/hgl/dev/nix/nixverse";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };

@@ -45,11 +45,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777369708,
-        "narHash": "sha256-1xW7cRZNsFNPQD+cE0fwnLVStnDth0HSoASEIFeT7uI=",
+        "lastModified": 1778445566,
+        "narHash": "sha256-oQvcadh2BCkrog+SGrG6YffKJrveYpjj3TdQJWaKhaM=",
         "owner": "nix-community",
         "repo": "bun2nix",
-        "rev": "e659e1cc4b8e1b21d0aa85f1c481f9db61ecfa98",
+        "rev": "2499dedd70744dba1815875b854818a3019e9e4c",
         "type": "github"
       },
       "original": {
@@ -110,11 +110,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777678872,
-        "narHash": "sha256-EPIFsulyon7Z1vLQq5Fk64GR8L7cQsT+IPhcsukVbgk=",
+        "lastModified": 1778716662,
+        "narHash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4=",
         "owner": "hercules-ci",
         "repo": "flake-parts",
-        "rev": "5250617bffd85403b14dbf43c3870e7f255d2c16",
+        "rev": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
         "type": "github"
       },
       "original": {
@@ -218,11 +218,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1777683291,
-        "narHash": "sha256-TH6+zsMhkyxqRaDN9uKyXX5QACu3hMHPLRywsPq7/Gs=",
+        "lastModified": 1778908628,
+        "narHash": "sha256-ajmB9EJXjFEYA0XZIx241e3HzHffnd+xwiyeftsKgV8=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "fb15e85a718eca084cbbf504155e170ec0c990e1",
+        "rev": "44e88554de43257ed4f7298d77b2a15458f828e4",
         "type": "github"
       },
       "original": {
@@ -426,17 +426,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1777719326,
-        "narHash": "sha256-x9/gqdwIU9PmaZZ/bUUMX3MIQT/PE5Sr6O93+1D+TTU=",
-        "owner": "hgl",
-        "repo": "nixverse",
-        "rev": "1bb971103031d3674449bf52cddcc3d187cf0827",
-        "type": "github"
+        "lastModified": 1778910325,
+        "narHash": "sha256-OVt23NmHJww70kCWO7YztiOJ1GOLHjO+c3lDHMtuEUg=",
+        "path": "/Users/hgl/dev/nix/nixverse",
+        "type": "path"
       },
       "original": {
-        "owner": "hgl",
-        "repo": "nixverse",
-        "type": "github"
+        "path": "/Users/hgl/dev/nix/nixverse",
+        "type": "path"
       }
     },
     "root": {
@@ -450,8 +447,29 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixpkgs-unstable-nixos": "nixpkgs-unstable-nixos",
         "nixverse": "nixverse",
+        "rust-overlay-unstable": "rust-overlay-unstable",
         "sops-nix-unstable-darwin": "sops-nix-unstable-darwin",
         "sops-nix-unstable-nixos": "sops-nix-unstable-nixos"
+      }
+    },
+    "rust-overlay-unstable": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778210054,
+        "narHash": "sha256-iYINsX0BVDxTXd0z4FzDpBYHZ9fWUtwjG9cKSXwe9Tg=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "bc83d66023d19fb301ee98772643b24b6129ef48",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "sops-nix-unstable-darwin": {

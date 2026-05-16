@@ -1,10 +1,14 @@
-{ pkgs, ... }:
+{ pkgs, inputs', ... }:
 {
   nix = {
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+    };
   };
+  nixpkgs.overlays = [ inputs'.rust-overlay.overlays.default ];
   nixpkgs = {
     config.allowUnfree = true;
   };
