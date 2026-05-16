@@ -41,8 +41,8 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nixverse = {
-      # url = "github:hgl/nixverse";
-      url = "/Users/hgl/dev/nix/nixverse";
+      url = "github:hgl/nixverse";
+      # url = "/Users/hgl/dev/nix/nixverse";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };

@@ -426,14 +426,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1778910325,
-        "narHash": "sha256-OVt23NmHJww70kCWO7YztiOJ1GOLHjO+c3lDHMtuEUg=",
-        "path": "/Users/hgl/dev/nix/nixverse",
-        "type": "path"
+        "lastModified": 1778910262,
+        "narHash": "sha256-cvAoDePHvQ37Pi6MshaXz4suUFa1k8gYZSQcnXwNoHg=",
+        "owner": "hgl",
+        "repo": "nixverse",
+        "rev": "7e7bb2151d16f22d2723b4edef9801a0bb2e0031",
+        "type": "github"
       },
       "original": {
-        "path": "/Users/hgl/dev/nix/nixverse",
-        "type": "path"
+        "owner": "hgl",
+        "repo": "nixverse",
+        "type": "github"
       }
     },
     "root": {
