@@ -2,6 +2,7 @@
 {
   services.nginx.virtualHosts.main = {
     serverName = config.networking.domain;
+    root = "/srv/www/main";
     forceSSL = true;
     enableACME = true;
     extraConfig = ''
