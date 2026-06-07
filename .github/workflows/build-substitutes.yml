@@ -4,99 +4,97 @@ on:
   push:
     branches: [main]
     paths:
+      - flake.lock
       - pkgs/**
       - outputs/**
+      - inputs/*/packages/**
+      - private/inputs/*/packages/**
+      - private/pkgs/**
+      - private/outputs/**
       - .github/workflows/build-substitutes.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-substitutes-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  strongswan-unstable:
+  discover-packages:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.1
         with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
+          submodules: recursive
+          ssh-key: ${{ secrets.PRIVATE_SSH_KEY }}
       - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v14
-        with:
-          name: hgl
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#strongswan-unstable
-  nixverse:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
-      - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v14
-        with:
-          name: hgl
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#nixverse
-  emacs-unstable:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
-      - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v14
-        with:
-          name: hgl
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#emacs-unstable
-  tailscale-utils-unstable:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
-      - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v14
-        with:
-          name: hgl
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#tailscale-utils-unstable
-  p0:
-    runs-on: ubuntu-latest
+      - id: matrix
+        name: Discover package outputs
+        run: |
+          matrix=$(
+            nix eval --json 'path:.#packages' --apply '
+              packages:
+              let
+                concatMap = f: xs: builtins.concatLists (map f xs);
+                runnerFor = system:
+                  {
+                    x86_64-linux = "ubuntu-latest";
+                    aarch64-linux = "ubuntu-24.04-arm";
+                    aarch64-darwin = "macos-latest";
+                  }.${system} or null;
+                quietAttrs = {
+                  p0 = true;
+                  p1 = true;
+                  p2 = true;
+                };
+                freeDiskAttrs = {
+                  "x86_64-linux.p0" = true;
+                };
+                packageJobs = concatMap (
+                  system:
+                  let
+                    runner = runnerFor system;
+                  in
+                  if runner == null then
+                    [ ]
+                  else
+                    map (attr: {
+                      inherit attr runner system;
+                      free_disk = freeDiskAttrs."${system}.${attr}" or false;
+                      quiet = quietAttrs.${attr} or false;
+                    }) (builtins.attrNames packages.${system})
+                ) (builtins.attrNames packages);
+              in
+              { include = packageJobs; }'
+          )
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  packages:
+    name: ${{ matrix.system }} / ${{ matrix.attr }}
+    needs: discover-packages
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.discover-packages.outputs.matrix) }}
     steps:
       - uses: jlumbroso/free-disk-space@main
+        if: ${{ matrix.free_disk }}
       - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.1
         with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
+          submodules: recursive
+          ssh-key: ${{ secrets.PRIVATE_SSH_KEY }}
       - uses: cachix/install-nix-action@v31
       - uses: cachix/cachix-action@v14
         with:
           name: hgl
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#p0 &>/dev/null
-  p1:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
-      - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v14
-        with:
-          name: hgl
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#p1 &>/dev/null
-  p2:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.PRIVATE_SSH_KEY }}
-      - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v14
-        with:
-          name: hgl
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-      - run: nix build --no-link .#p2 &>/dev/null
+      - name: Build ${{ matrix.attr }}
+        run: |
+          if [[ "${{ matrix.quiet }}" == "true" ]]; then
+            nix build --no-link "path:.#packages.${{ matrix.system }}.${{ matrix.attr }}"
+          else
+            nix build --no-link --print-build-logs "path:.#packages.${{ matrix.system }}.${{ matrix.attr }}"
+          fi

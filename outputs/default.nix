@@ -1,6 +1,7 @@
 {
   lib,
   flakeModules',
+  nodes,
   ...
 }:
 {
@@ -10,8 +11,25 @@
 
   systems = lib.systems.flakeExposed;
 
+  flake = {
+    packages = {
+      x86_64-linux = {
+        nginx = nodes.s0.config.services.nginx.package;
+        strongswan = nodes.s0.config.services.strongswan-swanctl.package;
+      };
+      aarch64-linux = {
+        codex = nodes.vm-nixos.config.home-manager.users.hgl.programs.codex.package;
+      };
+      aarch64-darwin = {
+        emacs-macport = nodes.hgl.pkgs'.emacs-macport;
+        codex = nodes.hgl.config.home-manager.users.hgl.programs.codex.package;
+      };
+    };
+  };
+
   perSystem =
     {
+      config,
       system,
       inputs',
       pkgs,
@@ -22,45 +40,43 @@
       buildGoModule = pkgs.buildGoModule;
     in
     {
-      packages =
-        {
-          x86_64-linux = {
-            strongswan-unstable = pkgs'.strongswan;
-          };
-          aarch64-darwin = {
-            emacs-unstable = pkgs'.emacs-macport;
-            tailscale-utils-unstable = pkgs'.tailscale-utils;
-            nixverse = inputs'.nixverse.packages.nixverse;
-          };
-        }
-        .${system} or { };
+      packages = {
+        cert = pkgs'.cert;
+        delve = pkgs.delve.override { inherit buildGoModule; };
+        gopls = pkgs.gopls.override { buildGoLatestModule = buildGoModule; };
+        go-tools = pkgs.go-tools.override { inherit buildGoModule; };
+        key-cert-match = pkgs'.key-cert-match;
+        mobileconfig = pkgs'.mobileconfig;
+        nixverse = inputs'.nixverse.packages.nixverse;
+        tailscale-utils = pkgs'.tailscale-utils.override { inherit buildGoModule; };
+      };
 
-      devShellPackages = [
-        pkgs.nil
-        pkgs.nixfmt
-        pkgs.shfmt
-        pkgs.shellcheck
-        pkgs.bash-language-server
-        pkgs.yaml-language-server
-        pkgs.sops
-        pkgs.mkpasswd
-        pkgs.go
-        (pkgs.delve.override { inherit buildGoModule; })
-        (pkgs.gopls.override { buildGoLatestModule = buildGoModule; })
-        (pkgs.go-tools.override { inherit buildGoModule; })
-        pkgs'.cert
-        inputs'.nixverse.packages.nixverse
+      devShellPackages = with pkgs; [
+        nil
+        nixfmt
+        shfmt
+        shellcheck
+        bash-language-server
+        yaml-language-server
+        sops
+        mkpasswd
+        go
+        config.packages.cert
+        config.packages.delve
+        config.packages.gopls
+        config.packages.go-tools
+        config.packages.nixverse
       ];
-      makefileInputs = [
-        pkgs.openssh
-        pkgs.cfssl
-        pkgs.yq
-        pkgs.coreutils
-        pkgs.util-linux # needs uuidgen
-        (pkgs'.tailscale-utils.override { inherit buildGoModule; })
-        pkgs'.key-cert-match
-        pkgs'.mobileconfig
-        inputs'.nixverse.packages.nixverse
+      makefileInputs = with pkgs; [
+        openssh
+        cfssl
+        yq
+        coreutils
+        util-linux # needs uuidgen
+        config.packages.key-cert-match
+        config.packages.mobileconfig
+        config.packages.tailscale-utils
+        config.packages.nixverse
       ];
     };
 }

@@ -29,6 +29,13 @@
           "aarch64-linux"
         ];
       }
+      # {
+      #   hostName = "${nodes.vm-nixos-builder.name}.local";
+      #   systems = [
+      #     "x86_64-linux"
+      #     "aarch64-linux"
+      #   ];
+      # }
     ];
   };
   nixpkgs.config.allowUnfree = true;

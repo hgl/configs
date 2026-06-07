@@ -51,9 +51,7 @@
 
   programs.codex = {
     enable = true;
-    package = inputs'.llm-agents.packages.codex.overrideAttrs (oldAttrs: {
-      RUST_BACKTRACE = "full";
-    });
+    package = inputs'.llm-agents.packages.codex;
   };
 
   # services.emacs = {
