@@ -60,7 +60,7 @@ lib.mkMerge (
       '';
     };
   }
-  ++ lib.optional (nodes.current.name == "vm-nixos-builder") {
+  ++ lib.optional (nodes.current.name == "vm-nixos") {
     users.users.root = {
       openssh.authorizedKeys.keys = builderKeys;
     };

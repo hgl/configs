@@ -3,7 +3,7 @@
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks = {
+    settings = {
       ${nodes.vm-nixos.name} = {
         user = "root";
         hostname = "${nodes.vm-nixos.name}.local";

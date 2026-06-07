@@ -15,7 +15,7 @@
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks = {
+    settings = {
       "*" = {
         controlMaster = "auto";
         controlPersist = "10m";

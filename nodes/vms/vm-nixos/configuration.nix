@@ -2,8 +2,8 @@
 {
   imports = [
     ./utm-vf.nix
-    ./gui-greetd.nix
-    ./gui-hyprland.nix
+    # ./gui-greetd.nix
+    # ./gui-hyprland.nix
   ];
   boot = {
     loader = {
@@ -14,14 +14,17 @@
   };
 
   nix = {
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    settings = {
+      trusted-users = [ "root" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+    };
     optimise = {
       automatic = true;
       persistent = true;
     };
-    settings.trusted-users = [ "root" ];
   };
 
   time.timeZone = "Asia/Shanghai";
@@ -57,11 +60,11 @@
     };
   };
 
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-  };
+  # services.pipewire = {
+  #   enable = true;
+  #   alsa.enable = true;
+  #   pulse.enable = true;
+  # };
   documentation.enable = false;
   environment.systemPackages = with pkgs; [
   ];

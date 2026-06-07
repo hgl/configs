@@ -4,14 +4,17 @@
     {
       system = lib.mkDefault "aarch64-linux";
       channel = lib.mkDefault "unstable";
+      deploy = {
+        targetHost = lib.mkDefault "root@${nodes.current.name}.local";
+      };
     };
-  vm-nixos = {
-    deploy.targetHost = "root@192.168.64.3";
-    install.targetHost = "root@192.168.64.4";
-  };
+  vm-nixos =
+    { lib, nodes, ... }:
+    {
+      install.targetHost = "root@192.168.64.21";
+    };
   vm-nixos-builder = {
     install.targetHost = "root@192.168.3.28";
-    deploy.targetHost = "root@vm-nixos-builder.local";
     deploy.buildOnRemote = true;
   };
 }

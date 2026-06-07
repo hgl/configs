@@ -1,19 +1,19 @@
 {
   pkgs,
   osConfig,
-  config,
+  inputs',
   modules',
   ...
 }:
 {
   imports = [
     modules'.fish
-    ./gui-hyprland.nix
+    # ./gui-hyprland.nix
   ];
   xdg = {
     enable = true;
   };
-  programs.firefox.enable = true;
+  # programs.firefox.enable = true;
   programs.git = {
     enable = true;
     ignores = [
@@ -41,7 +41,7 @@
       declare -A direnv_layout_dirs
       direnv_layout_dir() {
         local hash
-        hash=$(sha1sum - <<< "$PWD" | head -c40)
+        hash=$(${pkgs.coreutils}/bin/sha1sum - <<< "$PWD" | ${pkgs.coreutils}/bin/head -c40)
         local path=''${PWD//[^a-zA-Z0-9]/-}
         local dir=''${XDG_CACHE_HOME:-$HOME/.cache}/direnv/layouts/$hash$path
         echo "''${direnv_layout_dirs[$PWD]:="$dir"}"
@@ -49,21 +49,28 @@
     '';
   };
 
-  services.emacs = {
+  programs.codex = {
     enable = true;
-    defaultEditor = true;
-    client.enable = true;
+    package = inputs'.llm-agents.packages.codex.overrideAttrs (oldAttrs: {
+      RUST_BACKTRACE = "full";
+    });
   };
 
+  # services.emacs = {
+  #   enable = true;
+  #   defaultEditor = true;
+  #   client.enable = true;
+  # };
+
   home.packages = with pkgs; [
-    config.services.emacs.package
-    nerd-fonts.symbols-only
+    # config.services.emacs.package
+    # nerd-fonts.symbols-only
     btop
   ];
 
-  programs.foot = {
-    enable = true;
-  };
+  # programs.foot = {
+  #   enable = true;
+  # };
 
   home.stateVersion = osConfig.system.stateVersion;
 }

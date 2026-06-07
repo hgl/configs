@@ -29,7 +29,7 @@ in
   ];
 
   programs.ssh = {
-    matchBlocks = {
+    settings = {
       ${nodes.vm-nixos.name} = {
         user = "root";
       };
@@ -114,9 +114,10 @@ in
     e = "emacsclient";
   };
 
-  home.packages = [
+  home.packages = with pkgs; [
     pkgs'.slack-cli-darwin
-    pkgs.mkalias
     pkgs'.dnsclear
+    mkalias
+    tio
   ];
 }

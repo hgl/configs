@@ -23,7 +23,7 @@
     distributedBuilds = true;
     buildMachines = [
       {
-        hostName = "${nodes.vm-nixos-builder.name}.local";
+        hostName = "${nodes.vm-nixos.name}.local";
         systems = [
           "x86_64-linux"
           "aarch64-linux"
