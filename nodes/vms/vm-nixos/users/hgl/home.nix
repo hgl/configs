@@ -3,20 +3,20 @@
   osConfig,
   inputs',
   modules',
+  pkgs',
   ...
 }:
 {
   imports = [
     modules'.fish
-    # ./gui-hyprland.nix
   ];
   xdg = {
     enable = true;
   };
-  # programs.firefox.enable = true;
   programs.git = {
     enable = true;
     ignores = [
+      ".DS_Store"
       ".vscode"
       "*.code-workspace"
       ".direnv"
@@ -31,9 +31,20 @@
     };
   };
 
-  # programs.rofi = {
-  #   enable = true;
-  # };
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    settings = {
+      "*" = {
+        controlMaster = "auto";
+        controlPersist = "10m";
+        serverAliveInterval = 0;
+        serverAliveCountMax = 3;
+        controlPath = "~/.ssh/master-%r@%n:%p";
+      };
+    };
+  };
+
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
@@ -58,21 +69,42 @@
     };
   };
 
-  # services.emacs = {
-  #   enable = true;
-  #   defaultEditor = true;
-  #   client.enable = true;
-  # };
+  programs.helix = {
+    enable = true;
+    defaultEditor = true;
+    settings = {
+      keys = {
+        normal = {
+          "Cmd-s" = ":write";
+        };
+      };
+    };
+    languages = {
+      language = [
+        {
+          name = "nix";
+          auto-format = true;
+          language-servers = [ "nil" ];
+        }
+      ];
+      language-server.nil = {
+        command = "nil";
+        config = {
+          formatting = {
+            command = [ "nixfmt" ];
+          };
+        };
+      };
+    };
+  };
 
   home.packages = with pkgs; [
-    # config.services.emacs.package
-    # nerd-fonts.symbols-only
-    btop
+    pkgs'.vercel
+    lazygit
+    nil
+    awscli2
+    gh
   ];
-
-  # programs.foot = {
-  #   enable = true;
-  # };
 
   home.stateVersion = osConfig.system.stateVersion;
 }

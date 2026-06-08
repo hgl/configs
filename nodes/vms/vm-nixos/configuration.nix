@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs', ... }:
 {
   imports = [
     ./utm-vf.nix
@@ -26,6 +26,7 @@
       persistent = true;
     };
   };
+  nixpkgs.overlays = [ inputs'.rust-overlay.overlays.default ];
 
   time.timeZone = "Asia/Shanghai";
 
