@@ -34,19 +34,13 @@ in
         hostname = "${nodes.vm-nixos.name}.local";
         user = "hgl";
       };
-      ${nodes.hgl2.name} = {
-        user = "hgl";
-      };
     };
   };
 
   programs.git = {
-    lfs.enable = true;
-    ignores = [
-      ".DS_Store"
-    ];
     settings = {
       gpg = {
+        format = "ssh";
         ssh.program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
       };
     };
@@ -65,50 +59,6 @@ in
       adjust-cell-height = -2;
       font-thicken = true;
     };
-  };
-
-  programs.nushell = {
-    enable = true;
-  };
-
-  programs.neovim = {
-    enable = true;
-    extraConfig = ''
-      set number relativenumber
-    '';
-  };
-
-  programs.helix = {
-    enable = true;
-    defaultEditor = true;
-    settings = {
-      keys = {
-        normal = {
-          "Cmd-s" = ":write";
-        };
-      };
-    };
-    languages = {
-      language = [
-        {
-          name = "nix";
-          auto-format = true;
-          language-servers = [ "nil" ];
-        }
-      ];
-      language-server.nil = {
-        command = "nil";
-        config = {
-          formatting = {
-            command = [ "nixfmt" ];
-          };
-        };
-      };
-    };
-  };
-
-  programs.vim = {
-    enable = true;
   };
 
   home.shellAliases = {

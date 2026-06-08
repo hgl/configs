@@ -3,6 +3,7 @@
   pkgs',
   modules',
   inputs',
+  nodes,
   ...
 }:
 {
@@ -29,6 +30,9 @@
         identityFile = "~/.ssh/id_ed25519.pub";
         identitiesOnly = true;
       };
+      ${nodes.hgl2.name} = {
+        user = "hgl";
+      };
     };
   };
   home.file.".ssh/id_ed25519.pub".text =
@@ -36,7 +40,9 @@
 
   programs.git = {
     enable = true;
+    lfs.enable = true;
     ignores = [
+      ".DS_Store"
       ".vscode"
       "*.code-workspace"
       ".direnv"
@@ -48,10 +54,36 @@
         email = "me@glenhuang.com";
         signingkey = "~/.ssh/id_ed25519.pub";
       };
-      gpg = {
-        format = "ssh";
-      };
       push.autoSetupRemote = true;
+    };
+  };
+
+  programs.helix = {
+    enable = true;
+    defaultEditor = true;
+    settings = {
+      keys = {
+        normal = {
+          "Cmd-s" = ":write";
+        };
+      };
+    };
+    languages = {
+      language = [
+        {
+          name = "nix";
+          auto-format = true;
+          language-servers = [ "nil" ];
+        }
+      ];
+      language-server.nil = {
+        command = "nil";
+        config = {
+          formatting = {
+            command = [ "nixfmt" ];
+          };
+        };
+      };
     };
   };
 
@@ -75,17 +107,27 @@
     package = inputs'.llm-agents.packages.codex;
   };
 
-  # services.syncthing = {
-  #   enable = true;
-  # };
+  programs.nushell = {
+    enable = true;
+  };
+
+  programs.neovim = {
+    enable = true;
+    extraConfig = ''
+      set number relativenumber
+    '';
+  };
+
+  programs.vim = {
+    enable = true;
+  };
 
   home.packages =
-    with pkgs';
+    with pkgs;
     [
-      serve
-      init
-    ]
-    ++ (with pkgs; [
+      pkgs'.vercel
+      pkgs'.serve
+      pkgs'.init
       coreutils
       gnused
       gawk
@@ -104,7 +146,6 @@
       pstree
       iperf
       age
-      pkgs'.vercel
       awscli2
       gh
       lazygit
@@ -136,7 +177,7 @@
       oci-cli
       weechat
       mozjpeg
-    ])
+    ]
     ++ (with inputs'.llm-agents.packages; [
       claude-code
     ]);
