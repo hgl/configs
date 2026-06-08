@@ -14,6 +14,8 @@
   flake = {
     packages = {
       x86_64-linux = {
+        dnsmasq = nodes.r0.pkgs.dnsmasq;
+        nftables = nodes.r0.pkgs.nftables;
         nginx = nodes.s0.config.services.nginx.package;
         strongswan = nodes.s0.config.services.strongswan-swanctl.package;
       };
