@@ -94,7 +94,7 @@ jobs:
       - name: Build ${{ matrix.attr }}
         run: |
           if [[ "${{ matrix.quiet }}" == "true" ]]; then
-            nix build --no-link "path:.#packages.${{ matrix.system }}.${{ matrix.attr }}"
+            nix build --no-link "path:.#packages.${{ matrix.system }}.${{ matrix.attr }}" &>/dev/null
           else
             nix build --no-link --print-build-logs "path:.#packages.${{ matrix.system }}.${{ matrix.attr }}"
           fi

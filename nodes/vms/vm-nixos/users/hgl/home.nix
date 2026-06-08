@@ -52,6 +52,10 @@
   programs.codex = {
     enable = true;
     package = inputs'.llm-agents.packages.codex;
+    settings = {
+      sandbox_mode = "danger-full-access";
+      approval_policy = "never";
+    };
   };
 
   # services.emacs = {

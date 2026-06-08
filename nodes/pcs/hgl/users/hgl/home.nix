@@ -31,7 +31,8 @@ in
   programs.ssh = {
     settings = {
       ${nodes.vm-nixos.name} = {
-        user = "root";
+        hostname = "${nodes.vm-nixos.name}.local";
+        user = "hgl";
       };
       ${nodes.hgl2.name} = {
         user = "hgl";
