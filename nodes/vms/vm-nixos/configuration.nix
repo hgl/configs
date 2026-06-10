@@ -26,7 +26,10 @@
       persistent = true;
     };
   };
-  nixpkgs.overlays = [ inputs'.rust-overlay.overlays.default ];
+  nixpkgs = {
+    overlays = [ inputs'.rust-overlay.overlays.default ];
+    config.allowUnfree = true;
+  };
 
   time.timeZone = "Asia/Shanghai";
 
@@ -61,13 +64,9 @@
     };
   };
 
-  # services.pipewire = {
-  #   enable = true;
-  #   alsa.enable = true;
-  #   pulse.enable = true;
-  # };
   documentation.enable = false;
   environment.systemPackages = with pkgs; [
+    ghostty.terminfo
   ];
 
   system.stateVersion = "24.05";
