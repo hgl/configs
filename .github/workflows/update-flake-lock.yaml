@@ -1,0 +1,37 @@
+name: "Update Flake Lock"
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 21 * * 0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-flake-lock
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          ssh-key: ${{ secrets.PRIVATE_SSH_KEY }}
+      - uses: cachix/install-nix-action@v31
+      - name: Update flake.lock
+        run: nix flake update --flake 'path:.'
+      - name: Commit flake.lock
+        run: |
+          if git diff --quiet -- flake.lock; then
+            echo "flake.lock is already up to date"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git add flake.lock
+          git commit -m "Update flake.lock"
+          git push

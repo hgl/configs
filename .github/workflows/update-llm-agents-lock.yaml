@@ -1,11 +1,16 @@
-name: "Update Flake Lock"
+name: "Update LLM Agents Lock"
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 21 * * 0"
+    # llm-agents.nix updates at 00:00, 04:00, 18:00, and 21:00 UTC.
+    # These run after the recent observed upstream merge windows.
+    - cron: "45 1 * * *"
+    - cron: "15 6 * * *"
+    - cron: "30 19 * * *"
+    - cron: "55 22 * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: update-flake-lock
@@ -20,17 +25,18 @@ jobs:
           submodules: recursive
           ssh-key: ${{ secrets.PRIVATE_SSH_KEY }}
       - uses: cachix/install-nix-action@v31
-      - name: Update flake.lock
-        run: nix flake update --flake 'path:.'
+      - name: Update llm-agents-unstable
+        run: nix flake update llm-agents-unstable --flake 'path:.'
       - name: Commit flake.lock
         run: |
           if git diff --quiet -- flake.lock; then
-            echo "flake.lock is already up to date"
+            echo "llm-agents-unstable is already up to date"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
           git add flake.lock
-          git commit -m "Update flake.lock"
+          git commit -m "Update llm-agents-unstable"
           git push

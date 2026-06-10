@@ -11,7 +11,7 @@ on:
       - private/inputs/*/packages/**
       - private/pkgs/**
       - private/outputs/**
-      - .github/workflows/build-substitutes.yml
+      - .github/workflows/build-substitutes.yaml
 
 permissions:
   contents: read
