@@ -25,7 +25,6 @@
         controlPath = "~/.ssh/master-%r@%n:%p";
       };
       "github.com" = {
-        hostname = "github.com";
         user = "git";
         identityFile = "~/.ssh/id_ed25519.pub";
         identitiesOnly = true;
