@@ -15,6 +15,7 @@
   };
   programs.git = {
     enable = true;
+    lfs.enable = true;
     ignores = [
       ".DS_Store"
       ".vscode"
@@ -63,10 +64,6 @@
   programs.codex = {
     enable = true;
     package = inputs'.llm-agents.packages.codex;
-    settings = {
-      sandbox_mode = "danger-full-access";
-      approval_policy = "never";
-    };
   };
 
   programs.helix = {
@@ -104,6 +101,9 @@
     nil
     awscli2
     gh
+    ripgrep
+    jq
+    dig
   ];
 
   home.stateVersion = osConfig.system.stateVersion;
