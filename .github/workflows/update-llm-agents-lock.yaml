@@ -2,12 +2,7 @@ name: "Update LLM Agents Lock"
 on:
   workflow_dispatch:
   schedule:
-    # llm-agents.nix updates at 00:00, 04:00, 18:00, and 21:00 UTC.
-    # These run after the recent observed upstream merge windows.
-    - cron: "45 1 * * *"
-    - cron: "15 6 * * *"
-    - cron: "30 19 * * *"
-    - cron: "55 22 * * *"
+    - cron: "0 21 * * *"
 
 permissions:
   actions: write
