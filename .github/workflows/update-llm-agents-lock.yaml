@@ -10,6 +10,7 @@ on:
     - cron: "55 22 * * *"
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -28,6 +29,8 @@ jobs:
       - name: Update llm-agents-unstable
         run: nix flake update llm-agents-unstable --flake 'path:.'
       - name: Commit flake.lock
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet -- flake.lock; then
             echo "llm-agents-unstable is already up to date"
@@ -40,3 +43,4 @@ jobs:
           git add flake.lock
           git commit -m "Update llm-agents-unstable"
           git push
+          gh workflow run build-substitutes.yaml --ref main

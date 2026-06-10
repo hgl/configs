@@ -5,6 +5,7 @@ on:
     - cron: "0 21 * * 0"
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -23,6 +24,8 @@ jobs:
       - name: Update flake.lock
         run: nix flake update --flake 'path:.'
       - name: Commit flake.lock
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet -- flake.lock; then
             echo "flake.lock is already up to date"
@@ -35,3 +38,4 @@ jobs:
           git add flake.lock
           git commit -m "Update flake.lock"
           git push
+          gh workflow run build-substitutes.yaml --ref main
