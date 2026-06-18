@@ -103,7 +103,12 @@
 
   programs.codex = {
     enable = true;
-    package = inputs'.llm-agents.packages.codex;
+    package = pkgs'.codex;
+  };
+
+  programs.claude-code = {
+    enable = true;
+    package = pkgs'.claude-code;
   };
 
   programs.nushell = {
@@ -121,65 +126,59 @@
     enable = true;
   };
 
-  home.packages =
-    with pkgs;
-    [
-      pkgs'.vercel
-      pkgs'.serve
-      pkgs'.init
-      coreutils
-      gnused
-      gawk
-      gnumake
-      gnutar
-      wget
-      curl
-      jq
-      openssl
-      rsync
-      dig
-      openssh
-      bash
-      ripgrep
-      ffmpeg
-      pstree
-      iperf
-      age
-      awscli2
-      gh
-      lazygit
+  home.packages = with pkgs; [
+    pkgs'.vercel
+    pkgs'.serve
+    pkgs'.init
+    coreutils
+    gnused
+    gawk
+    gnumake
+    gnutar
+    wget
+    curl
+    jq
+    openssl
+    rsync
+    dig
+    openssh
+    bash
+    ripgrep
+    ffmpeg
+    pstree
+    iperf
+    age
+    awscli2
+    gh
+    lazygit
 
-      nil
-      nixfmt
-      shfmt
-      shellcheck
+    nil
+    nixfmt
+    shfmt
+    shellcheck
 
-      remake # debug make
-      dive # debug docker image
+    remake # debug make
+    dive # debug docker image
 
-      llama-cpp
+    llama-cpp
 
-      unzip
-      cachix
-      restic
-      rclone
-      delve
-      vimgolf
-      findutils
+    unzip
+    cachix
+    restic
+    rclone
+    delve
+    vimgolf
+    findutils
 
-      (parallel-full.override { willCite = true; })
-      # xterm-256color terminfo shipped by apple doesn't contain italic control
-      # code, install this package gives a more complete xterm-256color terminfo
-      ncurses
+    # xterm-256color terminfo shipped by apple doesn't contain italic control
+    # code, install this package gives a more complete xterm-256color terminfo
+    ncurses
 
-      android-tools
-      oci-cli
-      weechat
-      mozjpeg
-    ]
-    ++ (with inputs'.llm-agents.packages; [
-      claude-code
-    ]);
+    android-tools
+    oci-cli
+    weechat
+    mozjpeg
+  ];
 
   home.stateVersion = "26.05";
 }

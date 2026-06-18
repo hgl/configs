@@ -7,11 +7,13 @@
   };
   aarch64-linux = {
     codex = nodes.vm-nixos.config.home-manager.users.hgl.programs.codex.package;
+    claude-code = nodes.vm-nixos.config.home-manager.users.hgl.programs.claude-code.package;
     vercel = nodes.vm-nixos.pkgs'.vercel;
   };
   aarch64-darwin = {
     emacs-macport = nodes.hgl.pkgs'.emacs-macport;
     codex = nodes.hgl.config.home-manager.users.hgl.programs.codex.package;
+    claude-code = nodes.hgl.config.home-manager.users.hgl.programs.claude-code.package;
     vercel = nodes.hgl.pkgs'.vercel;
   };
 }
