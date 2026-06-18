@@ -1,1 +1,3 @@
-{ outputs', ... }: [ ]
+{ outputs', ... }: [
+  outputs'.packages.nixverse
+]
