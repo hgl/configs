@@ -4,6 +4,7 @@
   inputs',
   modules',
   pkgs',
+  nodes,
   ...
 }:
 {
@@ -42,6 +43,10 @@
         serverAliveInterval = 0;
         serverAliveCountMax = 3;
         controlPath = "~/.ssh/master-%r@%n:%p";
+      };
+      "hgl" = {
+        hostname = "${nodes.hgl.name}.local";
+        user = "hgl";
       };
     };
   };
@@ -104,6 +109,8 @@
     ripgrep
     jq
     dig
+    openssl
+    hcloud
   ];
 
   home.stateVersion = osConfig.system.stateVersion;

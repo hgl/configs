@@ -13,5 +13,6 @@
 
   systemd.tmpfiles.rules = [
     "L /home/hgl/dev - - - - /mnt/share/dev"
+    "L /home/hgl/lab - - - - /mnt/share/lab"
   ];
 }
