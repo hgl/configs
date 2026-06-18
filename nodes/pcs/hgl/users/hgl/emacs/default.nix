@@ -1,6 +1,6 @@
 {
   config,
-  inputs',
+  modules',
   ...
 }:
 let
@@ -9,7 +9,7 @@ let
 in
 {
   imports = [
-    inputs'.emacs.modules.emacs-macport
+    modules'.emacs-macport
   ];
   home.file.".config/emacs".source = mkLink "${homeDir}/emacs/emacs.d";
 }

@@ -2,7 +2,6 @@
   nodes,
   config,
   pkgs,
-  inputs',
   modules',
   modulesPath,
   ...
@@ -11,7 +10,8 @@
   disabledModules = [ "${modulesPath}/services/postgresql" ];
   imports = [
     modules'.postgresql
-    inputs'.emacs.modules.emacs-macport
+    modules'.emacs-macport
+    ./utm.nix
   ];
 
   nix = {
