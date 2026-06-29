@@ -16,5 +16,6 @@
     codex = nodes.hgl.config.home-manager.users.hgl.programs.codex.package;
     claude-code = nodes.hgl.config.home-manager.users.hgl.programs.claude-code.package;
     vercel = nodes.hgl.pkgs'.vercel;
+    pnpm = nodes.hgl.pkgs.pnpm;
   };
 }
