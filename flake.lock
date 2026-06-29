@@ -451,7 +451,9 @@
         "nixverse": "nixverse",
         "rust-overlay-unstable": "rust-overlay-unstable",
         "sops-nix-unstable-darwin": "sops-nix-unstable-darwin",
-        "sops-nix-unstable-nixos": "sops-nix-unstable-nixos"
+        "sops-nix-unstable-nixos": "sops-nix-unstable-nixos",
+        "zig2nix-unstable": "zig2nix-unstable",
+        "zmx-unstable": "zmx-unstable"
       }
     },
     "rust-overlay-unstable": {
@@ -569,6 +571,38 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "zig2nix-unstable": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782706469,
+        "narHash": "sha256-+mRQFvEPVX/S24VedR4bhp/KYjD7iQWNlexP0GURZlk=",
+        "owner": "Cloudef",
+        "repo": "zig2nix",
+        "rev": "64458fb8fcff86b9e4f42032c8703553f316d141",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Cloudef",
+        "repo": "zig2nix",
+        "type": "github"
+      }
+    },
+    "zmx-unstable": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782656076,
+        "narHash": "sha256-f8iLBDOekXS/sgYeH16OvCgPgRq3m6o48OBTikXlVx4=",
+        "owner": "neurosnap",
+        "repo": "zmx",
+        "rev": "6fabec06141d9e4bcda22c982df34166cfe506ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "neurosnap",
+        "repo": "zmx",
         "type": "github"
       }
     }

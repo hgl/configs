@@ -9,6 +9,7 @@
     codex = nodes.vm-nixos.config.home-manager.users.hgl.programs.codex.package;
     claude-code = nodes.vm-nixos.config.home-manager.users.hgl.programs.claude-code.package;
     vercel = nodes.vm-nixos.pkgs'.vercel;
+    zmx = nodes.vm-nixos.pkgs'.zmx;
   };
   aarch64-darwin = {
     emacs-macport = nodes.hgl.pkgs'.emacs-macport;

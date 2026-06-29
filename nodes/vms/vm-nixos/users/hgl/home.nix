@@ -102,6 +102,7 @@
 
   home.packages = with pkgs; [
     pkgs'.vercel
+    pkgs'.zmx
     lazygit
     nil
     awscli2
