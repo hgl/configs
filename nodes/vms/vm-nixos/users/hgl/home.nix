@@ -1,7 +1,6 @@
 {
   pkgs,
   osConfig,
-  inputs',
   modules',
   pkgs',
   nodes,
@@ -68,7 +67,14 @@
 
   programs.codex = {
     enable = true;
-    package = inputs'.llm-agents.packages.codex;
+    package = pkgs'.codex;
+  };
+  programs.claude-code = {
+    enable = true;
+    package = pkgs'.claude-code;
+  };
+  programs.fish.shellAliases = {
+    claude = "claude --dangerously-skip-permissions";
   };
 
   programs.helix = {
@@ -112,6 +118,7 @@
     dig
     openssl
     hcloud
+    tuicr
   ];
 
   home.stateVersion = osConfig.system.stateVersion;
