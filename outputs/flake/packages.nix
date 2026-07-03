@@ -17,5 +17,6 @@
     claude-code = nodes.hgl.config.home-manager.users.hgl.programs.claude-code.package;
     vercel = nodes.hgl.pkgs'.vercel;
     nodejs-slim_26 = nodes.hgl.pkgs.nodejs-slim_26;
+    rift = nodes.hgl.pkgs'.rift;
   };
 }
