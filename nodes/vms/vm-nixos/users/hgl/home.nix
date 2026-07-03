@@ -119,6 +119,7 @@
     openssl
     hcloud
     tuicr
+    yazi
   ];
 
   home.stateVersion = osConfig.system.stateVersion;
