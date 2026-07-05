@@ -1,10 +1,11 @@
-{ inputs', ... }: {
+{ inputs', pkgs', ... }: {
   imports = [
     inputs'.paneru.modules.paneru
   ];
 
   services.paneru = {
     enable = true;
+    package = pkgs'.paneru;
     settings = {
       options = {
         animation_speed = 20;
