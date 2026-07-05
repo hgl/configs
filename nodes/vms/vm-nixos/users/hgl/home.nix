@@ -9,6 +9,8 @@
 {
   imports = [
     modules'.fish
+    ./claude.nix
+    ./zmx.nix
   ];
   xdg = {
     enable = true;
@@ -69,13 +71,6 @@
     enable = true;
     package = pkgs'.codex;
   };
-  programs.claude-code = {
-    enable = true;
-    package = pkgs'.claude-code;
-  };
-  programs.fish.shellAliases = {
-    claude = "claude --dangerously-skip-permissions";
-  };
 
   programs.helix = {
     enable = true;
@@ -108,7 +103,6 @@
 
   home.packages = with pkgs; [
     pkgs'.vercel
-    pkgs'.zmx
     lazygit
     nil
     awscli2
