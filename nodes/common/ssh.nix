@@ -10,9 +10,8 @@ let
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDrXT3k9ISbCa/VRCjQynAegfMQ5KhNIeh2WmC3C876u hgl-phone"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBEiKGL8b89ObiPLa6+++d6fZCaTzhE+PITJ48/XTuzs vm-nixos"
   ];
-  builderKeys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos root"
-  ];
+  pwlessKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJr3km3lHUk5EZFuEn9fDiVAx5B/vB4thNNdrUjm07W hgl";
+  builderKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos root";
 
   # Make nixos installer accept ssh keys by running
   # curl -L <domain> | sudo sh
@@ -32,7 +31,7 @@ lib.mkMerge (
     ])
     {
       users.users.hgl = {
-        openssh.authorizedKeys.keys = keys;
+        openssh.authorizedKeys.keys = keys ++ [ pwlessKey ];
       };
     }
   ++ lib.optional (nodes.current.os == "nixos") {
@@ -63,7 +62,7 @@ lib.mkMerge (
   }
   ++ lib.optional (nodes.current.name == "vm-nixos") {
     users.users.root = {
-      openssh.authorizedKeys.keys = builderKeys;
+      openssh.authorizedKeys.keys = [ builderKey ];
     };
   }
   ++ lib.optional (nodes.current.groups ? servers) {
