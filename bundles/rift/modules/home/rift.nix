@@ -2,6 +2,7 @@
   lib,
   pkgs,
   config,
+  pkgs',
   ...
 }:
 let
@@ -15,6 +16,7 @@ in
 
     package = lib.mkOption {
       type = lib.types.package;
+      default = pkgs'.rift;
       description = "The rift package to use.";
     };
 
@@ -23,30 +25,27 @@ in
       default = { };
       description = "Rift settings configuration.";
     };
-
-    configFile = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
-      description = "Optional path to a custom config file. Overrides generated config.";
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    environment.etc."rift/config.toml".source = settingsFile;
+    assertions = [ (lib.hm.assertions.assertPlatform "services.paneru" pkgs lib.platforms.darwin) ];
+    home.packages = [ cfg.package ];
 
-    launchd.user.agents.rift = {
-      path = [ "${cfg.package}/bin" ];
-      serviceConfig = {
-        ProgramArguments = [ "${cfg.package}/bin/rift" ];
+    xdg.configFile."rift/config.toml".source = settingsFile;
+
+    launchd.agents.rift = {
+      enable = true;
+      config = {
+        Label = "com.github.acsandmann.rift";
+        Program = lib.getExe cfg.package;
         RunAtLoad = true;
-        KeepAlive = true;
+        KeepAlive = {
+          Crashed = true;
+          SuccessfulExit = false;
+        };
         StandardOutPath = "/tmp/rift.log";
         StandardErrorPath = "/tmp/rift.log";
       };
-    };
-
-    system.defaults.CustomUserPreferences."com.ryanmacanth.Rift" = {
-      ConfigPath = "/etc/rift/config.toml";
     };
   };
 }

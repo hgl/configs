@@ -12,8 +12,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
   src = fetchFromGitHub {
     owner = "acsandmann";
     repo = "rift";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256-oOVNq4/hdiRcCbc9kaMxynnq2gXVezviQRTvjrdkfPs=";
+    rev = "feat/space-actor";
+    hash = "sha256-atW8aMYc0Puq5Cc8KU1xWjY2sqYWI+8AJleKU7sMHjg=";
   };
 
   cargoHash = "sha256-eb3Z5NIUusJApQWa6sDMRP//Y0BOToQsEIhQqqR728o=";
