@@ -12,7 +12,6 @@
     modules'.postgresql
     modules'.emacs-macport
     ./utm.nix
-    ./rift.nix
   ];
 
   nix = {

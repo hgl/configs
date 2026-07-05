@@ -16,13 +16,16 @@ in
     modules'.node
     modules'.python
     ./emacs
+    ./paneru.nix
   ];
   home.file = {
     ".hushlogin".text = "";
-    ".config/sops".source = mkLink "${homeDir}/sops";
-    ".config/karabiner/assets/complex_modifications".source = mkLink "${homeDir}/karabiner";
     "Library/Application Support/Code/User/settings.json".source =
       mkLink "${homeDir}/vscode/settings.json";
+  };
+  xdg.configFile = {
+    "sops".source = mkLink "${homeDir}/sops";
+    "karabiner/assets/complex_modifications".source = mkLink "${homeDir}/karabiner";
   };
   home.sessionPath = [
     "/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
@@ -31,8 +34,10 @@ in
   programs.ssh = {
     settings = {
       ${nodes.vm-nixos.name} = {
-        hostname = "${nodes.vm-nixos.name}.local";
-        user = "hgl";
+        HostName = "${nodes.vm-nixos.name}.local";
+        User = "hgl";
+        IdentityFile = "~/.ssh/id_pwless";
+        IdentitiesOnly = true;
       };
     };
   };

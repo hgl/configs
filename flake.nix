@@ -40,6 +40,10 @@
       url = "github:neurosnap/zmx";
       flake = false;
     };
+    paneru-unstable = {
+      url = "github:karinushka/paneru";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     zig2nix-unstable = {
       url = "github:Cloudef/zig2nix";
       flake = false;
