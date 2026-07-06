@@ -2,7 +2,7 @@ name: "Update Flake Lock"
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 21 * * 0"
+    - cron: "0 21 * * 5"
 
 permissions:
   actions: write
