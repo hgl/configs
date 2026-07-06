@@ -10,6 +10,7 @@
   imports = [
     modules'.fish
     ./claude.nix
+    ./lazygit.nix
     ./zmx.nix
   ];
   xdg = {
@@ -102,8 +103,6 @@
   };
 
   home.packages = with pkgs; [
-    pkgs'.vercel
-    lazygit
     nil
     awscli2
     gh
