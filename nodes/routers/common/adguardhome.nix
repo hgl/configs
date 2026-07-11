@@ -38,7 +38,7 @@
   };
 
   services.nginx.virtualHosts.ad = {
-    serverName = "ad";
+    serverName = "adguard";
     listen = [
       {
         addr = "[::]";
@@ -51,5 +51,5 @@
     };
   };
 
-  networkd.hostNameAliases = [ "ad" ];
+  networkd.hostNameAliases = [ "adguard" ];
 }
