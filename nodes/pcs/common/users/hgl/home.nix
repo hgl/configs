@@ -2,7 +2,6 @@
   pkgs,
   pkgs',
   modules',
-  inputs',
   nodes,
   ...
 }:
@@ -127,7 +126,6 @@
   };
 
   home.packages = with pkgs; [
-    pkgs'.vercel
     pkgs'.serve
     pkgs'.init
     coreutils
