@@ -8,7 +8,6 @@
     package = pkgs'.paneru;
     settings = {
       options = {
-        animation_speed = 20;
         focus_follows_mouse = false;
         mouse_follows_focus = false;
         horizontal_mouse_warp = -1;
@@ -51,10 +50,12 @@
         window_focus_east = "cmd + alt - l";
         window_focus_north = "cmd + alt - k";
         window_focus_south = "cmd + alt - j";
-        window_resize = "cmd + alt + shift - return";
-        window_center = "cmd + alt - return";
+        window_resize = "cmd + alt - return";
+        window_center = "cmd + alt - delete";
         window_swap_west = "cmd + alt + shift - h";
         window_swap_east = "cmd + alt + shift - l";
+        window_swap_north = "cmd + alt + shift - k";
+        window_swap_south = "cmd + alt + shift - j";
         window_stack = "cmd + alt - s";
         window_unstack = "cmd + alt + shift - s";
         window_nextdisplay = "cmd + alt - tab";
