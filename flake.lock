@@ -333,11 +333,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1767490580,
-        "narHash": "sha256-xoB78NbevZI9wCQpIXgIS8usmKinwv2DGkObYngtF5g=",
+        "lastModified": 1783749067,
+        "narHash": "sha256-7ByPTPq94hf3eM4k4FJauu9CsedvLY1zcgKyw+Pb+u4=",
         "owner": "hgl",
         "repo": "nix-networkd",
-        "rev": "8fbdc4023067a5177018632b2f081147c4d68219",
+        "rev": "f21cf1b42cb44c004eec234de0a733ebe8f5c15f",
         "type": "github"
       },
       "original": {
@@ -518,16 +518,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1783606376,
-        "narHash": "sha256-C/W5Pkyh816xbrNhIcFvno8LnCQsgGWbTw9q00b5inE=",
+        "lastModified": 1783679770,
+        "narHash": "sha256-U0F+xAHL85eaYiL439aoByZiJHSAhZ0bxvxR3WmsvRI=",
         "owner": "karinushka",
         "repo": "paneru",
-        "rev": "01b95a918e6942154138bbc9d8ec9dc298fb30e6",
+        "rev": "60617ef436b1deb123a17d974494a90cb7bc5fb9",
         "type": "github"
       },
       "original": {
         "owner": "karinushka",
         "repo": "paneru",
+        "rev": "60617ef436b1deb123a17d974494a90cb7bc5fb9",
         "type": "github"
       }
     },
