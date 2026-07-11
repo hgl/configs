@@ -29,7 +29,7 @@ client_p12_data=$(
 		base64 --wrap 52 |
 		sed 's/^/			/'
 )
-server_addrs=$(nixverse eval 'lib.concatLines (lib.mapAttrsToList (_: node: node.config.networking.fqdn) nodes.routers.nodes)')
+server_addrs=$(nixverse eval 'lib.concatLines (lib.mapAttrsToList (_: node: node.config.networking.fqdn) nodes.routers.hosts)')
 if [[ $client_group = admins ]]; then
 	display_name=VPN
 else
