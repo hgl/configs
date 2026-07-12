@@ -8,7 +8,10 @@
   boot = {
     loader = {
       timeout = 0;
-      systemd-boot.enable = true;
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 10;
+      };
       efi.canTouchEfiVariables = true;
     };
   };
@@ -46,6 +49,12 @@
     };
   };
   programs.fish.enable = true;
+
+  services.openssh.settings.AcceptEnv = [
+    "COLORTERM"
+    "TERM_PROGRAM"
+    "TERM_PROGRAM_VERSION"
+  ];
 
   networking = {
     useDHCP = false;

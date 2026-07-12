@@ -22,6 +22,11 @@
         serverAliveInterval = 0;
         serverAliveCountMax = 3;
         controlPath = "~/.ssh/master-%r@%n:%p";
+        sendEnv = [
+          "COLORTERM"
+          "TERM_PROGRAM"
+          "TERM_PROGRAM_VERSION"
+        ];
       };
       "github.com" = {
         user = "git";
