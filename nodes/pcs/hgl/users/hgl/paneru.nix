@@ -13,14 +13,13 @@
         horizontal_mouse_warp = -1;
         preset_column_widths = [
           0.33
-          0.5
           0.66
           1
         ];
       };
       padding = {
-        top = 5;
-        bottom = 5;
+        top = 0;
+        bottom = 0;
         left = 5;
         right = 5;
       };
@@ -50,8 +49,8 @@
         window_focus_east = "cmd + alt - l";
         window_focus_north = "cmd + alt - k";
         window_focus_south = "cmd + alt - j";
-        window_resize = "cmd + alt - return";
-        window_center = "cmd + alt - delete";
+        window_resize = "cmd + alt - space";
+        window_center = "cmd + alt - return";
         window_swap_west = "cmd + alt + shift - h";
         window_swap_east = "cmd + alt + shift - l";
         window_swap_north = "cmd + alt + shift - k";
@@ -59,7 +58,7 @@
         window_stack = "cmd + alt - s";
         window_unstack = "cmd + alt + shift - s";
         window_nextdisplay = "cmd + alt - tab";
-        window_manage = "cmd + alt - space";
+        window_manage = "cmd + alt - delete";
         window_virtualnum_1 = "cmd + alt - 1";
         window_virtualmovenum_1 = "cmd + alt + shift - 1";
         window_virtualnum_2 = "cmd + alt - 2";
