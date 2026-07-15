@@ -41,7 +41,7 @@
       flake = false;
     };
     paneru-unstable = {
-      url = "github:karinushka/paneru/60617ef436b1deb123a17d974494a90cb7bc5fb9";
+      url = "github:karinushka/paneru/4a635d8dd7bed0c1eb43b6b85788b1db58e0500f";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     zig2nix-unstable = {
