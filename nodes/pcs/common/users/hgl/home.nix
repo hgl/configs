@@ -133,6 +133,7 @@
   home.packages = with pkgs; [
     pkgs'.serve
     pkgs'.init
+    pkgs'.llm
     coreutils
     gnused
     gawk
