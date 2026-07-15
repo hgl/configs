@@ -12,11 +12,11 @@ rustPlatform.buildRustPackage (finalAttrs: {
   src = fetchFromGitHub {
     owner = "acsandmann";
     repo = "rift";
-    rev = "feat/space-actor";
-    hash = "sha256-atW8aMYc0Puq5Cc8KU1xWjY2sqYWI+8AJleKU7sMHjg=";
+    rev = "main";
+    hash = "sha256-6XdjbVTfyf+1SVFvaH85xGu3a9sKDcyshUAD1nM47MA=";
   };
 
-  cargoHash = "sha256-eb3Z5NIUusJApQWa6sDMRP//Y0BOToQsEIhQqqR728o=";
+  cargoHash = "sha256-qN34EIfS6etz4E5PO17QoUp9YrfiqVcYgz+cs+B1c9w=";
 
   buildInputs = [
     apple-sdk_15
