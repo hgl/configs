@@ -2,7 +2,6 @@
   pkgs,
   osConfig,
   modules',
-  pkgs',
   nodes,
   ...
 }:
@@ -10,6 +9,7 @@
   imports = [
     modules'.fish
     ./claude.nix
+    ./codex.nix
     ./lazygit.nix
     ./zmx.nix
   ];
@@ -66,11 +66,6 @@
         echo "''${direnv_layout_dirs[$PWD]:="$dir"}"
       }
     '';
-  };
-
-  programs.codex = {
-    enable = true;
-    package = pkgs'.codex;
   };
 
   programs.helix = {
