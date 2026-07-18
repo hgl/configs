@@ -11,7 +11,7 @@
   };
 }
 //
-  lib.optional
+  lib.optionalAttrs
     (lib.elem nodes.current.name [
       "vm-nixos"
       "glen"
