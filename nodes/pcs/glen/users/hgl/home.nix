@@ -7,16 +7,12 @@
 }:
 {
   imports = [
-    modules'.sopsAgeKeys
-    modules'.go
     modules'.node
     modules'.python
     modules'.karabiner
     modules'.emacs-macport
     modules'.vscode
     modules'.paneru
-    modules'.ghostty
-    modules'.zmx
   ];
   home.file = {
     ".hushlogin".text = "";

@@ -3,11 +3,9 @@
   config,
   pkgs,
   modules',
-  modulesPath,
   ...
 }:
 {
-  disabledModules = [ "${modulesPath}/services/postgresql" ];
   imports = [
     modules'.postgresql
     modules'.emacs-macport

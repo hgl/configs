@@ -9,9 +9,9 @@
   imports = [
     modules'.fish
     modules'.zmx
-    ./claude.nix
-    ./codex.nix
-    ./lazygit.nix
+    modules'.claude-code
+    modules'.codex
+    modules'.lazygit
   ];
   xdg = {
     enable = true;

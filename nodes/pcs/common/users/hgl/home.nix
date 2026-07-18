@@ -6,7 +6,12 @@
 }:
 {
   imports = [
+    modules'.sopsAgeKeys
     modules'.fish
+    modules'.ghostty
+    modules'.claude-code
+    modules'.codex
+    modules'.zmx
   ];
   xdg = {
     enable = true;
@@ -91,16 +96,6 @@
         echo "''${direnv_layout_dirs[$PWD]:="$dir"}"
       }
     '';
-  };
-
-  programs.codex = {
-    enable = true;
-    package = pkgs'.codex;
-  };
-
-  programs.claude-code = {
-    enable = true;
-    package = pkgs'.claude-code;
   };
 
   programs.nushell = {
