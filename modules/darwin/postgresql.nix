@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  modulesPath,
   ...
 }:
 
@@ -40,6 +41,7 @@ let
 in
 
 {
+  disabledModules = [ "${modulesPath}/services/postgresql" ];
   imports = [
     (mkRemovedOptionModule [
       "services"

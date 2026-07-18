@@ -5,10 +5,13 @@
   ...
 }:
 let
-  keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG hgl"
+  hglKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG hgl/hgl"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDrXT3k9ISbCa/VRCjQynAegfMQ5KhNIeh2WmC3C876u hgl-phone"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBEiKGL8b89ObiPLa6+++d6fZCaTzhE+PITJ48/XTuzs vm-nixos"
+  ];
+  glenKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMXd859ueEG2/Ot8p9o2fSQMSSokfBuqJ+ZyF1d/4rAU"
   ];
   pwlessKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJr3km3lHUk5EZFuEn9fDiVAx5B/vB4thNNdrUjm07W hgl";
   builderKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos root";
@@ -18,7 +21,7 @@ let
   keysScript = pkgs.writeText "keys" ''
     mkdir -p /root/.ssh
     cat <<EOF >/root/.ssh/authorized_keys
-    ${lib.concatStringsSep "\n" keys}
+    ${lib.concatStringsSep "\n" hglKeys}
     EOF
   '';
 in
@@ -28,15 +31,16 @@ lib.mkMerge (
       "vm-nixos"
       "hgl"
       "hgl2"
+      "glen"
     ])
     {
       users.users.hgl = {
-        openssh.authorizedKeys.keys = keys ++ [ pwlessKey ];
+        openssh.authorizedKeys.keys = hglKeys ++ [ pwlessKey ];
       };
     }
   ++ lib.optional (nodes.current.os == "nixos") {
     users.users.root = {
-      openssh.authorizedKeys.keys = keys;
+      openssh.authorizedKeys.keys = hglKeys;
     };
 
     services.openssh = {
@@ -49,7 +53,7 @@ lib.mkMerge (
   }
   ++ lib.optional (nodes.current.os == "darwin") {
     users.users.root = {
-      openssh.authorizedKeys.keys = keys;
+      openssh.authorizedKeys.keys = hglKeys;
     };
 
     services.openssh = {

@@ -13,4 +13,8 @@
       targetHost = "root@hgl2";
     };
   };
+  glen = {
+    system = "aarch64-darwin";
+    channel = "unstable";
+  };
 }

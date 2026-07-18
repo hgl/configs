@@ -2,7 +2,6 @@
   pkgs,
   pkgs',
   modules',
-  nodes,
   ...
 }:
 {
@@ -28,18 +27,8 @@
           "TERM_PROGRAM_VERSION"
         ];
       };
-      "github.com" = {
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519.pub";
-        identitiesOnly = true;
-      };
-      ${nodes.hgl2.name} = {
-        user = "hgl";
-      };
     };
   };
-  home.file.".ssh/id_ed25519.pub".text =
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG";
 
   programs.git = {
     enable = true;
@@ -54,7 +43,6 @@
       init.defaultBranch = "main";
       user = {
         name = "Glen Huang";
-        email = "me@glenhuang.com";
         signingkey = "~/.ssh/id_ed25519.pub";
       };
       push.autoSetupRemote = true;
@@ -155,6 +143,7 @@
     awscli2
     gh
     lazygit
+    yazi
 
     nil
     nixfmt
