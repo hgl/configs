@@ -8,10 +8,10 @@
 {
   imports = [
     modules'.fish
+    modules'.zmx
     ./claude.nix
     ./codex.nix
     ./lazygit.nix
-    ./zmx.nix
   ];
   xdg = {
     enable = true;

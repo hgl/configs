@@ -1,12 +1,15 @@
 {
+  lib,
+  stdenv,
   zig_0_15,
   runCommand,
   runCommandLocal,
   installShellFiles,
-  inputs',
-  lib,
   callPackage,
   writeShellApplication,
+  writeShellScriptBin,
+  apple-sdk,
+  inputs',
 }:
 let
   zig2nixSrc = inputs'.zig2nix;
@@ -46,25 +49,42 @@ let
     }
   );
 
-  zmx = zigPackage {
-    src = lib.cleanSource inputs'.zmx;
-    zigPreferMusl = true;
-    postPatch = ''
-      if [[ -e "''${ZIG_GLOBAL_CACHE_DIR:-}/p" ]]; then
-        deps_store="$(readlink "$ZIG_GLOBAL_CACHE_DIR/p")"
-        deps_cache="$ZIG_GLOBAL_CACHE_DIR/p"
-        uucode="uucode-0.2.0-ZZjBPqZVVABQepOqZHR7vV_NcaN-wats0IB6o-Exj6m9"
+  xcrunWrapper = writeShellScriptBin "xcrun" ''
+    echo "${apple-sdk.sdkroot}"
+  '';
+  xcodeselectWrapper = writeShellScriptBin "xcode-select" ''
+    echo "${apple-sdk.sdkroot}"
+  '';
 
-        rm "$deps_cache"
-        mkdir "$deps_cache"
-        ln -s "$deps_store"/* "$deps_cache"/
-        rm "$deps_cache/$uucode"
-        cp -RL "$deps_store/$uucode" "$deps_cache/$uucode"
-        chmod -R u+w "$deps_cache/$uucode"
-        patch -d "$deps_cache/$uucode" -p1 < ${../bundles/emacs/pkgs/emacs-macport/emacs-libgterm/uucode-nix-macos.patch}
-      fi
-    '';
-  };
+  zmx = zigPackage (
+    {
+      src = lib.cleanSource inputs'.zmx;
+      zigPreferMusl = !stdenv.hostPlatform.isDarwin;
+      postPatch = ''
+        if [[ -e "''${ZIG_GLOBAL_CACHE_DIR:-}/p" ]]; then
+          deps_store="$(readlink "$ZIG_GLOBAL_CACHE_DIR/p")"
+          deps_cache="$ZIG_GLOBAL_CACHE_DIR/p"
+          uucode="uucode-0.2.0-ZZjBPqZVVABQepOqZHR7vV_NcaN-wats0IB6o-Exj6m9"
+
+          rm "$deps_cache"
+          mkdir "$deps_cache"
+          ln -s "$deps_store"/* "$deps_cache"/
+          rm "$deps_cache/$uucode"
+          cp -RL "$deps_store/$uucode" "$deps_cache/$uucode"
+          chmod -R u+w "$deps_cache/$uucode"
+          patch -d "$deps_cache/$uucode" -p1 < ${../../emacs/pkgs/emacs-macport/emacs-libgterm/uucode-nix-macos.patch}
+        fi
+      '';
+    }
+    // lib.optionalAttrs stdenv.hostPlatform.isDarwin {
+      glibc = null;
+      musl = null;
+      nativeBuildInputs = [
+        xcrunWrapper
+        xcodeselectWrapper
+      ];
+    }
+  );
 in
 runCommand zmx.name
   {
@@ -74,6 +94,7 @@ runCommand zmx.name
   ''
     mkdir -p $out/bin
     ln -s ${zmx}/bin/zmx $out/bin/zmx
+    export ZMX_DIR="$TMPDIR/zmx"
 
     echo '#compdef zmx' > _zmx
     $out/bin/zmx completions zsh >> _zmx

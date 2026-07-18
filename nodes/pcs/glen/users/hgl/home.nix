@@ -16,6 +16,7 @@
     modules'.vscode
     modules'.paneru
     modules'.ghostty
+    modules'.zmx
   ];
   home.file = {
     ".hushlogin".text = "";

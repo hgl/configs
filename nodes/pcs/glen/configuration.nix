@@ -25,6 +25,10 @@
     reattach = true;
   };
 
+  services.openssh.extraConfig = ''
+    AcceptEnv COLORTERM TERM_PROGRAM TERM_PROGRAM_VERSION
+  '';
+
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql_18_jit;
