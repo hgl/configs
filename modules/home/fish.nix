@@ -1,4 +1,3 @@
-{ nodes, ... }:
 {
   programs.fish = {
     enable = true;

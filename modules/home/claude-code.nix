@@ -9,15 +9,13 @@
     enable = true;
     package = pkgs'.claude-code;
   };
-}
-//
-  lib.optionalAttrs
-    (lib.elem nodes.current.name [
-      "vm-nixos"
-      "glen"
-    ])
-    {
-      programs.fish.shellAliases = {
+  programs.fish.shellAliases =
+    lib.mkIf
+      (lib.elem nodes.current.name [
+        "vm-nixos"
+        "glen"
+      ])
+      {
         claude = "claude --dangerously-skip-permissions";
       };
-    }
+}

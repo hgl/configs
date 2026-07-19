@@ -9,16 +9,13 @@
     enable = true;
     package = pkgs'.codex;
   };
-
-}
-//
-  lib.optionalAttrs
-    (lib.elem nodes.current.name [
-      "vm-nixos"
-      "glen"
-    ])
-    {
-      programs.fish.shellAliases = {
+  programs.fish.shellAliases =
+    lib.mkIf
+      (lib.elem nodes.current.name [
+        "vm-nixos"
+        "glen"
+      ])
+      {
         codex = "codex --yolo";
       };
-    }
+}
