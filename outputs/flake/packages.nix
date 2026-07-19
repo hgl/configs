@@ -16,6 +16,6 @@
     claude-code = nodes.hgl.config.home-manager.users.hgl.programs.claude-code.package;
     nodejs-slim_26 = nodes.hgl.pkgs.nodejs-slim_26;
     paneru = nodes.hgl.config.home-manager.users.hgl.services.paneru.package;
-    zmx = nodes.vm-nixos.pkgs'.zmx;
+    zmx = nodes.glen.pkgs'.zmx;
   };
 }
