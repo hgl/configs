@@ -21,12 +21,12 @@
     enableDefaultConfig = false;
     settings = {
       "*" = {
-        controlMaster = "auto";
-        controlPersist = "10m";
-        serverAliveInterval = 0;
-        serverAliveCountMax = 3;
-        controlPath = "~/.ssh/master-%r@%n:%p";
-        sendEnv = [
+        ControlMaster = "auto";
+        ControlPersist = "10m";
+        ServerAliveInterval = 0;
+        ServerAliveCountMax = 3;
+        ControlPath = "~/.ssh/master-%r@%n:%p";
+        SendEnv = [
           "COLORTERM"
           "TERM_PROGRAM"
           "TERM_PROGRAM_VERSION"
