@@ -22,7 +22,7 @@
 
   programs.ssh = {
     settings = {
-      "github.com" = {
+      "*" = {
         IdentityAgent = lib.toJSON "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
       };
 
@@ -31,6 +31,7 @@
         User = "git";
         IdentityFile = "~/.ssh/id_ed25519";
         IdentitiesOnly = true;
+        IdentityAgent = "none";
       };
 
       "github-hgl" = {
@@ -38,7 +39,6 @@
         User = "git";
         IdentityFile = "~/.ssh/id_hgl.pub";
         IdentitiesOnly = true;
-        IdentityAgent = lib.toJSON "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
       };
     };
   };
