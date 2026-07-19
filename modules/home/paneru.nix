@@ -43,6 +43,11 @@
           bundle_id = "com.mitchellh.ghostty";
           width = 0.33;
         };
+        onepassword-touchid = {
+          title = "1Password";
+          bundle_id = "com.1password.1password";
+          floating = true;
+        };
       };
       bindings = {
         window_focus_west = "cmd + alt - h";
