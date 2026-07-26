@@ -47,10 +47,6 @@
     root.home = "/var/root";
   };
 
-  networking = {
-    computerName = "Glen’s Work Laptop";
-  };
-
   system.primaryUser = "hgl";
 
   system.stateVersion = 6;
