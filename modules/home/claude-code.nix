@@ -16,6 +16,6 @@
         "glen"
       ])
       {
-        claude = "claude --dangerously-skip-permissions";
+        claude = "claude --chrome --dangerously-skip-permissions";
       };
 }
