@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
   nix = {
     settings = {
       experimental-features = [
@@ -9,6 +9,10 @@
       extra-trusted-public-keys = [ "hgl.cachix.org-1:niFEnN9pxxWAvFsgbxCw9YaCdEfrDUV8wgWfS1HpK0M=" ];
     };
   };
+
+  environment.systemPackages = with pkgs; [
+    git
+  ];
 
   system.stateVersion = 6;
 }
