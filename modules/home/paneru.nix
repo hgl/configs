@@ -31,6 +31,7 @@
           width = 4;
         };
       };
+      swipe.gesture.vertical = false;
       windows = {
         all = {
           title = ".*";
