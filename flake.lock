@@ -521,7 +521,6 @@
         "rust-overlay-unstable": "rust-overlay-unstable",
         "sops-nix-unstable-darwin": "sops-nix-unstable-darwin",
         "sops-nix-unstable-nixos": "sops-nix-unstable-nixos",
-        "zig2nix-unstable": "zig2nix-unstable",
         "zmx-unstable": "zmx-unstable"
       }
     },
@@ -640,22 +639,6 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "zig2nix-unstable": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1784861836,
-        "narHash": "sha256-XjsgrOy6Oh5m8lNu29KtxygXmmPuX6/NBdOqze+j2G0=",
-        "owner": "Cloudef",
-        "repo": "zig2nix",
-        "rev": "0d0a06147c34b61cd4957ec4ff57c340d3f39386",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Cloudef",
-        "repo": "zig2nix",
         "type": "github"
       }
     },

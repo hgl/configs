@@ -44,10 +44,6 @@
       url = "github:karinushka/paneru/4a635d8dd7bed0c1eb43b6b85788b1db58e0500f";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    zig2nix-unstable = {
-      url = "github:Cloudef/zig2nix";
-      flake = false;
-    };
     rust-overlay-unstable = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
