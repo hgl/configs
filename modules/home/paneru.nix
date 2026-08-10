@@ -51,16 +51,40 @@
         };
       };
       bindings = {
-        window_focus_west = "cmd + alt - h";
-        window_focus_east = "cmd + alt - l";
-        window_focus_north = "cmd + alt - k";
-        window_focus_south = "cmd + alt - j";
+        window_focus_west = [
+          "cmd + alt - h"
+          "cmd + alt - leftarrow"
+        ];
+        window_focus_east = [
+          "cmd + alt - l"
+          "cmd + alt - rightarrow"
+        ];
+        window_focus_north = [
+          "cmd + alt - k"
+          "cmd + alt - uparrow"
+        ];
+        window_focus_south = [
+          "cmd + alt - j"
+          "cmd + alt - downarrow"
+        ];
         window_resize = "cmd + alt - space";
         window_center = "cmd + alt - return";
-        window_swap_west = "cmd + alt + shift - h";
-        window_swap_east = "cmd + alt + shift - l";
-        window_swap_north = "cmd + alt + shift - k";
-        window_swap_south = "cmd + alt + shift - j";
+        window_swap_west = [
+          "cmd + alt + shift - h"
+          "cmd + alt + shift - leftarrow"
+        ];
+        window_swap_east = [
+          "cmd + alt + shift - l"
+          "cmd + alt + shift - rightarrow"
+        ];
+        window_swap_north = [
+          "cmd + alt + shift - k"
+          "cmd + alt + shift - uparrow"
+        ];
+        window_swap_south = [
+          "cmd + alt + shift - j"
+          "cmd + alt + shift - downarrow"
+        ];
         window_stack = "cmd + alt - s";
         window_unstack = "cmd + alt + shift - s";
         window_nextdisplay = "cmd + alt - tab";
