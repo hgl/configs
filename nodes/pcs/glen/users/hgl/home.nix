@@ -22,22 +22,11 @@
 
   programs.ssh = {
     settings = {
-      "*" = {
-        IdentityAgent = lib.toJSON "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
-      };
-
-      "github-glenplan" = {
-        HostName = "github.com";
-        User = "git";
-        IdentityFile = "~/.ssh/id_ed25519";
-        IdentitiesOnly = true;
-        IdentityAgent = "none";
-      };
-
       "github-hgl" = {
         HostName = "github.com";
         User = "git";
         IdentityFile = "~/.ssh/id_hgl.pub";
+        IdentityAgent = lib.toJSON "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
         IdentitiesOnly = true;
       };
     };
