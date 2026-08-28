@@ -10,7 +10,6 @@
       options = {
         focus_follows_mouse = false;
         mouse_follows_focus = false;
-        horizontal_mouse_warp = -1;
         preset_column_widths = [
           0.33
           0.66
