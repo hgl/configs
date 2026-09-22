@@ -17,6 +17,10 @@
   ];
   home.file = {
     ".hushlogin".text = "";
+    # Ghostty only sets TERMINFO for shells it spawns, so ssh logins can't find
+    # xterm-ghostty without this.
+    ".terminfo".source =
+      config.lib.file.mkOutOfStoreSymlink "/Applications/Ghostty.app/Contents/Resources/terminfo";
   };
 
   programs.ssh = {
@@ -36,12 +40,6 @@
             header = ''Match exec "printenv SSH_CONNECTION"'';
             IdentityAgent = "SSH_AUTH_SOCK";
           };
-      "github-hgl" = {
-        HostName = "github.com";
-        User = "git";
-        IdentityFile = "~/.ssh/id_hgl.pub";
-        IdentitiesOnly = true;
-      };
       "*" = {
         IdentityAgent = lib.toJSON "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
       };

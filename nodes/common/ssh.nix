@@ -8,12 +8,7 @@ let
   hglKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG hgl"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDrXT3k9ISbCa/VRCjQynAegfMQ5KhNIeh2WmC3C876u hgl-phone"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBEiKGL8b89ObiPLa6+++d6fZCaTzhE+PITJ48/XTuzs vm-nixos"
   ];
-  glenKeys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMXd859ueEG2/Ot8p9o2fSQMSSokfBuqJ+ZyF1d/4rAU"
-  ];
-  pwlessKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJr3km3lHUk5EZFuEn9fDiVAx5B/vB4thNNdrUjm07W hgl";
   builderKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFTNE97QDW/v8PgMZoZz7kalVJUKVyI7eypqJuUrkos root";
 
   # Make nixos installer accept ssh keys by running
@@ -35,7 +30,7 @@ lib.mkMerge (
     ])
     {
       users.users.hgl = {
-        openssh.authorizedKeys.keys = hglKeys ++ [ pwlessKey ];
+        openssh.authorizedKeys.keys = hglKeys;
       };
     }
   ++ lib.optional (nodes.current.os == "nixos") {
