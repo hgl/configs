@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   pkgs',
   modules',
@@ -16,6 +17,12 @@
   xdg = {
     enable = true;
   };
+
+  home.file.".ssh/id_hgl.pub".text =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG";
+  home.activation.sshSessionsDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p -m 700 "$HOME/.ssh/sessions"
+  '';
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
@@ -25,7 +32,7 @@
         ControlPersist = "10m";
         ServerAliveInterval = 0;
         ServerAliveCountMax = 3;
-        ControlPath = "~/.ssh/master-%r@%n:%p";
+        ControlPath = "~/.ssh/sessions/%r@%n:%p";
         SendEnv = [
           "COLORTERM"
           "TERM_PROGRAM"

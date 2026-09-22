@@ -17,8 +17,6 @@
   home.file = {
     ".hushlogin".text = "";
   };
-  home.file.".ssh/id_hgl.pub".text =
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICezYVapRivfpiaxOFG09uty365vyGDqXSGfFKvB54yG";
 
   programs.ssh = {
     settings = {
