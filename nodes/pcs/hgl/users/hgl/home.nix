@@ -29,12 +29,10 @@
       ${nodes.vm-nixos.name} = {
         HostName = "${nodes.vm-nixos.name}.local";
         User = "hgl";
-        IdentityFile = "~/.ssh/id_pwless";
+        IdentityFile = "~/.ssh/id_ed25519.pub";
         IdentitiesOnly = true;
       };
       "*" = {
-        IdentityFile = "~/.ssh/id_ed25519.pub";
-        IdentitiesOnly = true;
         IdentityAgent = lib.toJSON "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
       };
     };
