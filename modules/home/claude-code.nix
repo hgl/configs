@@ -13,7 +13,7 @@
     lib.mkIf
       (lib.elem nodes.current.name [
         "vm-nixos"
-        "glen"
+        "pl-laptop"
       ])
       {
         claude = "claude --chrome --dangerously-skip-permissions";

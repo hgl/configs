@@ -2,7 +2,6 @@
   pkgs,
   osConfig,
   modules',
-  nodes,
   ...
 }:
 {
@@ -46,8 +45,8 @@
         serverAliveCountMax = 3;
         controlPath = "~/.ssh/master-%r@%n:%p";
       };
-      "hgl" = {
-        hostname = "${nodes.hgl.name}.local";
+      "laptop" = {
+        hostname = "laptop.local";
         user = "hgl";
       };
     };

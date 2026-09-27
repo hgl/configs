@@ -1,19 +1,19 @@
 {
-  hgl = {
+  laptop = {
     system = "aarch64-darwin";
     channel = "unstable";
   };
-  hgl2 = {
+  laptop2 = {
     system = "x86_64-linux";
     channel = "unstable";
     install = {
       targetHost = "root@nixos";
     };
     deploy = {
-      targetHost = "root@hgl2";
+      targetHost = "root@laptop2";
     };
   };
-  glen = {
+  pl-laptop = {
     system = "aarch64-darwin";
     channel = "unstable";
   };

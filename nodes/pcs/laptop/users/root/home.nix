@@ -1,12 +1,12 @@
-{ nodes, ... }:
+{ ... }:
 {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
     settings = {
-      ${nodes.vm-nixos.name} = {
+      "vm-nixos" = {
         user = "root";
-        hostname = "${nodes.vm-nixos.name}.local";
+        hostname = "vm-nixos.local";
         identityFile = "~/.ssh/id_ed25519.pub";
         identitiesOnly = true;
       };

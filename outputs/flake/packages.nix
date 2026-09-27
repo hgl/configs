@@ -10,11 +10,11 @@
     claude-code = nodes.vm-nixos.config.home-manager.users.hgl.programs.claude-code.package;
   };
   aarch64-darwin = {
-    emacs-macport = nodes.hgl.pkgs'.emacs-macport;
-    agent-deck = nodes.hgl.pkgs'.agent-deck;
-    codex = nodes.hgl.config.home-manager.users.hgl.programs.codex.package;
-    claude-code = nodes.hgl.config.home-manager.users.hgl.programs.claude-code.package;
-    nodejs-slim_26 = nodes.hgl.pkgs.nodejs-slim_26;
-    paneru = nodes.hgl.config.home-manager.users.hgl.services.paneru.package;
+    emacs-macport = nodes.laptop.pkgs'.emacs-macport;
+    agent-deck = nodes.laptop.pkgs'.agent-deck;
+    codex = nodes.laptop.config.home-manager.users.hgl.programs.codex.package;
+    claude-code = nodes.laptop.config.home-manager.users.hgl.programs.claude-code.package;
+    nodejs-slim_26 = nodes.laptop.pkgs.nodejs-slim_26;
+    paneru = nodes.laptop.config.home-manager.users.hgl.services.paneru.package;
   };
 }

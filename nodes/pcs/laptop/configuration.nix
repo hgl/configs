@@ -8,6 +8,7 @@
   imports = [
     modules'.postgresql
     modules'.emacs-macport
+    ./utm.nix
   ];
 
   nix = {
@@ -16,18 +17,24 @@
       extra-substituters = [ "https://hgl.cachix.org" ];
       extra-trusted-public-keys = [ "hgl.cachix.org-1:niFEnN9pxxWAvFsgbxCw9YaCdEfrDUV8wgWfS1HpK0M=" ];
     };
+    distributedBuilds = true;
+    buildMachines = [
+      {
+        hostName = "vm-nixos.local";
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+        ];
+      }
+    ];
   };
   nixpkgs.config.allowUnfree = true;
 
   security.pam.services.sudo_local = {
     enable = true;
-    # touchIdAuth = true;
+    touchIdAuth = true;
     reattach = true;
   };
-
-  services.openssh.extraConfig = ''
-    AcceptEnv COLORTERM TERM_PROGRAM TERM_PROGRAM_VERSION
-  '';
 
   services.postgresql = {
     enable = true;
@@ -45,6 +52,11 @@
   users.users = {
     hgl.home = "/Users/hgl";
     root.home = "/var/root";
+  };
+
+  networking = {
+    hostName = "hgl-laptop";
+    computerName = "Glen’s Laptop";
   };
 
   system.primaryUser = "hgl";

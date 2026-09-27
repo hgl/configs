@@ -24,9 +24,9 @@ lib.mkMerge (
   lib.optional
     (lib.elem nodes.current.name [
       "vm-nixos"
-      "hgl"
-      "hgl2"
-      "glen"
+      "laptop"
+      "laptop2"
+      "pl-laptop"
     ])
     {
       users.users.hgl = {

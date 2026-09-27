@@ -13,7 +13,7 @@
     lib.mkIf
       (lib.elem nodes.current.name [
         "vm-nixos"
-        "glen"
+        "pl-laptop"
       ])
       {
         codex = "codex --yolo";

@@ -3,7 +3,6 @@
   pkgs,
   pkgs',
   modules',
-  nodes,
   ...
 }:
 {
@@ -26,8 +25,8 @@
 
   programs.ssh = {
     settings = {
-      ${nodes.vm-nixos.name} = {
-        HostName = "${nodes.vm-nixos.name}.local";
+      "vm-nixos" = {
+        HostName = "vm-nixos.local";
         User = "hgl";
         IdentityFile = "~/.ssh/id_ed25519.pub";
         IdentitiesOnly = true;
