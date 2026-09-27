@@ -13,8 +13,4 @@
       targetHost = "root@laptop2";
     };
   };
-  pl-laptop = {
-    system = "aarch64-darwin";
-    channel = "unstable";
-  };
 }

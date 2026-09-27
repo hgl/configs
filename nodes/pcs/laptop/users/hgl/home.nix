@@ -14,7 +14,6 @@
     modules'.karabiner
     modules'.emacs-macport
     modules'.vscode
-    modules'.paneru
     modules'.ghostty
   ];
   home.file = {
