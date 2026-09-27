@@ -11,6 +11,7 @@
   };
   aarch64-darwin = {
     emacs-macport = nodes.hgl.pkgs'.emacs-macport;
+    agent-deck = nodes.hgl.pkgs'.agent-deck;
     codex = nodes.hgl.config.home-manager.users.hgl.programs.codex.package;
     claude-code = nodes.hgl.config.home-manager.users.hgl.programs.claude-code.package;
     nodejs-slim_26 = nodes.hgl.pkgs.nodejs-slim_26;
