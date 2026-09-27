@@ -24,6 +24,23 @@ let
     worktree = false
     with_state = false
     docker = "off"
+
+    # Two tool-scoped groups so the quick-create key has a per-tool cursor
+    # position: on a group header it takes the tool from that group's most
+    # recent session. No default_path — it would have to differ per machine, so
+    # the path falls back to the cursor's session, then the launch cwd.
+    [groups."claude"]
+    create = true
+
+    [groups."codex"]
+    create = true
+
+    [hotkeys]
+    # Swap n/N so the plain key is the auto-named one that never prompts for a
+    # name. `n` quick-creates (inheriting tool/path/options from the cursor),
+    # `N` opens the full dialog when a field needs setting explicitly.
+    new_session = "N"
+    quick_create = "n"
   '';
 in
 {
@@ -33,6 +50,16 @@ in
     # tmux instead of linking it, so it has to be on PATH.
     pkgs.tmux
   ];
+
+  # Quick-create straight from the shell, bypassing the deck. -Q auto-names the
+  # session (suppressed by --title), --attach starts it and drops you in. Add
+  # --model / --effort / --account here to pin per-alias defaults; the in-TUI
+  # quick create can only inherit them from the cursor.
+  programs.fish.shellAliases = {
+    ad = "agent-deck";
+    ad-claude = "agent-deck add -Q -c claude --attach";
+    ad-codex = "agent-deck add -Q -c codex --attach";
+  };
 
   # agent-deck owns config.toml at runtime: the TUI settings view and the config
   # migrations both rewrite it via os.WriteFile(path, …, 0600). Managing it with
