@@ -16,6 +16,6 @@
         "pl-laptop"
       ])
       {
-        codex = "codex --yolo";
+        codex = "codex --yolo --no-daemon";
       };
 }
