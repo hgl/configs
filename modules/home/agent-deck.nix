@@ -9,6 +9,27 @@ let
   cfg = config.programs.agent-deck;
   tomlFormat = pkgs.formats.toml { };
   configSource = tomlFormat.generate "agent-deck-config.toml" cfg.settings;
+  codexLauncher = pkgs.writeShellScript "agent-deck-codex" ''
+    # Codex queries the terminal palette once at startup. A detached tmux
+    # session has no terminal to answer, so wait for the first attachment.
+    # Once started, Codex can keep running normally after the client detaches.
+    if [[ -n "''${TMUX:-}" && -n "''${TMUX_PANE:-}" && -t 1 ]]; then
+      session=$(${lib.getExe pkgs.tmux} display-message -p -t "$TMUX_PANE" '#{session_id}')
+      attached() {
+        # agent-deck's control-mode clients do not supply a terminal palette.
+        [[ "$(${lib.getExe pkgs.tmux} list-clients -t "$session" -F '#{client_control_mode}')" == *0* ]]
+      }
+      if ! attached; then
+        while ! attached; do
+          sleep 0.05
+        done
+        # Let tmux finish its own terminal queries over the SSH connection
+        # before Codex starts its much shorter (250 ms) palette probe.
+        sleep 1
+      fi
+    fi
+    exec ${lib.getExe config.programs.codex.package} "$@"
+  '';
 in
 {
   options.programs.agent-deck.settings = lib.mkOption {
@@ -23,6 +44,8 @@ in
 
   config = {
     programs.agent-deck.settings = {
+      codex.command = toString codexLauncher;
+
       tmux = {
         # Host sessions on their own tmux server (tmux -L agent-deck) so agent-deck's
         # bind-key, set-option and status line mutations stay off the default server.
