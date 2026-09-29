@@ -28,10 +28,16 @@ let
         sleep 1
       fi
     fi
-    exec ${lib.getExe config.programs.codex.package} "$@"
+    exec ${lib.getExe config.programs.codex.package} ${lib.escapeShellArgs cfg.codexArgs} "$@"
   '';
 in
 {
+  options.programs.agent-deck.codexArgs = lib.mkOption {
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+    description = "Arguments passed to every Codex invocation launched by Agent Deck.";
+  };
+
   options.programs.agent-deck.settings = lib.mkOption {
     type = tomlFormat.type;
     default = { };

@@ -1,0 +1,236 @@
+--- a/internal/termreply/filter.go
++++ b/internal/termreply/filter.go
+@@ -1,4 +1,6 @@
+ package termreply
++
++import "strings"
+ 
+ const (
+ 	escapeByte = 0x1b
+@@ -44,16 +46,44 @@
+ 	filterModeDiscardEscapeString
+ 	filterModeCollectCSI
+ 	filterModeCollectSS3
++	filterModeCollectColorReply
+ )
+ 
+ // Filter strips terminal-generated control replies from a byte stream while
+ // preserving ordinary keyboard input. It is stateful so replies split across
+ // reads are discarded without relying on terminal-specific payload strings.
+ type Filter struct {
+-	mode                filterMode
+-	pendingEsc          bool
+-	escapeSeenInDiscard bool
+-	sequenceBuf         []byte
++	// PreserveColorReplies lets an attached tmux client learn the terminal's
++	// actual default palette. Leave false when draining replies back to the TUI.
++	PreserveColorReplies bool
++	mode                 filterMode
++	pendingEsc           bool
++	escapeSeenInDiscard  bool
++	sequenceBuf          []byte
++}
++
++// isDefaultColorReply accepts only OSC 10/11 RGB replies, not arbitrary OSC
++// payloads. The caller supplies the payload without its introducer/terminator.
++func isDefaultColorReply(payload []byte) bool {
++	s := string(payload)
++	if !strings.HasPrefix(s, "10;rgb:") && !strings.HasPrefix(s, "11;rgb:") {
++		return false
++	}
++	parts := strings.Split(s[7:], "/")
++	if len(parts) != 3 {
++		return false
++	}
++	for _, part := range parts {
++		if len(part) < 1 || len(part) > 4 {
++			return false
++		}
++		for _, c := range part {
++			if !(c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F') {
++				return false
++			}
++		}
++	}
++	return true
+ }
+ 
+ // Active reports whether the filter is carrying parser state across read boundaries.
+@@ -105,9 +135,8 @@
+ // host terminal. Per @Clean-Cole's root-cause analysis in #738, swallowing
+ // these breaks modifyOtherKeys negotiation and collapses Shift+Enter to bare
+ // CR in iTerm2 default profile. They must pass through to the wrapped tmux
+-// client regardless of the armed flag. Unlike DCS/OSC/APC/PM/SOS (which are
+-// purely outer-TUI capability responses and are unconditionally stripped),
+-// these CSI replies are consumed by tmux itself.
++// client regardless of the armed flag. These CSI replies are consumed by
++// tmux itself; default-color OSC replies are also needed during active attach.
+ func isTmuxCapabilityReplyCSIFinalByte(b byte) bool {
+ 	switch b {
+ 	case csiFinalDeviceAttributesByte,
+@@ -135,7 +164,8 @@
+ }
+ 
+ // Consume filters a chunk of bytes. Escape-string replies (OSC/DCS/APC/PM/SOS)
+-// are discarded unconditionally — they have no keyboard overlap, so a human
++// are discarded unless PreserveColorReplies allows a validated OSC 10/11 RGB
++// reply through. Other escape strings have no keyboard overlap, so a human
+ // cannot produce them, and leaking them to the inner PTY has real-world
+ // failure modes (see #731: iTerm2 XTVERSION DCS leaking as `TERM2 3.6.10n`
+ // input into the wrapped agent).
+@@ -161,6 +191,29 @@
+ 
+ 	for _, b := range src {
+ 		switch f.mode {
++		case filterModeCollectColorReply:
++			f.sequenceBuf = append(f.sequenceBuf, b)
++			end := 0
++			if b == bellByte {
++				end = 1
++			} else if b == stringTerminatorByte && f.escapeSeenInDiscard {
++				end = 2
++			}
++			if end != 0 {
++				if isDefaultColorReply(f.sequenceBuf[2 : len(f.sequenceBuf)-end]) {
++					out = flushSequence(out, f.sequenceBuf)
++				}
++				f.resetSequenceState()
++			} else if len(f.sequenceBuf) > 64 {
++				// Bound buffering, then discard the rest like any other OSC.
++				f.mode = filterModeDiscardEscapeString
++				f.sequenceBuf = f.sequenceBuf[:0]
++				f.escapeSeenInDiscard = b == escapeByte
++			} else {
++				f.escapeSeenInDiscard = b == escapeByte
++			}
++			continue
++
+ 		case filterModeDiscardEscapeString:
+ 			if f.escapeSeenInDiscard {
+ 				f.escapeSeenInDiscard = false
+@@ -217,6 +270,9 @@
+ 		if f.pendingEsc {
+ 			f.pendingEsc = false
+ 			switch {
++			case b == operatingSystemCommandByte && f.PreserveColorReplies:
++				f.beginSequence(filterModeCollectColorReply, escapeByte, operatingSystemCommandByte)
++				continue
+ 			case isEscapeStringIntroducer(b):
+ 				// Escape-string replies (DCS/OSC/APC/PM/SOS) are never
+ 				// legitimate keyboard input — strip regardless of armed
+@@ -254,7 +310,7 @@
+ 		switch f.mode {
+ 		case filterModeCollectCSI, filterModeCollectSS3:
+ 			out = flushSequence(out, f.sequenceBuf)
+-		case filterModeDiscardEscapeString:
++		case filterModeDiscardEscapeString, filterModeCollectColorReply:
+ 			// Drop incomplete escape-string replies on EOF.
+ 		}
+ 		f.pendingEsc = false
+--- /dev/null
++++ b/internal/termreply/color_reply_test.go
+@@ -0,0 +1,45 @@
++package termreply
++
++import (
++	"strings"
++	"testing"
++
++	"github.com/stretchr/testify/require"
++)
++
++func TestAttachedFilterPreservesDefaultPalette(t *testing.T) {
++	for _, reply := range []string{
++		"\x1b]10;rgb:aaaa/bbbb/cccc\x07",
++		"\x1b]11;rgb:12/34/56\x1b\\",
++	} {
++		for _, armed := range []bool{true, false} {
++			for split := 2; split <= len(reply); split++ {
++				f := Filter{PreserveColorReplies: true}
++				got := f.Consume([]byte(reply[:split]), armed, false)
++				got = append(got, f.Consume([]byte(reply[split:]+"x"), armed, false)...)
++				require.Equal(t, reply+"x", string(got))
++				require.False(t, f.Active())
++			}
++		}
++		var drain Filter
++		require.Equal(t, "x", string(drain.Consume([]byte(reply+"x"), true, false)))
++	}
++}
++
++func TestAttachedFilterStillDiscardsOtherReplies(t *testing.T) {
++	for _, reply := range []string{
++		"\x1b]52;c;secret\x07",
++		"\x1b]11;rgb:nope\x07",
++		"\x1b]11;rgb:12345/0/0\x07",
++		"\x1b]11;rgb:1/2/3/4\x1b\\",
++		"\x1b]11;" + strings.Repeat("x", 1000) + "\x1b\\",
++		"\x1bP>|iTerm2 3.6.10n\x1b\\",
++	} {
++		f := Filter{PreserveColorReplies: true}
++		require.Equal(t, "x", string(f.Consume([]byte(reply+"x"), false, false)))
++		require.False(t, f.Active())
++	}
++	f := Filter{PreserveColorReplies: true}
++	require.Empty(t, f.Consume([]byte("\x1b]11;rgb:1234"), true, true))
++	require.False(t, f.Active())
++}
+--- a/internal/tmux/pty.go
++++ b/internal/tmux/pty.go
+@@ -274,7 +274,7 @@
+ // cancellation.
+ func (p *attachStdinPump) run(ctx context.Context) (SwitchIntent, bool) {
+ 	buf := make([]byte, 32)
+-	var replyFilter termreply.Filter
++	replyFilter := termreply.Filter{PreserveColorReplies: true}
+ 	fd := int(p.in.Fd()) // #nosec G115 -- an OS file descriptor is a small positive int
+ 
+ 	reportErr := func(err error) {
+--- a/internal/tmux/attach_stdin_pump_test.go
++++ b/internal/tmux/attach_stdin_pump_test.go
+@@ -6,6 +6,7 @@
+ import (
+ 	"bytes"
+ 	"context"
++	"fmt"
+ 	"os"
+ 	"sync"
+ 	"testing"
+@@ -153,6 +154,37 @@
+ 	}
+ }
+ 
++func TestAttachStdinPump_ForwardsDefaultColors(t *testing.T) {
++	for _, quarantine := range []bool{true, false} {
++		t.Run(fmt.Sprint(quarantine), func(t *testing.T) {
++			pump, w, out := newTestPump(t, AttachOptions{DetachByte: 17})
++			if quarantine {
++				pump.startTime = time.Now()
++			}
++			ctx, cancel := context.WithCancel(context.Background())
++			defer cancel()
++			done := runPump(ctx, pump)
++			colors := "\x1b]10;rgb:aaaa/bbbb/cccc\a\x1b]11;rgb:1111/2222/3333\x1b\\"
++			// Tmux consumes color replies. Unrelated strings must still be
++			// stripped, and the detach key must retain its normal behavior.
++			if _, err := w.Write([]byte(colors + "\x1bP>|terminal version\x1b\\x\x11")); err != nil {
++				t.Fatal(err)
++			}
++			select {
++			case res := <-done:
++				if !res.interrupted {
++					t.Fatal("detach key did not interrupt attach")
++				}
++			case <-time.After(5 * time.Second):
++				t.Fatal("pump did not exit on detach")
++			}
++			if got := out.String(); got != colors+"x" {
++				t.Errorf("forwarded %q, want %q", got, colors+"x")
++			}
++		})
++	}
++}
++
+ func TestAttachStdinPump_ReportsSwitchIntent(t *testing.T) {
+ 	pump, w, _ := newTestPump(t, AttachOptions{DetachByte: 17, SwitchKeyByte: 19})
+ 
