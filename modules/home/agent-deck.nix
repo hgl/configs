@@ -31,6 +31,15 @@ in
         socket_name = "agent-deck";
       };
 
+      instances = {
+        # Let a second agent-deck open on the same profile, so the deck can be up
+        # in more than one terminal at a time. Upstream defaults this off because
+        # two instances each run the reviver, which used to restart and tear down
+        # each other's live sessions. Only the first instance to start (the
+        # primary) owns the notification bar; the rest are otherwise equal.
+        allow_multiple = true;
+      };
+
       fork = {
         # Make `f` branch the conversation only. The defaults also cut a worktree and
         # branch per fork, which is the wrong unit for following up on an answer.
@@ -38,6 +47,19 @@ in
         worktree = false;
         with_state = false;
         docker = "off";
+      };
+
+      display = {
+        # Drop the "[<project>] " prefix from the terminal tab/window title,
+        # leaving just the session name. The prefix is the working directory's
+        # basename, not the branch, so on a box where every session runs in the
+        # same checkout it repeats one word on every tab — pl-laptop works out
+        # of ~/dev/planlab/main, so all of them read "[main] ...". Set
+        # [display] title_format instead to build a title out of {project},
+        # {group} and {name}; it overrides this toggle. Read once at startup
+        # and re-applied to live tmux sessions when the deck picks them up, so
+        # restarting agent-deck is enough — sessions need not be recreated.
+        include_cwd_prefix = false;
       };
 
       # Two tool-scoped groups so the quick-create key (N) has a per-tool cursor
