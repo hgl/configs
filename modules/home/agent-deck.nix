@@ -19,14 +19,13 @@ let
         # agent-deck's control-mode clients do not supply a terminal palette.
         [[ "$(${lib.getExe pkgs.tmux} list-clients -t "$session" -F '#{client_control_mode}')" == *0* ]]
       }
-      if ! attached; then
-        while ! attached; do
-          sleep 0.05
-        done
-        # Let tmux finish its own terminal queries over the SSH connection
-        # before Codex starts its much shorter (250 ms) palette probe.
-        sleep 1
-      fi
+      while ! attached; do
+        sleep 0.05
+      done
+      # Attachment is not a palette-ready signal. Probe tmux until it can
+      # answer both colors, including when a client was already attached.
+      # Bound the wait for terminals that do not implement OSC 10/11.
+      ${lib.getExe pkgs.python3} ${./agent-deck-wait-palette.py} ${lib.getExe pkgs.tmux} || true
     fi
     exec ${lib.getExe config.programs.codex.package} ${lib.escapeShellArgs cfg.codexArgs} "$@"
   '';
