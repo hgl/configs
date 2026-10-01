@@ -1,0 +1,301 @@
+--- a/internal/session/instance.go
++++ b/internal/session/instance.go
+@@ -6199,6 +6199,8 @@
+ }
+ 
+ func (i *Instance) updateStatus(pass *StatusUpdatePass, syncMetadata bool) error {
++	// Run after the status lock is released and current Codex identity is known.
++	defer i.ReconcileTitleFromCodex()
+ 	// #1846: flush any unpersisted last-activity evidence once the lock is
+ 	// released (declared before Lock so it runs after the Unlock defer).
+ 	// Cheap no-op unless the cold-load fold below (or an earlier
+--- /dev/null
++++ b/internal/session/codex_title_reconcile.go
+@@ -0,0 +1,126 @@
++package session
++
++import (
++	"bytes"
++	"context"
++	"encoding/json"
++	"os"
++	"path/filepath"
++	"strings"
++	"time"
++	"unicode"
++
++	"github.com/asheshgoplani/agent-deck/internal/tmux"
++)
++
++// Codex appends both generated names and /rename edits to session_index.jsonl.
++// The last complete record for the exact thread wins; neither cwd nor the
++// terminal title identifies a conversation when several sessions share a repo.
++func codexSessionNameIn(home, sessionID string) string {
++	if home == "" || sessionID == "" {
++		return ""
++	}
++	data, err := os.ReadFile(filepath.Join(home, "session_index.jsonl"))
++	if err != nil {
++		return ""
++	}
++	name := ""
++	for _, line := range bytes.SplitAfter(data, []byte{'\n'}) {
++		// A writer may be partway through appending the final record.
++		if len(line) == 0 || line[len(line)-1] != '\n' {
++			continue
++		}
++		var entry struct {
++			ID   string `json:"id"`
++			Name string `json:"thread_name"`
++		}
++		if json.Unmarshal(line, &entry) == nil && entry.ID == sessionID {
++			name = entry.Name
++		}
++	}
++	// Names are displayed in terminal chrome: never emit control sequences.
++	name = strings.Map(func(r rune) rune {
++		if unicode.IsControl(r) {
++			return ' '
++		}
++		return r
++	}, name)
++	return strings.Join(strings.Fields(name), " ")
++}
++
++// ReconcileTitleFromCodex persists only the title, preserving concurrent edits
++// and respecting Agent Deck's explicit title lock. Called after status polling
++// has resolved the current conversation, including hook/process identity changes.
++func (i *Instance) ReconcileTitleFromCodex() {
++	if i == nil {
++		return
++	}
++	i.mu.RLock()
++	if !IsCodexCompatible(i.Tool) || i.TitleLocked || i.SSHHost != "" {
++		i.mu.RUnlock()
++		return
++	}
++	sid, title, home := i.CodexSessionID, i.Title, i.getCodexHomeDir()
++	i.mu.RUnlock()
++	if sid == "" {
++		return
++	}
++	if cfg, err := LoadUserConfig(); err != nil || (cfg != nil && !cfg.GetSyncTitle()) {
++		return
++	}
++	name := codexSessionNameIn(home, sid)
++	if name == "" || name == title {
++		return
++	}
++	db := i.restartDB.Load()
++	if db == nil {
++		return
++	}
++	i.mu.Lock()
++	if i.TitleLocked || i.CodexSessionID != sid || i.Title != title {
++		i.mu.Unlock()
++		return
++	}
++	applied, err := db.UpdateTitleIfUnlocked(i.ID, name)
++	if err != nil || !applied {
++		i.mu.Unlock()
++		return
++	}
++	i.Title, i.AutoName = name, false
++	i.mu.Unlock()
++	_ = db.Touch() // Wake existing TUI/remote registry watchers.
++	i.SyncTmuxDisplayName()
++	if ts := i.GetTmuxSession(); ts != nil && ts.Name != "" {
++		_ = tmux.WriteBadgeUpdate(ts.Name, name)
++	}
++}
++
++// WatchCodexTitle covers direct CLI/SSH attachment, which has no TUI status
++// loop. Load a fresh instance per tick so a rename, lock or /new cannot leave
++// the attach process using its initial snapshot. No agent process is restarted.
++func WatchCodexTitle(ctx context.Context, profile, instanceID string) {
++	storage, err := NewStorageWithProfile(profile)
++	if err != nil {
++		return
++	}
++	defer storage.Close()
++	ticker := time.NewTicker(2 * time.Second)
++	defer ticker.Stop()
++	for {
++		instances, _, err := storage.LoadWithGroups()
++		if err == nil {
++			for _, inst := range instances {
++				if inst.ID == instanceID {
++					// UpdateStatus resolves live identity before reconciling names.
++					_ = inst.UpdateStatus()
++					break
++				}
++			}
++		}
++		select {
++		case <-ctx.Done():
++			return
++		case <-ticker.C:
++		}
++	}
++}
+--- /dev/null
++++ b/internal/session/codex_title_reconcile_test.go
+@@ -0,0 +1,126 @@
++package session
++
++import (
++	"os"
++	"path/filepath"
++	"testing"
++)
++
++func TestCodexSessionNameIn(t *testing.T) {
++	home := t.TempDir()
++	path := filepath.Join(home, "session_index.jsonl")
++	data := "{\"id\":\"one\",\"thread_name\":\"Generated task title\"}\n" +
++		"not json\n" +
++		"{\"id\":\"other\",\"thread_name\":\"Wrong conversation\"}\n" +
++		"{\"id\":\"one\",\"thread_name\":\"  Renamed task\\n标题  \"}\n" +
++		"{\"id\":\"one\",\"thread_name\":\"Partial append\"}"
++	if err := os.WriteFile(path, []byte(data), 0600); err != nil {
++		t.Fatal(err)
++	}
++	if got := codexSessionNameIn(home, "one"); got != "Renamed task 标题" {
++		t.Fatalf("name = %q", got)
++	}
++	if got := codexSessionNameIn(home, "unknown"); got != "" {
++		t.Fatalf("unknown = %q", got)
++	}
++	if err := os.WriteFile(path, []byte(data+"\n{\"id\":\"one\",\"thread_name\":\"\"}\n"), 0600); err != nil {
++		t.Fatal(err)
++	}
++	if got := codexSessionNameIn(home, "one"); got != "" {
++		t.Fatalf("cleared = %q", got)
++	}
++}
++
++func TestReconcileTitleFromCodex(t *testing.T) {
++	home := t.TempDir()
++	t.Setenv("CODEX_HOME", home)
++	path := filepath.Join(home, "session_index.jsonl")
++	writeName := func(name string) {
++		t.Helper()
++		if err := os.WriteFile(path, []byte("{\"id\":\"thread-one\",\"thread_name\":\""+name+"\"}\n"), 0600); err != nil {
++			t.Fatal(err)
++		}
++	}
++	storage := newTestStorage(t)
++	inst := NewInstance("random-fox", t.TempDir())
++	inst.Tool, inst.Command = "codex", "codex"
++	inst.CodexSessionID, inst.AutoName = "thread-one", true
++	if err := storage.SaveWithGroups([]*Instance{inst}, nil); err != nil {
++		t.Fatal(err)
++	}
++	writeName("Generated task title")
++	// Even a stopped session must get its name when status is queried.
++	_ = inst.UpdateStatus()
++	if inst.Title != "Generated task title" || inst.AutoName || inst.TitleLocked {
++		t.Fatalf("sync failed: title=%q auto=%v locked=%v", inst.Title, inst.AutoName, inst.TitleLocked)
++	}
++	writeName("Manual Codex rename")
++	inst.ReconcileTitleFromCodex()
++	rows, _, err := storage.LoadWithGroups()
++	if err != nil || len(rows) != 1 || rows[0].Title != "Manual Codex rename" || rows[0].CodexSessionID != "thread-one" {
++		t.Fatalf("persisted rename = %+v, err=%v", rows, err)
++	}
++	// A concurrent Agent Deck rename locks the stored row after our snapshot.
++	rows[0].Title, rows[0].TitleLocked = "Pinned by user", true
++	if err := storage.SaveWithGroups(rows, nil); err != nil {
++		t.Fatal(err)
++	}
++	writeName("Must not overwrite pinned title")
++	inst.ReconcileTitleFromCodex()
++	rows, _, err = storage.LoadWithGroups()
++	if err != nil || rows[0].Title != "Pinned by user" {
++		t.Fatalf("lost title lock: %+v %v", rows, err)
++	}
++	if inst.Title != "Manual Codex rename" {
++		t.Fatal("rejected write changed in-memory title")
++	}
++	// A configured opt-out must also apply to unlocked sessions.
++	rows[0].TitleLocked = false
++	if err := storage.SaveWithGroups(rows, nil); err != nil {
++		t.Fatal(err)
++	}
++	configPath, err := GetUserConfigPath()
++	if err != nil {
++		t.Fatal(err)
++	}
++	oldConfig, readErr := os.ReadFile(configPath)
++	t.Cleanup(func() {
++		if readErr == nil {
++			_ = os.WriteFile(configPath, oldConfig, 0600)
++		} else {
++			_ = os.Remove(configPath)
++		}
++		ClearUserConfigCache()
++	})
++	if err := os.MkdirAll(filepath.Dir(configPath), 0700); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.WriteFile(configPath, []byte("sync_title = false\n"), 0600); err != nil {
++		t.Fatal(err)
++	}
++	ClearUserConfigCache()
++	rows[0].ReconcileTitleFromCodex()
++	if rows[0].Title != "Pinned by user" {
++		t.Fatal("sync_title=false was ignored")
++	}
++}
++
++func TestReconcileTitleFromCodexUsesSessionHome(t *testing.T) {
++	home, wrongHome := t.TempDir(), t.TempDir()
++	t.Setenv("CODEX_HOME", wrongHome)
++	for dir, name := range map[string]string{home: "Right account", wrongHome: "Wrong account"} {
++		if err := os.WriteFile(filepath.Join(dir, "session_index.jsonl"), []byte("{\"id\":\"thread\",\"thread_name\":\""+name+"\"}\n"), 0600); err != nil {
++			t.Fatal(err)
++		}
++	}
++	storage := newTestStorage(t)
++	inst := NewInstance("random-fox", t.TempDir())
++	inst.Tool, inst.Command, inst.CodexSessionID = "codex", "CODEX_HOME="+home+" codex", "thread"
++	if err := storage.SaveWithGroups([]*Instance{inst}, nil); err != nil {
++		t.Fatal(err)
++	}
++	inst.ReconcileTitleFromCodex()
++	if inst.Title != "Right account" {
++		t.Fatalf("title = %q", inst.Title)
++	}
++}
+--- a/internal/ui/home.go
++++ b/internal/ui/home.go
+@@ -6278,6 +6278,12 @@
+ 	copy(instances, h.instances)
+ 	h.instancesMu.RUnlock()
+ 
++	// Codex's background naming and /rename can change metadata while idle.
++	// Reconcile before the idle-pane and dead-server polling shortcuts.
++	for _, inst := range instances {
++		inst.ReconcileTitleFromCodex()
++	}
++
+ 	tmuxBefore := tmux.SubprocessStarts()
+ 	defer func() {
+ 		elapsed := time.Since(totalStart)
+--- a/cmd/agent-deck/session_cmd.go
++++ b/cmd/agent-deck/session_cmd.go
+@@ -1512,8 +1512,12 @@
+ 		os.Exit(1)
+ 	}
+ 
+-	// Create context for attach
+-	ctx := context.Background()
++	// Direct CLI/SSH attachment has no TUI status loop to pick up Codex names.
++	ctx, cancel := context.WithCancel(context.Background())
++	defer cancel()
++	if session.IsCodexCompatible(inst.Tool) {
++		go session.WatchCodexTitle(ctx, profile, inst.ID)
++	}
+ 
+ 	if err := tmuxSession.Attach(ctx, detachByte); err != nil {
+ 		fmt.Fprintf(os.Stderr, "Error: failed to attach: %v\n", err)
