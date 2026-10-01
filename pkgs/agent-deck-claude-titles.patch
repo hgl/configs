@@ -1,0 +1,435 @@
+diff --git a/cmd/agent-deck/attach.go b/cmd/agent-deck/attach.go
+index 69e20af..e6b6fec 100644
+--- a/cmd/agent-deck/attach.go
++++ b/cmd/agent-deck/attach.go
+@@ -34,7 +34,7 @@ func stdinStdoutIsTerminal() bool {
+ // created/started) session intact. Any other error (no tmux pane, attach
+ // failure) is returned verbatim. The session must already be started before
+ // this is called.
+-func attachInstanceInteractive(inst *session.Instance) error {
++func attachInstanceInteractive(inst *session.Instance, profile string) error {
+ 	if !stdinStdoutIsTerminal() {
+ 		return errAttachNoTTY
+ 	}
+@@ -43,5 +43,10 @@ func attachInstanceInteractive(inst *session.Instance) error {
+ 		return fmt.Errorf("no tmux session for '%s'", inst.Title)
+ 	}
+ 	detachByte := ui.ResolvedDetachByte(session.GetHotkeyOverrides())
+-	return tmuxSession.Attach(context.Background(), detachByte)
++	ctx, cancel := context.WithCancel(context.Background())
++	defer cancel()
++	if session.IsClaudeCompatible(inst.Tool) || session.IsCodexCompatible(inst.Tool) {
++		go session.WatchSessionTitle(ctx, profile, inst.ID)
++	}
++	return tmuxSession.Attach(ctx, detachByte)
+ }
+diff --git a/cmd/agent-deck/attach_test.go b/cmd/agent-deck/attach_test.go
+index 2ef8e97..8fbba33 100644
+--- a/cmd/agent-deck/attach_test.go
++++ b/cmd/agent-deck/attach_test.go
+@@ -16,7 +16,7 @@ func TestAttachInstanceInteractive_NoTTYReturnsSentinel(t *testing.T) {
+ 	}
+ 
+ 	inst := session.NewInstance("attach-guard", "/tmp")
+-	err := attachInstanceInteractive(inst)
++	err := attachInstanceInteractive(inst, "")
+ 	if !errors.Is(err, errAttachNoTTY) {
+ 		t.Fatalf("attachInstanceInteractive without a TTY = %v, want errAttachNoTTY", err)
+ 	}
+diff --git a/cmd/agent-deck/hook_name_sync.go b/cmd/agent-deck/hook_name_sync.go
+index a63a59c..07eac4b 100644
+--- a/cmd/agent-deck/hook_name_sync.go
++++ b/cmd/agent-deck/hook_name_sync.go
+@@ -2,7 +2,6 @@ package main
+ 
+ import (
+ 	"os"
+-	"path/filepath"
+ 
+ 	"github.com/asheshgoplani/agent-deck/internal/session"
+ 	"github.com/asheshgoplani/agent-deck/internal/tmux"
+@@ -44,17 +43,8 @@ func applyClaudeTitleSync(instanceID, sessionID string) {
+ 		return
+ 	}
+ 
+-	home, err := os.UserHomeDir()
+-	if err != nil {
+-		return
+-	}
+-	// Cheap pre-check: if Claude has no name for this session at all, skip the
+-	// profile scan entirely (the common case for sessions started without
+-	// --name). ReconcileTitleFromClaude re-reads it authoritatively below.
+-	if findClaudeSessionName(filepath.Join(home, ".claude"), sessionID) == "" {
+-		return
+-	}
+-
++	// Resolve the instance before looking up the name: account and group config
++	// directories can differ from ~/.claude and from this hook's environment.
+ 	profiles, err := session.ListProfiles()
+ 	if err != nil || len(profiles) == 0 {
+ 		p := os.Getenv("AGENTDECK_PROFILE")
+diff --git a/cmd/agent-deck/hook_name_sync_test.go b/cmd/agent-deck/hook_name_sync_test.go
+index 8bd355b..6ff034c 100644
+--- a/cmd/agent-deck/hook_name_sync_test.go
++++ b/cmd/agent-deck/hook_name_sync_test.go
+@@ -403,3 +403,41 @@ func TestApplyClaudeTitleSync_SyncsWhenEnabled(t *testing.T) {
+ 		t.Errorf("post-sync Title = %q, want %q (sync_title=true must allow sync)", got, "renamed-by-user")
+ 	}
+ }
++
++func TestApplyClaudeTitleSync_AccountDirectory(t *testing.T) {
++	home := t.TempDir()
++	t.Setenv("HOME", home)
++	t.Setenv("XDG_CONFIG_HOME", filepath.Join(home, ".config"))
++	t.Setenv("XDG_DATA_HOME", filepath.Join(home, ".local", "share"))
++	t.Setenv("AGENTDECK_PROFILE", "account_title_sync")
++	accountDir := filepath.Join(home, ".claude-work")
++	configPath, err := session.GetUserConfigPath()
++	if err != nil {
++		t.Fatal(err)
++	}
++	if err := os.MkdirAll(filepath.Dir(configPath), 0700); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.WriteFile(configPath, []byte(fmt.Sprintf("[profiles.work.claude]\nconfig_dir=%q\n", accountDir)), 0600); err != nil {
++		t.Fatal(err)
++	}
++	session.ClearUserConfigCache()
++	t.Cleanup(session.ClearUserConfigCache)
++	writeClaudeSessionFile(t, accountDir, 42, map[string]any{"sessionId": "account-thread", "name": "Account title"})
++	storage, err := session.NewStorageWithProfile("account_title_sync")
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer storage.Close()
++	inst := session.NewInstance("random-fox", home)
++	inst.Tool, inst.Command, inst.Account = "claude", "claude", "work"
++	inst.ClaudeSessionID = "account-thread"
++	if err := storage.Save([]*session.Instance{inst}); err != nil {
++		t.Fatal(err)
++	}
++	applyClaudeTitleSync(inst.ID, inst.ClaudeSessionID)
++	loaded, err := storage.Load()
++	if err != nil || len(loaded) != 1 || loaded[0].Title != "Account title" {
++		t.Fatalf("account hook sync = %+v, err=%v", loaded, err)
++	}
++}
+diff --git a/cmd/agent-deck/main.go b/cmd/agent-deck/main.go
+index 51bb446..f359030 100644
+--- a/cmd/agent-deck/main.go
++++ b/cmd/agent-deck/main.go
+@@ -2638,7 +2638,7 @@ func handleAddCommand(profile string, args []string, inspectFlags func(*flag.Fla
+ 			fmt.Fprintf(os.Stderr, "Error: failed to save session state: %v\n", err)
+ 			os.Exit(1)
+ 		}
+-		if err := attachInstanceInteractive(newInstance); err != nil {
++		if err := attachInstanceInteractive(newInstance, profile); err != nil {
+ 			if errors.Is(err, errAttachNoTTY) {
+ 				fmt.Fprintf(os.Stderr, "Error: %v; session was created and started\n", err)
+ 				os.Exit(3)
+diff --git a/cmd/agent-deck/session_cmd.go b/cmd/agent-deck/session_cmd.go
+index 88a2841..d349fbc 100644
+--- a/cmd/agent-deck/session_cmd.go
++++ b/cmd/agent-deck/session_cmd.go
+@@ -366,7 +366,7 @@ func handleSessionStart(profile string, args []string) {
+ 			out.Error("--attach cannot be combined with --json; session was started", ErrCodeInvalidOperation)
+ 			os.Exit(3)
+ 		}
+-		if err := attachInstanceInteractive(inst); err != nil {
++		if err := attachInstanceInteractive(inst, profile); err != nil {
+ 			if errors.Is(err, errAttachNoTTY) {
+ 				fmt.Fprintf(os.Stderr, "Error: %v; session was started\n", err)
+ 				os.Exit(3)
+@@ -1512,11 +1512,11 @@ func handleSessionAttach(profile string, args []string) {
+ 		os.Exit(1)
+ 	}
+ 
+-	// Direct CLI/SSH attachment has no TUI status loop to pick up Codex names.
++	// Direct CLI/SSH attachment has no TUI status loop to pick up agent names.
+ 	ctx, cancel := context.WithCancel(context.Background())
+ 	defer cancel()
+-	if session.IsCodexCompatible(inst.Tool) {
+-		go session.WatchCodexTitle(ctx, profile, inst.ID)
++	if session.IsCodexCompatible(inst.Tool) || session.IsClaudeCompatible(inst.Tool) {
++		go session.WatchSessionTitle(ctx, profile, inst.ID)
+ 	}
+ 
+ 	if err := tmuxSession.Attach(ctx, detachByte); err != nil {
+diff --git a/internal/session/claude_title_reconcile.go b/internal/session/claude_title_reconcile.go
+index cd3a4a0..271f8ab 100644
+--- a/internal/session/claude_title_reconcile.go
++++ b/internal/session/claude_title_reconcile.go
+@@ -108,7 +108,7 @@ func ClaudeSessionNameIn(claudeDir, sessionID string) string {
+ 	if meta.NameSource == "derived" {
+ 		return ""
+ 	}
+-	return strings.TrimSpace(meta.Name)
++	return claudeTitleName(strings.TrimSpace(meta.Name))
+ }
+ 
+ // ClaudeSessionName resolves the user's ~/.claude and returns the Claude
+@@ -244,7 +244,7 @@ func (i *Instance) ResolveTitleFromClaude(sessionID string) (string, bool) {
+ 	if cfg, err := LoadUserConfig(); err == nil && cfg != nil && !cfg.GetSyncTitle() {
+ 		return "", false
+ 	}
+-	name := ClaudeSessionName(sessionID)
++	name := ClaudeSessionNameIn(ClaudeConfigDirForSend(i), sessionID)
+ 	if name == "" || name == i.Title {
+ 		return "", false
+ 	}
+diff --git a/internal/session/codex_title_reconcile.go b/internal/session/codex_title_reconcile.go
+index 6ce0cf7..e9401b9 100644
+--- a/internal/session/codex_title_reconcile.go
++++ b/internal/session/codex_title_reconcile.go
+@@ -48,19 +48,32 @@ func codexSessionNameIn(home, sessionID string) string {
+ 	return strings.Join(strings.Fields(name), " ")
+ }
+ 
+-// ReconcileTitleFromCodex persists only the title, preserving concurrent edits
+-// and respecting Agent Deck's explicit title lock. Called after status polling
+-// has resolved the current conversation, including hook/process identity changes.
++// ReconcileTitleFromCodex is retained for callers that only handle Codex.
+ func (i *Instance) ReconcileTitleFromCodex() {
++	if i != nil && IsCodexCompatible(i.Tool) {
++		i.ReconcileSessionTitle()
++	}
++}
++
++// ReconcileSessionTitle persists only the title, preserving concurrent edits
++// and respecting Agent Deck's explicit title lock. Status polling resolves the
++// current conversation first; the account directory belongs to that instance.
++func (i *Instance) ReconcileSessionTitle() {
+ 	if i == nil {
+ 		return
+ 	}
+ 	i.mu.RLock()
+-	if !IsCodexCompatible(i.Tool) || i.TitleLocked || i.SSHHost != "" {
++	if (!IsCodexCompatible(i.Tool) && !IsClaudeCompatible(i.Tool)) || i.TitleLocked || i.SSHHost != "" {
+ 		i.mu.RUnlock()
+ 		return
+ 	}
+-	sid, title, home := i.CodexSessionID, i.Title, i.getCodexHomeDir()
++	isClaude := IsClaudeCompatible(i.Tool)
++	sid, title, home := i.CodexSessionID, i.Title, ""
++	if isClaude {
++		sid, home = i.ClaudeSessionID, ClaudeConfigDirForSend(i)
++	} else {
++		home = i.getCodexHomeDir()
++	}
+ 	i.mu.RUnlock()
+ 	if sid == "" {
+ 		return
+@@ -68,7 +81,12 @@ func (i *Instance) ReconcileTitleFromCodex() {
+ 	if cfg, err := LoadUserConfig(); err != nil || (cfg != nil && !cfg.GetSyncTitle()) {
+ 		return
+ 	}
+-	name := codexSessionNameIn(home, sid)
++	var name string
++	if isClaude {
++		name = ClaudeSessionNameIn(home, sid)
++	} else {
++		name = codexSessionNameIn(home, sid)
++	}
+ 	if name == "" || name == title {
+ 		return
+ 	}
+@@ -77,7 +95,11 @@ func (i *Instance) ReconcileTitleFromCodex() {
+ 		return
+ 	}
+ 	i.mu.Lock()
+-	if i.TitleLocked || i.CodexSessionID != sid || i.Title != title {
++	currentSID := i.CodexSessionID
++	if isClaude {
++		currentSID = i.ClaudeSessionID
++	}
++	if i.TitleLocked || currentSID != sid || i.Title != title {
+ 		i.mu.Unlock()
+ 		return
+ 	}
+@@ -95,10 +117,10 @@ func (i *Instance) ReconcileTitleFromCodex() {
+ 	}
+ }
+ 
+-// WatchCodexTitle covers direct CLI/SSH attachment, which has no TUI status
++// WatchSessionTitle covers direct CLI/SSH attachment, which has no TUI status
+ // loop. Load a fresh instance per tick so a rename, lock or /new cannot leave
+ // the attach process using its initial snapshot. No agent process is restarted.
+-func WatchCodexTitle(ctx context.Context, profile, instanceID string) {
++func WatchSessionTitle(ctx context.Context, profile, instanceID string) {
+ 	storage, err := NewStorageWithProfile(profile)
+ 	if err != nil {
+ 		return
+diff --git a/internal/session/instance.go b/internal/session/instance.go
+index 5b63ce7..b229879 100644
+--- a/internal/session/instance.go
++++ b/internal/session/instance.go
+@@ -6199,8 +6199,8 @@ func (i *Instance) UpdateStatus() error {
+ }
+ 
+ func (i *Instance) updateStatus(pass *StatusUpdatePass, syncMetadata bool) error {
+-	// Run after the status lock is released and current Codex identity is known.
+-	defer i.ReconcileTitleFromCodex()
++	// Run after the status lock is released and current agent identity is known.
++	defer i.ReconcileSessionTitle()
+ 	// #1846: flush any unpersisted last-activity evidence once the lock is
+ 	// released (declared before Lock so it runs after the Unlock defer).
+ 	// Cheap no-op unless the cold-load fold below (or an earlier
+diff --git a/internal/session/session_title_sync_test.go b/internal/session/session_title_sync_test.go
+new file mode 100644
+index 0000000..4f4c7e4
+--- /dev/null
++++ b/internal/session/session_title_sync_test.go
+@@ -0,0 +1,93 @@
++package session
++
++import (
++	"fmt"
++	"os"
++	"path/filepath"
++	"testing"
++)
++
++func TestReconcileSessionTitleClaudeAccount(t *testing.T) {
++	account := t.TempDir()
++	configPath := startupNameConfig(t, fmt.Sprintf("[profiles.work.claude]\nconfig_dir=%q\n", filepath.Join(account, ".claude")))
++	seedClaudeSession(t, os.Getenv("HOME"), "thread", "Wrong account")
++	seedClaudeSession(t, account, "thread", "Generated title")
++	storage := newTestStorage(t)
++	inst := NewInstance("random-fox", t.TempDir())
++	inst.Tool, inst.Command, inst.Account = "claude", "claude", "work"
++	inst.ClaudeSessionID, inst.AutoName = "thread", true
++	if err := storage.SaveWithGroups([]*Instance{inst}, nil); err != nil {
++		t.Fatal(err)
++	}
++	// The account-aware resolver is shared by hooks and on-attach sync.
++	if name, changed := inst.ResolveTitleFromClaude("thread"); !changed || name != "Generated title" {
++		t.Fatalf("resolved = %q, %v", name, changed)
++	}
++	// Stopped and idle sessions are included in ordinary status reconciliation.
++	_ = inst.UpdateStatus()
++	if inst.Title != "Generated title" || inst.AutoName || inst.TitleLocked {
++		t.Fatalf("sync = %q, auto=%v, locked=%v", inst.Title, inst.AutoName, inst.TitleLocked)
++	}
++	seedClaudeSession(t, account, "thread", "Renamed 标题")
++	inst.ReconcileSessionTitle()
++	rows, _, err := storage.LoadWithGroups()
++	if err != nil || len(rows) != 1 || rows[0].Title != "Renamed 标题" || rows[0].ClaudeSessionID != "thread" {
++		t.Fatalf("persisted = %+v, err=%v", rows, err)
++	}
++	// A concurrent Agent Deck rename must protect the DB and terminal chrome.
++	rows[0].Title, rows[0].TitleLocked = "Pinned by user", true
++	if err := storage.SaveWithGroups(rows, nil); err != nil {
++		t.Fatal(err)
++	}
++	seedClaudeSession(t, account, "thread", "Must not overwrite pinned title")
++	inst.ReconcileSessionTitle()
++	rows, _, err = storage.LoadWithGroups()
++	if err != nil || rows[0].Title != "Pinned by user" || inst.Title != "Renamed 标题" {
++		t.Fatalf("lost title lock: %+v %v, memory=%q", rows, err, inst.Title)
++	}
++	rows[0].TitleLocked = false
++	if err := storage.SaveWithGroups(rows, nil); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.WriteFile(configPath, []byte(fmt.Sprintf("sync_title=false\n[profiles.work.claude]\nconfig_dir=%q\n", filepath.Join(account, ".claude"))), 0600); err != nil {
++		t.Fatal(err)
++	}
++	ClearUserConfigCache()
++	rows[0].ReconcileSessionTitle()
++	if rows[0].Title != "Pinned by user" {
++		t.Fatal("sync_title=false ignored")
++	}
++}
++
++func TestReconcileSessionTitleClaudeBoundaries(t *testing.T) {
++	startupNameConfig(t, "")
++	home := os.Getenv("HOME")
++	seedClaudeSession(t, home, "other-thread", "Unrelated conversation")
++	storage := newTestStorage(t)
++	inst := NewInstance("random-fox", t.TempDir())
++	inst.Tool, inst.Command, inst.ClaudeSessionID = "claude", "claude", "thread"
++	if err := storage.SaveWithGroups([]*Instance{inst}, nil); err != nil {
++		t.Fatal(err)
++	}
++	inst.ReconcileSessionTitle()
++	if inst.Title != "random-fox" {
++		t.Fatal("selected wrong session")
++	}
++	seedClaudeSession(t, home, "thread", "Local name")
++	inst.SSHHost = "remote"
++	inst.ReconcileSessionTitle()
++	if inst.Title != "random-fox" {
++		t.Fatal("read local metadata for a remote session")
++	}
++	inst.SSHHost = ""
++	seedClaudeSessionFile(t, home, "1234.json", map[string]any{"sessionId": "thread", "name": "folder-name", "nameSource": "derived"})
++	inst.ReconcileSessionTitle()
++	if inst.Title != "random-fox" {
++		t.Fatal("adopted a folder-derived name")
++	}
++	seedClaudeSession(t, home, "thread", "unsafe\x1b]2;title\x07")
++	inst.ReconcileSessionTitle()
++	if inst.Title != "random-fox" {
++		t.Fatal("accepted terminal control characters")
++	}
++}
+diff --git a/internal/ui/home.go b/internal/ui/home.go
+index 7f8cea0..fbf91e3 100644
+--- a/internal/ui/home.go
++++ b/internal/ui/home.go
+@@ -6278,10 +6278,10 @@ func (h *Home) backgroundStatusUpdate() {
+ 	copy(instances, h.instances)
+ 	h.instancesMu.RUnlock()
+ 
+-	// Codex's background naming and /rename can change metadata while idle.
++	// Agent naming and /rename can change metadata while idle.
+ 	// Reconcile before the idle-pane and dead-server polling shortcuts.
+ 	for _, inst := range instances {
+-		inst.ReconcileTitleFromCodex()
++		inst.ReconcileSessionTitle()
+ 	}
+ 
+ 	tmuxBefore := tmux.SubprocessStarts()
+@@ -17499,9 +17499,11 @@ func (h *Home) attachSession(inst *session.Instance) tea.Cmd {
+ 	h.isAttaching.Store(true) // Prevent View() output only during actual attach transition
+ 	res := &attachResult{}
+ 	return tea.Exec(attachCmd{
+-		session: tmuxSess,
+-		opts:    h.attachOptions(tmuxSess),
+-		result:  res,
++		session:    tmuxSess,
++		profile:    h.profile,
++		instanceID: inst.ID,
++		opts:       h.attachOptions(tmuxSess),
++		result:     res,
+ 		// #1753: clear the flag inside Run(), i.e. BEFORE Bubble Tea restores the
+ 		// terminal and resumes the loop. The ExecCallback below runs on its own
+ 		// goroutine, so clearing it only there raced the first View() after resume:
+@@ -17651,9 +17653,11 @@ type attachResult struct {
+ 
+ // attachCmd implements tea.ExecCommand for custom PTY attach
+ type attachCmd struct {
+-	session *tmux.Session
+-	opts    tmux.AttachOptions
+-	result  *attachResult
++	profile    string
++	instanceID string
++	session    *tmux.Session
++	opts       tmux.AttachOptions
++	result     *attachResult
+ 	// onExit runs as Run returns, i.e. while Bubble Tea's event loop is still
+ 	// parked inside Program.exec and before it restores the terminal. It exists so
+ 	// the attach flag can be cleared without racing the first repaint (#1753); see
+@@ -17668,7 +17672,11 @@ func (a attachCmd) Run() error {
+ 		defer a.onExit()
+ 	}
+ 
+-	ctx := context.Background()
++	ctx, cancel := context.WithCancel(context.Background())
++	defer cancel()
++	if a.instanceID != "" {
++		go session.WatchSessionTitle(ctx, a.profile, a.instanceID)
++	}
+ 	intent, err := a.session.AttachWithOptions(ctx, a.opts)
+ 	if a.result != nil {
+ 		a.result.intent = intent

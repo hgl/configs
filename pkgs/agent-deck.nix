@@ -6,5 +6,7 @@ inputs'.llm-agents.packages.agent-deck.overrideAttrs (old: {
     ./agent-deck-color-replies.patch
     # Follow Codex's generated conversation names and /rename updates.
     ./agent-deck-codex-titles.patch
+    # Keep Claude names in sync while attached, including per-account sessions.
+    ./agent-deck-claude-titles.patch
   ];
 })
