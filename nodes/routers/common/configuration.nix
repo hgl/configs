@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  config,
   modulesPath,
   ...
 }:
@@ -73,7 +74,17 @@
     "net.ipv6.conf.all.forwarding" = true;
   };
 
-  security.acme.acceptTerms = true;
+  security.acme = {
+    acceptTerms = true;
+    defaults = {
+      # dnsmasq negatively caches the _acme-challenge lookup for the zone's SOA
+      # minimum (30m on Cloudflare), so lego's recursive propagation check keeps
+      # seeing NXDOMAIN for the record it just created. Only wait for the
+      # authoritative nameservers, and bypass dnsmasq for the remaining lookups.
+      dnsResolver = "${lib.head config.networking.nameservers}:53";
+      extraLegoFlags = [ "--dns.propagation.disable-rns" ];
+    };
+  };
 
   environment.systemPackages = with pkgs; [
     ghostty.terminfo
