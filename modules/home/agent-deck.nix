@@ -148,5 +148,10 @@ in
       # regular file (a save that did land) is healed instead of blocking.
       force = true;
     };
+
+    # Agent Deck execs Codex directly, bypassing the interactive shell alias.
+    # Apply these defaults on every host, including local and remote sessions.
+    programs.agent-deck.codexArgs = [ "--no-daemon" ];
+    programs.agent-deck.settings.codex.yolo_mode = true;
   };
 }
