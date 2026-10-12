@@ -12,9 +12,7 @@
   aarch64-darwin = {
     emacs-macport = nodes.laptop.pkgs'.emacs-macport;
     agent-deck = nodes.laptop.pkgs'.agent-deck;
-    codex = nodes.laptop.config.home-manager.users.hgl.programs.codex.package;
-    claude-code = nodes.laptop.config.home-manager.users.hgl.programs.claude-code.package;
-    nodejs-slim_26 = nodes.laptop.pkgs.nodejs-slim_26;
-    paneru = nodes.laptop.config.home-manager.users.hgl.services.paneru.package;
+    codex = nodes.laptop.pkgs'.codex;
+    claude-code = nodes.laptop.pkgs'.claude-code;
   };
 }
