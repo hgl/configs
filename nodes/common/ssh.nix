@@ -26,7 +26,6 @@ lib.mkMerge (
       "vm-nixos"
       "laptop"
       "laptop2"
-      "pl-laptop"
     ])
     {
       users.users.hgl = {
