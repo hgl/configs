@@ -117,8 +117,10 @@
     '';
   };
 
+  # vim-full 9.2.1164 fails to build on darwin (GTK2 GUI: no member 'scale'
+  # in 'struct Gui'), and nothing is cached. Re-enable once nixpkgs fixes it.
   programs.vim = {
-    enable = true;
+    enable = false;
   };
 
   home.packages = with pkgs; [
@@ -176,5 +178,5 @@
     mozjpeg
   ];
 
-  home.stateVersion = "26.05";
+  home.stateVersion = "26.11";
 }
