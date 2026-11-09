@@ -7,7 +7,6 @@
 {
   imports = [
     modules'.fish
-    modules'.zmx
     modules'.claude-code
     modules'.codex
     modules'.lazygit

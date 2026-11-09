@@ -12,7 +12,6 @@
     modules'.ghostty
     modules'.claude-code
     modules'.codex
-    # modules'.zmx
   ];
   xdg = {
     enable = true;

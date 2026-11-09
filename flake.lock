@@ -497,8 +497,7 @@
         "nixverse": "nixverse",
         "paneru-unstable": "paneru-unstable",
         "sops-nix-unstable-darwin": "sops-nix-unstable-darwin",
-        "sops-nix-unstable-nixos": "sops-nix-unstable-nixos",
-        "zmx-unstable": "zmx-unstable"
+        "sops-nix-unstable-nixos": "sops-nix-unstable-nixos"
       }
     },
     "sops-nix-unstable-darwin": {
@@ -596,22 +595,6 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "zmx-unstable": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1793997890,
-        "narHash": "sha256-aud/azC9TpnKs4jJrXBWO0LXWUFgu7u6Gg2z9jgc79g=",
-        "owner": "neurosnap",
-        "repo": "zmx",
-        "rev": "a35f00a2118b15a5e9d522a43035c8d7487df9b7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "neurosnap",
-        "repo": "zmx",
         "type": "github"
       }
     }
