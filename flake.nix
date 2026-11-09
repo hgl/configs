@@ -36,10 +36,6 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    paneru-unstable = {
-      url = "github:karinushka/paneru/4a635d8dd7bed0c1eb43b6b85788b1db58e0500f";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
     nixverse = {
       url = "github:hgl/nixverse";
       # url = "/Users/hgl/dev/nix/nixverse";
