@@ -11,7 +11,6 @@
   };
   aarch64-darwin = {
     emacs-macport = nodes.laptop.pkgs'.emacs-macport;
-    agent-deck = nodes.laptop.pkgs'.agent-deck;
     codex = nodes.laptop.pkgs'.codex;
     claude-code = nodes.laptop.pkgs'.claude-code;
   };
