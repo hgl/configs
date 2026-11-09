@@ -155,6 +155,261 @@ index 88a2841..d349fbc 100644
  	}
  
  	if err := tmuxSession.Attach(ctx, detachByte); err != nil {
+diff --git a/internal/session/claude_conversation_title.go b/internal/session/claude_conversation_title.go
+new file mode 100644
+index 0000000..e91dc74
+--- /dev/null
++++ b/internal/session/claude_conversation_title.go
+@@ -0,0 +1,99 @@
++package session
++
++import (
++	"bufio"
++	"encoding/json"
++	"io"
++	"os"
++	"sync"
++)
++
++// Claude's generated name lives in the transcript's ai-title record. Its
++// per-process registry can continue to report a folder-derived name instead.
++// Explicit /rename names still take precedence over the generated name.
++func claudeConversationTitleIn(home, projectPath, sessionID string) (string, bool) {
++	if name := ClaudeSessionNameIn(home, sessionID); name != "" {
++		return name, false
++	}
++	path := resolveClaudeTranscriptPath(home, projectPath, sessionID)
++	custom, generated := claudeTranscriptTitles(path, sessionID)
++	if custom != "" {
++		return custom, false
++	}
++	return generated, generated != ""
++}
++
++type claudeTitleCursor struct {
++	info              os.FileInfo
++	offset            int64
++	custom, generated string
++}
++
++var claudeTitleCache = struct {
++	sync.Mutex
++	entries map[string]claudeTitleCursor
++}{entries: make(map[string]claudeTitleCursor)}
++
++// Read only new, complete JSONL records. Large tool results are discarded in
++// bounded chunks, and an incomplete append is retried next time. Compaction
++// replaces/truncates the file, so its inode/size reset the cursor and names.
++func claudeTranscriptTitles(path, sessionID string) (string, string) {
++	if path == "" || sessionID == "" {
++		return "", ""
++	}
++	file, err := os.Open(path)
++	if err != nil {
++		return "", ""
++	}
++	defer file.Close()
++	info, err := file.Stat()
++	if err != nil {
++		return "", ""
++	}
++	claudeTitleCache.Lock()
++	defer claudeTitleCache.Unlock()
++	key := path + "\x00" + sessionID
++	cursor := claudeTitleCache.entries[key]
++	if cursor.info == nil || !os.SameFile(cursor.info, info) || info.Size() < cursor.offset ||
++		(info.Size() == cursor.info.Size() && !info.ModTime().Equal(cursor.info.ModTime())) {
++		cursor = claudeTitleCursor{}
++	}
++	if _, err := file.Seek(cursor.offset, io.SeekStart); err != nil {
++		return "", ""
++	}
++	reader := bufio.NewReaderSize(file, 64*1024)
++	var skipped int64
++	for {
++		line, err := reader.ReadSlice('\n')
++		if err == bufio.ErrBufferFull {
++			skipped += int64(len(line))
++			continue
++		}
++		if err != nil { // Do not consume a partially appended final record.
++			break
++		}
++		cursor.offset += skipped + int64(len(line))
++		if skipped != 0 {
++			skipped = 0
++			continue
++		}
++		var entry struct {
++			Type        string `json:"type"`
++			SessionID   string `json:"sessionId"`
++			CustomTitle string `json:"customTitle"`
++			AITitle     string `json:"aiTitle"`
++		}
++		if json.Unmarshal(line, &entry) != nil || entry.SessionID != sessionID {
++			continue
++		}
++		switch entry.Type {
++		case "custom-title":
++			cursor.custom = claudeTitleName(entry.CustomTitle)
++		case "ai-title":
++			cursor.generated = claudeTitleName(entry.AITitle)
++		}
++	}
++	cursor.info = info
++	claudeTitleCache.entries[key] = cursor
++	return cursor.custom, cursor.generated
++}
+diff --git a/internal/session/claude_conversation_title_test.go b/internal/session/claude_conversation_title_test.go
+new file mode 100644
+index 0000000..1e17471
+--- /dev/null
++++ b/internal/session/claude_conversation_title_test.go
+@@ -0,0 +1,100 @@
++package session
++
++import (
++	"os"
++	"path/filepath"
++	"strings"
++	"testing"
++)
++
++func TestClaudeTranscriptTitles(t *testing.T) {
++	path := filepath.Join(t.TempDir(), "session.jsonl")
++	data := "{\"type\":\"ai-title\",\"sessionId\":\"ours\",\"aiTitle\":\"Generated title\"}\n" +
++		strings.Repeat("x", 150000) + "\n" +
++		"{\"type\":\"ai-title\",\"sessionId\":\"other\",\"aiTitle\":\"Wrong session\"}\n" +
++		"{\"type\":\"custom-title\",\"sessionId\":\"ours\",\"customTitle\":\"Manual rename\"}"
++	if err := os.WriteFile(path, []byte(data), 0600); err != nil {
++		t.Fatal(err)
++	}
++	custom, generated := claudeTranscriptTitles(path, "ours")
++	if custom != "" || generated != "Generated title" {
++		t.Fatalf("titles = %q, %q", custom, generated)
++	}
++	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0600)
++	if err != nil {
++		t.Fatal(err)
++	}
++	_, err = file.WriteString("\n{\"type\":\"ai-title\",\"sessionId\":\"ours\",\"aiTitle\":\"Later generated title\"}\n")
++	if err != nil {
++		t.Fatal(err)
++	}
++	file.Close()
++	custom, generated = claudeTranscriptTitles(path, "ours")
++	if custom != "Manual rename" || generated != "Later generated title" {
++		t.Fatalf("append = %q, %q", custom, generated)
++	}
++	// A compacted file replaces its inode and can lose obsolete metadata.
++	replacement := path + ".tmp"
++	if err := os.WriteFile(replacement, []byte("{\"type\":\"ai-title\",\"sessionId\":\"ours\",\"aiTitle\":\"Compacted title\"}\n"), 0600); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.Rename(replacement, path); err != nil {
++		t.Fatal(err)
++	}
++	custom, generated = claudeTranscriptTitles(path, "ours")
++	if custom != "" || generated != "Compacted title" {
++		t.Fatalf("replacement = %q, %q", custom, generated)
++	}
++}
++
++func TestReconcileGeneratedClaudeTitle(t *testing.T) {
++	startupNameConfig(t, "")
++	home := os.Getenv("HOME")
++	project := t.TempDir()
++	transcripts := filepath.Join(home, ".claude", "projects", ConvertToClaudeDirName(project))
++	if err := os.MkdirAll(transcripts, 0700); err != nil {
++		t.Fatal(err)
++	}
++	path := filepath.Join(transcripts, "native-session.jsonl")
++	if err := os.WriteFile(path, []byte("{\"type\":\"ai-title\",\"sessionId\":\"native-session\",\"aiTitle\":\"Why the sky is blue\"}\n"), 0600); err != nil {
++		t.Fatal(err)
++	}
++	// This is what real Claude writes: registry remains derived, generated
++	// conversation title lives only in the transcript.
++	seedClaudeSessionFile(t, home, "1234.json", map[string]any{"sessionId": "native-session", "name": "project-ab", "nameSource": "derived"})
++	storage := newTestStorage(t)
++	inst := NewInstance("forest-fern", project)
++	inst.Tool, inst.Command, inst.ClaudeSessionID, inst.AutoName = "claude", "claude", "native-session", true
++	if err := storage.SaveWithGroups([]*Instance{inst}, nil); err != nil {
++		t.Fatal(err)
++	}
++	inst.ReconcileSessionTitle()
++	rows, _, err := storage.LoadWithGroups()
++	if err != nil || len(rows) != 1 || rows[0].Title != "Why the sky is blue" || !rows[0].AutoName || rows[0].TitleLocked {
++		t.Fatalf("generated title = %+v, err=%v", rows, err)
++	}
++	if name := rows[0].ClaudeLaunchName(); name != "" {
++		t.Fatalf("restart would pin generated name: %q", name)
++	}
++	// Explicit Claude renames override AI titles and stop automatic naming.
++	seedClaudeSession(t, home, "native-session", "User renamed title")
++	inst.ReconcileSessionTitle()
++	if inst.Title != "User renamed title" || inst.AutoName {
++		t.Fatalf("rename = %q auto=%v", inst.Title, inst.AutoName)
++	}
++	// Neither generated title sync nor a stale snapshot can replace a DB lock.
++	rows, _, err = storage.LoadWithGroups()
++	if err != nil {
++		t.Fatal(err)
++	}
++	rows[0].Title, rows[0].TitleLocked = "Pinned", true
++	if err := storage.SaveWithGroups(rows, nil); err != nil {
++		t.Fatal(err)
++	}
++	seedClaudeSessionFile(t, home, "1234.json", map[string]any{"sessionId": "native-session", "name": "project-ab", "nameSource": "derived"})
++	inst.ReconcileSessionTitle()
++	rows, _, err = storage.LoadWithGroups()
++	if err != nil || rows[0].Title != "Pinned" {
++		t.Fatalf("lost pin: %+v %v", rows, err)
++	}
++}
+diff --git a/internal/session/claude_startup_name_test.go b/internal/session/claude_startup_name_test.go
+index 69a63d4..b9645b6 100644
+--- a/internal/session/claude_startup_name_test.go
++++ b/internal/session/claude_startup_name_test.go
+@@ -254,3 +254,19 @@ func BenchmarkStartupNameFlags(b *testing.B) {
+ 		inst.buildClaudeExtraFlags(nil)
+ 	}
+ }
++
++func TestStartupNameLeavesQuickSessionsUnnamed(t *testing.T) {
++	startupNameConfig(t, "")
++	inst := &Instance{Tool: "claude", Command: "claude", Title: "calm-delta", AutoName: true}
++	if got := inst.ClaudeLaunchName(); got != "" {
++		t.Fatalf("quick-create placeholder became an explicit Claude name: %q", got)
++	}
++	if flags := inst.buildClaudeExtraFlags(nil); strings.Contains(flags, "--name") {
++		t.Fatalf("quick-create flags pin Claude's title: %s", flags)
++	}
++	inst.AutoName = false
++	inst.Title = "User chosen title"
++	if got := inst.ClaudeLaunchName(); got != inst.Title {
++		t.Fatalf("explicit title = %q", got)
++	}
++}
+diff --git a/internal/session/claude_title_push.go b/internal/session/claude_title_push.go
+index f06e1e8..9992c0d 100644
+--- a/internal/session/claude_title_push.go
++++ b/internal/session/claude_title_push.go
+@@ -66,11 +66,13 @@ func pushTitleEnabled() bool {
+ 	return err == nil && cfg != nil && cfg.GetPushTitle()
+ }
+ 
+-// ClaudeLaunchName supplies a default for a supported Claude startup command.
++// ClaudeLaunchName supplies an explicit title for a supported startup command.
++// Quick-create handles are placeholders, not user names: passing them via --name
++// writes a custom-title in Claude and suppresses its automatic title generation.
+ // It never reads an agent registry or sends input to a running process. Existing
+ // startup builders retain ownership of account and conversation selection.
+ func (i *Instance) ClaudeLaunchName() string {
+-	if i == nil || !IsClaudeCompatible(i.Tool) || extraArgsSupplyName(i.ExtraArgs) || extraArgsSelectSession(i.ExtraArgs) || !pushTitleEnabled() {
++	if i == nil || i.GetAutoName() || !IsClaudeCompatible(i.Tool) || extraArgsSupplyName(i.ExtraArgs) || extraArgsSelectSession(i.ExtraArgs) || !pushTitleEnabled() {
+ 		return ""
+ 	}
+ 	// Match the resume builder's generated-fork distinction. Arbitrary per-row
 diff --git a/internal/session/claude_title_reconcile.go b/internal/session/claude_title_reconcile.go
 index cd3a4a0..271f8ab 100644
 --- a/internal/session/claude_title_reconcile.go
@@ -178,10 +433,10 @@ index cd3a4a0..271f8ab 100644
  		return "", false
  	}
 diff --git a/internal/session/codex_title_reconcile.go b/internal/session/codex_title_reconcile.go
-index 6ce0cf7..e9401b9 100644
+index 6ce0cf7..0067224 100644
 --- a/internal/session/codex_title_reconcile.go
 +++ b/internal/session/codex_title_reconcile.go
-@@ -48,19 +48,32 @@ func codexSessionNameIn(home, sessionID string) string {
+@@ -48,19 +48,33 @@ func codexSessionNameIn(home, sessionID string) string {
  	return strings.Join(strings.Fields(name), " ")
  }
  
@@ -211,6 +466,7 @@ index 6ce0cf7..e9401b9 100644
 -	sid, title, home := i.CodexSessionID, i.Title, i.getCodexHomeDir()
 +	isClaude := IsClaudeCompatible(i.Tool)
 +	sid, title, home := i.CodexSessionID, i.Title, ""
++	projectPath := i.EffectiveWorkingDir()
 +	if isClaude {
 +		sid, home = i.ClaudeSessionID, ClaudeConfigDirForSend(i)
 +	} else {
@@ -219,21 +475,22 @@ index 6ce0cf7..e9401b9 100644
  	i.mu.RUnlock()
  	if sid == "" {
  		return
-@@ -68,7 +81,12 @@ func (i *Instance) ReconcileTitleFromCodex() {
+@@ -68,7 +82,13 @@ func (i *Instance) ReconcileTitleFromCodex() {
  	if cfg, err := LoadUserConfig(); err != nil || (cfg != nil && !cfg.GetSyncTitle()) {
  		return
  	}
 -	name := codexSessionNameIn(home, sid)
 +	var name string
++	generated := false
 +	if isClaude {
-+		name = ClaudeSessionNameIn(home, sid)
++		name, generated = claudeConversationTitleIn(home, projectPath, sid)
 +	} else {
 +		name = codexSessionNameIn(home, sid)
 +	}
  	if name == "" || name == title {
  		return
  	}
-@@ -77,7 +95,11 @@ func (i *Instance) ReconcileTitleFromCodex() {
+@@ -77,16 +97,26 @@ func (i *Instance) ReconcileTitleFromCodex() {
  		return
  	}
  	i.mu.Lock()
@@ -246,7 +503,24 @@ index 6ce0cf7..e9401b9 100644
  		i.mu.Unlock()
  		return
  	}
-@@ -95,10 +117,10 @@ func (i *Instance) ReconcileTitleFromCodex() {
+-	applied, err := db.UpdateTitleIfUnlocked(i.ID, name)
++	var applied bool
++	var err error
++	if generated {
++		applied, err = db.UpdateAutoTitleIfUnlocked(i.ID, name)
++	} else {
++		applied, err = db.UpdateTitleIfUnlocked(i.ID, name)
++	}
+ 	if err != nil || !applied {
+ 		i.mu.Unlock()
+ 		return
+ 	}
+-	i.Title, i.AutoName = name, false
++	i.Title, i.AutoName = name, generated
+ 	i.mu.Unlock()
+ 	_ = db.Touch() // Wake existing TUI/remote registry watchers.
+ 	i.SyncTmuxDisplayName()
+@@ -95,10 +125,10 @@ func (i *Instance) ReconcileTitleFromCodex() {
  	}
  }
  
@@ -373,6 +647,33 @@ index 0000000..4f4c7e4
 +		t.Fatal("accepted terminal control characters")
 +	}
 +}
+diff --git a/internal/statedb/statedb.go b/internal/statedb/statedb.go
+index decb401..4dd65d6 100644
+--- a/internal/statedb/statedb.go
++++ b/internal/statedb/statedb.go
+@@ -1168,10 +1168,20 @@ func (s *StateDB) DeleteInstance(id string) error {
+ // write site itself can resolve that, by asking SQLite to apply the change
+ // solely if the row is STILL unlocked at the moment of the write.
+ func (s *StateDB) UpdateTitleIfUnlocked(id, title string) (applied bool, err error) {
++	return s.updateTitleIfUnlocked(id, title, false)
++}
++
++// UpdateAutoTitleIfUnlocked keeps a generated Claude title automatic so restart
++// never turns it into --name and suppresses native automatic naming again.
++func (s *StateDB) UpdateAutoTitleIfUnlocked(id, title string) (applied bool, err error) {
++	return s.updateTitleIfUnlocked(id, title, true)
++}
++
++func (s *StateDB) updateTitleIfUnlocked(id, title string, autoName bool) (applied bool, err error) {
+ 	err = withBusyRetry(func() error {
+ 		res, execErr := s.db.Exec(
+-			"UPDATE instances SET title = ?, auto_name = 0 WHERE id = ? AND title_locked = 0",
+-			title, id,
++			"UPDATE instances SET title = ?, auto_name = ? WHERE id = ? AND title_locked = 0",
++			title, autoName, id,
+ 		)
+ 		if execErr != nil {
+ 			return execErr
 diff --git a/internal/ui/home.go b/internal/ui/home.go
 index 7f8cea0..fbf91e3 100644
 --- a/internal/ui/home.go
