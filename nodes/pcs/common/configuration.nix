@@ -1,4 +1,4 @@
-{ pkgs, inputs', ... }:
+{ pkgs, ... }:
 {
   nix = {
     settings = {
@@ -8,7 +8,6 @@
       ];
     };
   };
-  nixpkgs.overlays = [ inputs'.rust-overlay.overlays.default ];
   nixpkgs = {
     config.allowUnfree = true;
   };

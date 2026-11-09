@@ -1,4 +1,4 @@
-{ pkgs, inputs', ... }:
+{ pkgs, ... }:
 {
   imports = [
     ./utm-vf.nix
@@ -30,7 +30,6 @@
     };
   };
   nixpkgs = {
-    overlays = [ inputs'.rust-overlay.overlays.default ];
     config.allowUnfree = true;
   };
 

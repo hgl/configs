@@ -496,30 +496,9 @@
         "nixpkgs-unstable-nixos": "nixpkgs-unstable-nixos",
         "nixverse": "nixverse",
         "paneru-unstable": "paneru-unstable",
-        "rust-overlay-unstable": "rust-overlay-unstable",
         "sops-nix-unstable-darwin": "sops-nix-unstable-darwin",
         "sops-nix-unstable-nixos": "sops-nix-unstable-nixos",
         "zmx-unstable": "zmx-unstable"
-      }
-    },
-    "rust-overlay-unstable": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs-unstable"
-        ]
-      },
-      "locked": {
-        "lastModified": 1793956102,
-        "narHash": "sha256-dASUovwB3DUoTm6daga0hsNZZAFCCGlUS4FPBjK0OwA=",
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "rev": "74cebce67ef6671ea48fda353a5be2d229bd2920",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "type": "github"
       }
     },
     "sops-nix-unstable-darwin": {
