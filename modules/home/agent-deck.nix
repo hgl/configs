@@ -29,44 +29,42 @@ let
     fi
     exec ${lib.getExe config.programs.codex.package} ${lib.escapeShellArgs cfg.codexArgs} "$@"
   '';
-  claudeLauncher = pkgs.writeShellScript "agent-deck-claude" ''
-    # Put the outer terminal's identity back for Claude. Claude only emits the
-    # OSC 9;4 progress sequence -- what makes Ghostty draw the bar sliding back
-    # and forth across the top of the window while a turn runs -- for terminals
-    # it recognises from TERM_PROGRAM/TERM_PROGRAM_VERSION: ghostty >= 1.2.0,
-    # iTerm2 >= 3.6.6 or ConEmu. tmux overwrites both in every pane with its
-    # own name and version, so in a deck session Claude reads "tmux"/"3.7c" and
-    # stays silent. It special-cases TERM_PROGRAM=tmux for hyperlinks but not
-    # for progress, hence the restore here rather than a flag. Same blind spot
-    # as the SSH one these vars are in SendEnv/AcceptEnv for, different carrier.
-    #
-    # The session environment has the real values once a client has attached
-    # (update-environment, set in tmux.conf below) and tracks re-attaches; the
-    # server's global environment holds whatever started it, which covers the
-    # gap before the first attach, since agent-deck starts a session detached
-    # and only then attaches to it.
-    if [[ -n "''${TMUX:-}" ]]; then
-      outer() {
-        local line scope
-        for scope in "" -g; do
-          line=$(${lib.getExe pkgs.tmux} show-environment $scope "$1" 2>/dev/null) || continue
-          # show-environment answers "-NAME" for a variable it knows is unset.
-          [[ $line == "$1="* ]] || continue
-          printf '%s' "''${line#*=}"
-          return 0
+  claudeTerminalEnv = pkgs.writeText "agent-deck-claude-terminal-env.sh" ''
+    # Sourced by Agent Deck before Claude starts. Keeping claude.command at its
+    # default also keeps Agent Deck's --account / CLAUDE_CONFIG_DIR handling:
+    # a custom command is treated as an alias that selects its own account.
+    agent_deck_restore_terminal() {
+      local session program version line name scope
+      [[ -n "''${TMUX:-}" && -n "''${TMUX_PANE:-}" ]] || return 0
+      session=$(${lib.getExe pkgs.tmux} display-message -p -t "$TMUX_PANE" '#{session_id}') || return 0
+      for name in TERM_PROGRAM TERM_PROGRAM_VERSION; do
+        for scope in session global; do
+          if [[ $scope == session ]]; then
+            line=$(${lib.getExe pkgs.tmux} show-environment -t "$session" "$name" 2>/dev/null) || continue
+          else
+            line=$(${lib.getExe pkgs.tmux} show-environment -g "$name" 2>/dev/null) || continue
+          fi
+          [[ $line == "$name="* ]] || continue
+          if [[ $name == TERM_PROGRAM ]]; then
+            program="''${line#*=}"
+          else
+            version="''${line#*=}"
+          fi
+          break
         done
-        return 1
-      }
-      program=$(outer TERM_PROGRAM) || true
-      # A nested deck would report tmux again; leave the pane's value alone then.
+      done
+      # tmux replaces these in the pane environment. Claude needs the outer
+      # terminal's identity to enable OSC 9;4 progress reporting.
       if [[ -n "$program" && "$program" != tmux ]]; then
         export TERM_PROGRAM="$program"
-        version=$(outer TERM_PROGRAM_VERSION) || true
-        [[ -n "$version" ]] && export TERM_PROGRAM_VERSION="$version"
+        [[ -z "$version" ]] || export TERM_PROGRAM_VERSION="$version"
       fi
-    fi
-    exec ${lib.getExe config.programs.claude-code.package} "$@"
+      return 0
+    }
+    agent_deck_restore_terminal
+    unset -f agent_deck_restore_terminal
   '';
+
 in
 {
   options.programs.agent-deck.codexArgs = lib.mkOption {
@@ -89,7 +87,7 @@ in
     programs.agent-deck.settings = {
       theme = "dark";
       codex.command = toString codexLauncher;
-      claude.command = toString claudeLauncher;
+      claude.env_file = toString claudeTerminalEnv;
 
       tmux = {
         # Host sessions on their own tmux server (tmux -L agent-deck) so agent-deck's
@@ -166,26 +164,26 @@ in
     # tmux reads this at server startup whatever socket it is on, so it reaches
     # the deck's own server (tmux -L agent-deck) too. Nothing else here uses
     # tmux -- zmx is a separate multiplexer -- so the file is all agent-deck's.
-    # A rebuild does not reach a server that is already up: the settings land
-    # when it next starts, i.e. once every deck session is gone.
+    # The activation below also reloads the existing server without stopping
+    # any sessions. Terminal features take effect when a client next attaches.
     xdg.configFile."tmux/tmux.conf".text = ''
-      # tmux parses OSC 9;4 out of the pane either way -- #{pane_pb_state} goes
-      # to "indeterminate" -- but only re-emits it to a client whose terminal is
-      # flagged able to take it, and swallows it otherwise. Its built-in table
-      # grants "progressbar" to mintty and iTerm2 alone, and xterm-ghostty's
-      # terminfo carries no Spb capability for tmux to pick it up from, so
-      # Ghostty has to be named here or Claude's progress bar dies at the tmux
-      # boundary. Resolved per client at attach time, so an attached client only
-      # picks this up on re-attach.
-      set -as terminal-features ",xterm-ghostty:progressbar"
+      # Agent Deck normalizes Ghostty's TERM to xterm-256color over SSH.
+      # Cover both local and remote clients so tmux forwards OSC 9;4 progress.
+      set -as terminal-features ",xterm-ghostty:progressbar,xterm-256color:progressbar"
 
       # Keep the outer terminal reachable from inside a pane, where tmux has
       # replaced TERM_PROGRAM/TERM_PROGRAM_VERSION with its own name and
-      # version. The claude launcher reads these back out of the session
+      # version. Claude's env_file reads these back out of the session
       # environment; update-environment refreshes them on every attach, so a
       # session that gets picked up from a different terminal reports that one.
       set -ga update-environment TERM_PROGRAM
       set -ga update-environment TERM_PROGRAM_VERSION
+    '';
+
+    home.activation.agentDeckTmuxConfig = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      if ${lib.getExe pkgs.tmux} -L agent-deck has-session 2>/dev/null; then
+        run ${lib.getExe pkgs.tmux} -L agent-deck source-file "$HOME/.config/tmux/tmux.conf"
+      fi
     '';
 
     # Quick-create straight from the shell, bypassing the deck. -Q auto-names the
