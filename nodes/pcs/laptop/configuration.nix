@@ -12,6 +12,9 @@
     ./utm.nix
   ];
 
+  # Apple's /usr/bin shims error about the Xcode licence instead of pointing at nix.
+  environment.appleDeveloperTools.block = true;
+
   nix = {
     optimise.automatic = true;
     gc.automatic = true;
