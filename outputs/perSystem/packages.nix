@@ -9,9 +9,6 @@ let
 in
 {
   cert = pkgs'.cert;
-  delve = pkgs.delve.override { inherit buildGoModule; };
-  gopls = pkgs.gopls.override { buildGoLatestModule = buildGoModule; };
-  go-tools = pkgs.go-tools.override { inherit buildGoModule; };
   key-cert-match = pkgs'.key-cert-match;
   llm = pkgs'.llm;
   mobileconfig = pkgs'.mobileconfig;
