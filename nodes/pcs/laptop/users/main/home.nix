@@ -38,7 +38,6 @@
   };
 
   home.packages = with pkgs; [
-    pkgs'.slack-cli-darwin
     pkgs'.dnsclear
     mkalias
     tio
