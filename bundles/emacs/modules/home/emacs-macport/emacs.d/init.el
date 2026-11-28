@@ -98,7 +98,7 @@
     "<SPC> p c" 'project-compile
     "<SPC> g g" 'magit
     "<SPC> b b" 'consult-buffer)
-  (hel-keymap-global-set :state '(normal motion)
+  (hel-keymap-global-set :state 'normal
     "<SPC> w" 'hel-window-map))
 (use-package hel-vterm)
 
