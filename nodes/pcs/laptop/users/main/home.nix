@@ -3,6 +3,7 @@
   pkgs,
   pkgs',
   modules',
+  nodes,
   ...
 }:
 {
@@ -26,7 +27,7 @@
     settings = {
       "vm-nixos" = {
         HostName = "vm-nixos.local";
-        User = "hgl";
+        User = nodes.vm-nixos.users.main.name;
         IdentityFile = "~/.ssh/id_ed25519.pub";
         IdentitiesOnly = true;
       };

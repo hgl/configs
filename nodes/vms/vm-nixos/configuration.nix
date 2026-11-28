@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, nodes, ... }:
 {
   imports = [
     ./utm-vf.nix
@@ -40,7 +40,7 @@
     root = {
       shell = pkgs.fish;
     };
-    hgl = {
+    ${nodes.current.users.main.name} = {
       isNormalUser = true;
       shell = pkgs.fish;
       extraGroups = [ "wheel" ];

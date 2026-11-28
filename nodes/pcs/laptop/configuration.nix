@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  nodes,
   modules',
   ...
 }:
@@ -51,7 +52,7 @@
   };
 
   users.users = {
-    hgl.home = "/Users/hgl";
+    ${nodes.current.users.main.name}.home = "/Users/${nodes.current.users.main.name}";
     root.home = "/var/root";
   };
 
@@ -60,7 +61,7 @@
     computerName = "Glen’s Laptop";
   };
 
-  system.primaryUser = "hgl";
+  system.primaryUser = nodes.current.users.main.name;
 
   system.stateVersion = 6;
 }

@@ -1,3 +1,7 @@
+{ nodes, ... }:
+let
+  user = nodes.current.users.main.name;
+in
 {
   imports = [
     ./gui.nix
@@ -23,14 +27,14 @@
   users = {
     mutableUsers = false;
     users = {
-      hgl = {
+      ${user} = {
         isNormalUser = true;
-        home = "/home/hgl";
-        group = "hgl";
+        home = "/home/${user}";
+        group = user;
         extraGroups = [ "wheel" ];
       };
     };
-    groups.hgl = { };
+    groups.${user} = { };
   };
 
   security.sudo = {
@@ -68,7 +72,7 @@
   programs._1password.enable = true;
   programs._1password-gui = {
     enable = true;
-    polkitPolicyOwners = [ "hgl" ];
+    polkitPolicyOwners = [ user ];
   };
 
   # services.fprintd = {

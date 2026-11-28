@@ -1,11 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, nodes, ... }:
 {
   services.displayManager = {
     gdm.enable = true;
     defaultSession = "gnome";
     autoLogin = {
       enable = true;
-      user = "hgl";
+      user = nodes.current.users.main.name;
     };
   };
 

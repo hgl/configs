@@ -28,7 +28,7 @@ lib.mkMerge (
       "laptop2"
     ])
     {
-      users.users.hgl = {
+      users.users.${nodes.current.users.main.name} = {
         openssh.authorizedKeys.keys = hglKeys;
       };
     }

@@ -1,4 +1,9 @@
 {
+  common =
+    { lib, ... }:
+    {
+      users.main.name = lib.mkDefault "hgl";
+    };
   laptop = {
     system = "aarch64-darwin";
     channel = "unstable";

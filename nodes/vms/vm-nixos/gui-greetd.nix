@@ -1,13 +1,13 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, nodes, ... }:
 {
   programs.regreet = {
     enable = true;
   };
   services.greetd.settings = {
-    default_session.user = "hgl";
+    default_session.user = nodes.current.users.main.name;
     initial_session = {
       command = lib.getExe pkgs.hyprland;
-      user = "hgl";
+      user = nodes.current.users.main.name;
     };
   };
 }

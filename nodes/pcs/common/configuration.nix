@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, nodes, ... }:
 {
   nix = {
     settings = {
@@ -12,7 +12,7 @@
     config.allowUnfree = true;
   };
   users.users = {
-    hgl = {
+    ${nodes.current.users.main.name} = {
       description = "Glen Huang";
       shell = pkgs.fish;
     };

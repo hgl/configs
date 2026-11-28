@@ -2,6 +2,7 @@
   pkgs,
   osConfig,
   modules',
+  nodes,
   ...
 }:
 {
@@ -46,7 +47,7 @@
       };
       "laptop" = {
         hostname = "laptop.local";
-        user = "hgl";
+        user = nodes.laptop.users.main.name;
       };
     };
   };

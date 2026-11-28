@@ -12,6 +12,7 @@
     { lib, nodes, ... }:
     {
       install.targetHost = "root@192.168.64.21";
+      users.main.name = "hgl";
     };
   vm-nixos-builder = {
     install.targetHost = "root@192.168.3.28";
