@@ -6,7 +6,7 @@
 }:
 let
   mkLink = config.lib.file.mkOutOfStoreSymlink;
-  dir = "/Users/hgl/dev/configs/bundles/emacs/modules/darwin/emacs-macport/emacs.d";
+  dir = "/Users/hgl/dev/configs/bundles/emacs/modules/home/emacs-macport/emacs.d";
 in
 {
   home.packages = [
