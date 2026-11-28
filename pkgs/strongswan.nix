@@ -15,12 +15,12 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "strongswan";
-  version = "6.0.2";
+  version = "6.1.0";
   src = fetchFromGitHub {
     owner = "strongswan";
     repo = "strongswan";
     rev = finalAttrs.version;
-    hash = "sha256-wjz41gt+Xu4XJkEXRRVl3b3ryEoEtijeqmfVFoRjnA4=";
+    hash = "sha256-Uqyyju7mi/ERQLo4oAAxX2FzpHzulyrManX8NN4ESAo=";
   };
   enableParallelBuilding = true;
   dontPatchELF = true;
